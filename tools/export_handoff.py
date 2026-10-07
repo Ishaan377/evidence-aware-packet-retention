@@ -17,12 +17,13 @@ def export():
         if path.is_file():
             files.add(path)
     for folder in ("src", "demo", "tests", "tools", "docs", "data/generated",
-                   "results/demo", "results/sensitivity", "logs"):
+                   "results/demo", "results/sensitivity", "logs", ".github", "examples"):
         for path in (ROOT / folder).rglob("*"):
             if path.is_file() and "__pycache__" not in path.parts:
                 files.add(path)
     files = sorted(p for p in files if p.resolve().is_relative_to(ROOT)
-                   and p != OUTPUT and p.name != "export_manifest.json"
+                   and p != OUTPUT and p.name not in ("export_manifest.json", "github_upload_inventory.json", "github_project_bundle.zip")
+                   and not p.is_relative_to(ROOT / "logs/github_clone_check")
                    and p.suffix != ".pyc")
     manifest = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -32,7 +33,8 @@ def export():
         "excluded": ["Machine-specific .venv and .qa-venv",
                      "Duplicate results/clean_environment",
                      "Diagnostic results/configuration_check and results/portable_audit_check",
-                     "Python caches and this archive"],
+                     "Python caches, fresh-download scratch copy and redundant publication bundle/inventory",
+                     "This archive"],
         "supplementary_limit": "Only the final supplementary working subset was retained; rerun demo/run_sensitivity.py to reproduce supplementary measurements.",
         "files": {p.relative_to(ROOT).as_posix(): {"bytes": p.stat().st_size, "sha256": digest(p)}
                   for p in files},

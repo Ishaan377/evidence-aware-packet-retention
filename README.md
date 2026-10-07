@@ -16,7 +16,7 @@ A working, offline student research prototype for **Topic 2: selective PCAP rete
 - [Question criteria](docs/forensic_question_catalogue.md)
 - [Action log](logs/action_log.md) and [AI continuation notes](logs/continuation_notes.md)
 
-The revised synopsis includes a visual architecture flowchart. Its Planned Completion column reproduces the reference's week/month labels as proposed milestones, with a note distinguishing them from completed work. All original reference files remain in the project root. The synopsis preserves their supplied team, course, guide and year details. Information Security Lab is retained; no college or department name has been invented.
+The revised synopsis includes a visual architecture flowchart. Its Planned Completion column reproduces the reference's week/month labels as proposed milestones, with a note distinguishing them from completed work. All original reference files remain in the original project folder; the GitHub copy includes the original synopsis reference needed by its builder. The synopsis preserves their supplied team, course, guide and year details. Information Security Lab is retained; no college or department name has been invented.
 
 ## Run the demonstration
 
@@ -152,5 +152,7 @@ Hashes detect changes; they do not supply a complete legal chain of custody. An 
 For the next phase, strengthen the alert baseline, obtain an independently annotated lab/public capture, expand parser support and test whether conclusions survive scenarios not designed alongside the scorer. Follow the roadmap rather than adding unvalidated complexity.
 
 ## Export for another agent
+
+The ready-made full archive described below is local to the original project folder. A GitHub download can create a new archive from its included files after generating any required experimental outputs.
 
 The ready-to-export `logs/agent_handoff.zip` contains source, original references, documents/QA, synthetic data, all 165 primary retained PCAPs, measurements and action/test logs. A machine-readable inventory inside lists file hashes; `logs/export_manifest.json` records the archive hash. Machine-specific environments and duplicate diagnostic result directories are excluded. Refresh it after future changes with `python tools/export_handoff.py`. Another agent should begin with `logs/continuation_notes.md`.

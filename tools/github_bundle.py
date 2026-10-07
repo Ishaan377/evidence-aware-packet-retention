@@ -10,7 +10,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 ROOT=Path(__file__).resolve().parents[1]
 INVENTORY=ROOT/'logs/github_upload_inventory.json'
 ROOT_FILES=('README.md','TEAM_START_HERE.md','CONTRIBUTING.md','run_project.py','requirements.txt','config.json','.gitignore','.gitattributes','progress_check.md','professor_explanation.md','final_project_roadmap.md','Network_Traffic_Forensics_Synopsis_FINAL.docx')
-LOG_FILES=('action_log.md','continuation_notes.md','unit_tests.txt','result_audit.txt','scapy_verification.json','document_update_checks.json')
+LOG_FILES=('action_log.md','continuation_notes.md','unit_tests.txt','result_audit.txt','scapy_verification.json','document_update_checks.json','github_setup.json')
 
 def digest(data): return hashlib.sha256(data).hexdigest()
 def blob_digest(data): return hashlib.sha1(f'blob {len(data)}\0'.encode()+data).hexdigest()

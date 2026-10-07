@@ -85,3 +85,16 @@ Next substantive work is the roadmap: guide review, evaluation freeze, closest-f
 Original workspace: `C:/Users/Ishaan SM/Desktop/IS project`, Windows PowerShell. Initial sandbox was read-only; writes/runs used explicit escalation. All requested deliverables stay in this project. User did not ask to publish a repository, send messages, deploy or perform live attacks/capture. Proceed with ordinary local authorized work and obey the next session's permissions.
 
 Append substantive changes/outcomes to `logs/action_log.md`; update these notes at the end of each phase. Keep research facts, design choices, hypotheses and actual findings visibly distinct.
+
+
+## Private GitHub repository - current sharing setup
+
+Repository: https://github.com/Ishaan377/evidence-aware-packet-retention (private; owner Ishaan377). Project commit: 77d7f778ece828f8e07bc1b9c7d3794ed2193a0a. Evidence: logs/github_setup.json. User explicitly approved access for only this new project through the existing connector; pre-existing vs-projects access remains. Do not broaden access or invite anyone unless the user supplies names/authorization. User plans to invite teammates later.
+
+Read TEAM_START_HERE.md and CONTRIBUTING.md for teammate download, run and branch/review instructions. run_project.py --check generates a new complete run under results/local_demo, runs all 15 tests, audits 165 subsets and opens the local report. --no-open supports automated/headless runs. Outputs must stay within results/.
+
+The GitHub copy deliberately excludes environments, generated data/results, large render history, archived DOCX revisions and the full export archive. A small frozen actual-result example is in examples/default_run/. All original files remain in this original workspace. Rebuild generated traffic/results before using audits or optional authoring/check tools after a new download. Document verification tools additionally require the saved rendering environment/history; the core teammate demo does not.
+
+GitHub Actions run 37648021902 passed on Linux/Python 3.10 and Windows/Python 3.13. Exact-byte Git attributes preserve source/capture provenance. The local fresh-copy smoke test also passed and reproduced actual metrics. GitHub setup changed no core src/demo code or scientific conclusion.
+
+This original workspace has no local Git checkout or installed Git CLI; initial publication used the connected GitHub app. For future direct local Git changes, clone with GitHub Desktop into a new folder or configure Git explicitly, then work on branches. Do not assume writing files here automatically uploads them. tools/github_bundle.py inventories the selected publication copy; refresh it after changes.

@@ -99,3 +99,11 @@ Append each substantive change, command outcome, source decision, and unresolved
 - User requested GitHub sharing and selected a private repository. Connected account is Ishaan377; user signed in through GitHub and will invite teammates later. No password, verification code or token was requested in chat.
 - Prepared run_project.py, beginner teammate instructions, contribution/review guidance, read-only Windows/Linux automatic checks, exact-byte Git attributes and ignores for runtime outputs/environments/render history.
 - Copied a small frozen example from actual main measurements and recorded its provenance; full original experiment files remain local. Private repository target: Ishaan377/evidence-aware-packet-retention. Upload and fresh-download verification are pending.
+
+## Private GitHub publication verified
+- Created Ishaan377/evidence-aware-packet-retention as a private personal repository. User explicitly approved adding only this repository to the existing selected-repository connector access; vs-projects remains selected and All repositories remains off.
+- Published 66 reviewed project files at commit 77d7f778ece828f8e07bc1b9c7d3794ed2193a0a. Checked the complete remote file inventory and eight critical file hashes, including both final DOCX files, the flowchart, launcher, configuration and workflow.
+- Tested a fresh curated copy with no copied environments or prior runtime outputs: generated 1413 packets/904905 bytes, executed 165 trials, passed all 15 tests and all 165 subset audits. Coverage/SD/selected sizes match the saved primary baseline.
+- GitHub Actions run 37648021902 passed both ubuntu-latest/Python 3.10 and windows-latest/Python 3.13 jobs, including generation, all policies, unit tests and retained-file audit.
+- Teammate usernames were unavailable; user chose to invite later. TEAM_START_HERE.md explains Settings > Collaborators > Add people, accepting invitations, Download ZIP, Python setup and the one-command demo. No invitation or message was sent.
+- Stored repository/commit/access/CI evidence in logs/github_setup.json. Full original experiments, renders and handoff archive stay local; only small clearly labelled actual-result examples are in GitHub.

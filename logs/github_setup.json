@@ -1,0 +1,162 @@
+{
+  "repository_url": "https://github.com/Ishaan377/evidence-aware-packet-retention",
+  "repository_full_name": "Ishaan377/evidence-aware-packet-retention",
+  "visibility": "private",
+  "branch": "main",
+  "project_commit": "77d7f778ece828f8e07bc1b9c7d3794ed2193a0a",
+  "tree_sha": "e59e94b385e430dd1c1ca83374a410439847322d",
+  "upload": {
+    "inventoryFiles": 66,
+    "criticalHashes": [
+      {
+        "path": "README.md",
+        "sha": "b13ca6a1502f5e27db8fba8b8d6a06725c41bbd4"
+      },
+      {
+        "path": "config.json",
+        "sha": "b29608883d51e89d16490324f029445408d37b2a"
+      },
+      {
+        "path": ".github/workflows/verify.yml",
+        "sha": "300ed54c45efe90ea3e1be064a5069f1dbd137d0"
+      },
+      {
+        "path": "TEAM_START_HERE.md",
+        "sha": "3e8e2ec35fb89795a3e1db84982b2d074f69b5e8"
+      },
+      {
+        "path": "docs/synopsis.docx",
+        "sha": "6d18bb317dbeba8955b5c2778b527e355b6af2ca"
+      },
+      {
+        "path": "docs/zero_to_hero_project_guide.docx",
+        "sha": "e98f0433e70c911ffbc5185e6bef68e3b5b13f24"
+      },
+      {
+        "path": "docs/assets/architecture_flowchart.png",
+        "sha": "e773d79ff638db781b8a93bcd7247d51b3a3f3a2"
+      },
+      {
+        "path": "run_project.py",
+        "sha": "55b224f430f0eb296230304bea773cef7d14cfed"
+      }
+    ]
+  },
+  "workflow_url": "https://github.com/Ishaan377/evidence-aware-packet-retention/actions/runs/37648021902",
+  "workflow_run_id": 37648021902,
+  "workflow_jobs": [
+    {
+      "id": 112883754342,
+      "name": "windows-latest / Python 3.13",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37648021902,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-python@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Generate traffic, run all policies, test and audit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-python@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 112883754714,
+      "name": "ubuntu-latest / Python 3.10",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37648021902,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-python@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Generate traffic, run all policies, test and audit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-python@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    }
+  ],
+  "local_fresh_copy": {
+    "location": "logs/github_clone_check",
+    "unit_tests_passed": 15,
+    "retained_captures_audited": 165,
+    "main_results_matched": true
+  },
+  "collaborators": "User will invite later; no invitations sent.",
+  "access_change": "User explicitly approved adding only this repository to the existing selected-repository GitHub connector installation; pre-existing vs-projects access preserved.",
+  "scope": "Final documents, core code, research notes, small measured example and teammate instructions. Full runtime data/results, render history, environments and export archive remain local."
+}
