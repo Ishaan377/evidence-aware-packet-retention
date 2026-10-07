@@ -1,0 +1,92 @@
+{
+  "reference_sha256": "2a9000836d4bbac7e5db0347597bd17e8a10f8b6acd5157fda2e638452659800",
+  "final_sha256": "89a4b30f2f5aa89483240dc1c9fd69a57260bcde0fba0a52c3af827affc8da71",
+  "section_geometry_unchanged": true,
+  "preserve_only_parts_verified": 14,
+  "added_parts": [
+    "word/media/architecture_flowchart.png"
+  ],
+  "editable_parts": [
+    "[Content_Types].xml",
+    "word/_rels/document.xml.rels",
+    "word/document.xml"
+  ],
+  "baseline_parts": {
+    "[Content_Types].xml": {
+      "bytes": 1738,
+      "sha256": "66c84fb7a6aa3c4ead49f895e4a7044df1fb57de1ed76d09b2686e91f5bed5b4"
+    },
+    "_rels/.rels": {
+      "bytes": 734,
+      "sha256": "a9ae57efe9186f07d48303bcac5d54c7e359bf3f503939c03ad2954e5c59a5c4"
+    },
+    "docProps/core.xml": {
+      "bytes": 721,
+      "sha256": "d14be8284e406d14dc2a576b19f15e7f637b955f9e27a3d9ed871ec99606f7ba"
+    },
+    "docProps/app.xml": {
+      "bytes": 1132,
+      "sha256": "be664981c3141cddfc59362beb287ebf20d0773660e2dd6faac5968a5930a081"
+    },
+    "word/document.xml": {
+      "bytes": 31393,
+      "sha256": "45ff7f37a672b07dca6a9f05ef219ede54e590b94730bf3ff127850e77c9f4ba"
+    },
+    "word/_rels/document.xml.rels": {
+      "bytes": 1227,
+      "sha256": "1e7f0eb144a98e199249314f61ff32a8de2a27e56d8e9ee6b524e1c6b235d377"
+    },
+    "word/styles.xml": {
+      "bytes": 349534,
+      "sha256": "541aca3c9c757a89b5874e5dbe43c817abd8c40302620908398c598816ab341f"
+    },
+    "word/stylesWithEffects.xml": {
+      "bytes": 438131,
+      "sha256": "463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15"
+    },
+    "word/settings.xml": {
+      "bytes": 2535,
+      "sha256": "51a0d348fe85965c66e4748a03c3c0d055d78455514f03cb121c334af7d73689"
+    },
+    "word/webSettings.xml": {
+      "bytes": 438,
+      "sha256": "349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95"
+    },
+    "word/fontTable.xml": {
+      "bytes": 2811,
+      "sha256": "79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb"
+    },
+    "word/theme/theme1.xml": {
+      "bytes": 10939,
+      "sha256": "e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941"
+    },
+    "customXml/item1.xml": {
+      "bytes": 262,
+      "sha256": "a86086ffc5d8e83ebd6c71a55d1d2efaa31b137977f5f3a752366e1023612144"
+    },
+    "customXml/_rels/item1.xml.rels": {
+      "bytes": 295,
+      "sha256": "1ca6c9a64edcebe24ee703a54403611b322d96da33371779e742d2d3f7ed7a6c"
+    },
+    "customXml/itemProps1.xml": {
+      "bytes": 354,
+      "sha256": "c542307b13ec29a8b546217bb37936ab4822e044b265d2952985ec3d6afed24e"
+    },
+    "word/numbering.xml": {
+      "bytes": 5513,
+      "sha256": "70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce"
+    },
+    "docProps/thumbnail.jpeg": {
+      "bytes": 8324,
+      "sha256": "96367138dc44ce09bf2c8f0f8e49348a1478d2c5c0af69bbc2bbc38b63cdcead"
+    }
+  },
+  "intentional_changes": [
+    "Project content and planned roles",
+    "Reference-matched planned-completion labels explicitly distinguished from completed work",
+    "18 verified references",
+    "Keep section headings with next content",
+    "Repeating headers and intact table rows",
+    "Requested visual architecture and its image relationship/content type"
+  ]
+}

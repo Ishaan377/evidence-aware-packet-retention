@@ -1,0 +1,26 @@
+{
+  "executed_at_utc": "2026-10-07T14:11:44.255111+00:00",
+  "dataset_kind": "SYNTHETIC_FILE_ONLY",
+  "input_bytes": 904905,
+  "input_packets": 1413,
+  "input_sha256": "09db990e94d572444a464eba22d75ae4c20fa3457070761fc534aa974637b6bb",
+  "truth_sha256": "ec8d49dfa0494b8e0eab1b9b9b24fdc890ffe53f0a5a167c406c0fbe939d63cc",
+  "config_sha256": "1349c4c63ceb79471824945a4b6ba89ac8ab8a2e0e64a58eae4bbb6f94d7793b",
+  "source_sha256": {
+    "src/evaluator.py": "667985e0e2189a74bccab356bc9891ce633f1d2fe29b4bf7165e3d11093d6892",
+    "src/evidence_scoring.py": "2035bf8fe25c28369c85cc1a160640c9f5de8f81446a38ffc39ecb4b02577192",
+    "src/feature_extraction.py": "b67d55bd60973b15f64328a03cf663e3a99985285cc418246e340fc1d7f39667",
+    "src/metrics.py": "f0b7c64c44dba4ac2917547aebd98b665d31ef75afb39e9a8e571fc89706b29d",
+    "src/packet_parser.py": "03f8107e00676c65b23360e34f374ebe2c59757dff5905d0f043927e3ad405c1",
+    "src/selectors.py": "b84f488d6495156bdf269f55486470922e750ea96055b08d6cbe0aa56c8100ab",
+    "src/visualization.py": "78a281148124f6c56c7330307c7e8e043aba1d6af0c133f19d1fd734dc61feff",
+    "src/__init__.py": "17da75e36c11677c5d249468c9e8e84ad35f69f4f8ee9decee0a187ea29c58fc",
+    "demo/generate_demo_pcap.py": "27788086a806486d1e20ca06ad7645999d18a19b184df9915674ba701cd9e6c6",
+    "demo/run_demo.py": "4b5e08eb63b42826a4b76006a86b35fe7f6d550d748864faa27481e6b8921e2f",
+    "demo/run_sensitivity.py": "33456f0425553232e6a6f25158d837f15a52da88d8a03ff40d5c96acf79a3c5c"
+  },
+  "trials": 165,
+  "full_capture_coverage": 1.0,
+  "budget_scope": "Retained PCAP bytes only, including 24-byte header and 16-byte records; metadata/report overhead excluded.",
+  "snapshot_note": "Frozen measured example from the original local 165-trial run; recreate all retained PCAPs with the launcher. Full local experiment and render history are not included in this small GitHub example."
+}

@@ -1,0 +1,8 @@
+# Preserve exact source/capture bytes for provenance on every operating system.
+# This disables automatic newline conversion; text files still have readable diffs.
+* -text
+*.docx binary
+*.png binary
+*.pcap binary
+*.pdf binary
+*.zip binary

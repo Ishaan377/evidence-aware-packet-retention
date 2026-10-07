@@ -1,0 +1,20 @@
+test_all_strategies_respect_cap_and_keep_record_bytes (test_pipeline.PipelineTests.test_all_strategies_respect_cap_and_keep_record_bytes) ... ok
+test_big_endian_nanosecond_round_trip (test_pipeline.PipelineTests.test_big_endian_nanosecond_round_trip) ... ok
+test_dns_response_loss_breaks_mapping_question (test_pipeline.PipelineTests.test_dns_response_loss_breaks_mapping_question) ... ok
+test_duplicate_payload_does_not_inflate_bulk_volume (test_pipeline.PipelineTests.test_duplicate_payload_does_not_inflate_bulk_volume) ... ok
+test_empty_subset_has_no_answers (test_pipeline.PipelineTests.test_empty_subset_has_no_answers) ... ok
+test_full_capture_answers_all_questions (test_pipeline.PipelineTests.test_full_capture_answers_all_questions) ... ok
+test_generated_network_checksums (test_pipeline.PipelineTests.test_generated_network_checksums) ... ok
+test_generator_known_counts_and_bytes (test_pipeline.PipelineTests.test_generator_known_counts_and_bytes) ... ok
+test_http_request_loss_breaks_success_question (test_pipeline.PipelineTests.test_http_request_loss_breaks_success_question) ... ok
+test_invalid_inputs_fail_explicitly (test_pipeline.PipelineTests.test_invalid_inputs_fail_explicitly) ... ok
+test_missing_handshake_ack_breaks_sequence_question (test_pipeline.PipelineTests.test_missing_handshake_ack_breaks_sequence_question) ... ok
+test_random_seed_is_reproducible_and_changes_selection (test_pipeline.PipelineTests.test_random_seed_is_reproducible_and_changes_selection) ... ok
+test_scan_boundary_loss_breaks_exact_count_and_interval (test_pipeline.PipelineTests.test_scan_boundary_loss_breaks_exact_count_and_interval) ... ok
+test_too_small_budget_and_overrun_rejected (test_pipeline.PipelineTests.test_too_small_budget_and_overrun_rejected) ... ok
+test_truth_labels_are_not_selector_inputs (test_pipeline.PipelineTests.test_truth_labels_are_not_selector_inputs) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.518s
+
+OK

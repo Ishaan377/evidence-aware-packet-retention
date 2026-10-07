@@ -1,0 +1,1 @@
+AUDIT PASSED: 165 retained captures; cap, input/truth/subset hashes, exact records, fresh re-evaluation.

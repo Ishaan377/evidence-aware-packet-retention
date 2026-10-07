@@ -1,0 +1,20 @@
+{
+  "library": "Scapy",
+  "version": "2.6.1",
+  "input_packets": 1413,
+  "tcp_packets": 611,
+  "udp_packets": 802,
+  "verified_subsets": 165,
+  "checks": [
+    "PCAP reading",
+    "packet bytes",
+    "timestamps",
+    "IPv4/TCP/UDP fields",
+    "Scapy-recomputed IPv4/transport checksums",
+    "40 scan SYNs",
+    "12 HTTP 401s",
+    "one HTTP 200",
+    "DNS query and A response",
+    "all retained-subset raw bytes/caps"
+  ]
+}

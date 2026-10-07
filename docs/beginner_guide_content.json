@@ -1,0 +1,1933 @@
+{
+  "title": "Evidence Aware Packet Retention Beginner Guide",
+  "prepared_for": "8 October 2026",
+  "pages": [
+    {
+      "title": "Evidence Aware Packet Retention Beginner Guide",
+      "cover": true,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "From first principles to a working research experiment and a confident professor demonstration"
+        },
+        {
+          "type": "p",
+          "text": "Information Security Lab | ICT3141 | Prepared for the 8 October 2026 progress check"
+        },
+        {
+          "type": "p",
+          "text": "This guide explains what the project does, why it matters, how its code and experiments work, what the saved results mean, and how to turn the prototype into a defensible final project. Start with the demonstration pages if time is short, then work through the fundamentals and research sections."
+        },
+        {
+          "type": "h2",
+          "text": "The project in one sentence"
+        },
+        {
+          "type": "p",
+          "text": "When we cannot keep a complete packet capture, we compare ways of keeping a smaller subset and measure how many clearly defined investigation answers still have the required packet evidence."
+        },
+        {
+          "type": "p",
+          "text": "The current system is an offline prototype on labelled synthetic traffic. It has genuinely executed experiments and verification checks. It has not established general performance on real networks, and it does not prove that a host was compromised."
+        },
+        {
+          "type": "h2",
+          "text": "How to use this guide"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Time available",
+            "Read and do"
+          ],
+          "widths": [
+            1.2,
+            5.55
+          ],
+          "rows": [
+            [
+              "20 minutes",
+              "Read pages 2, 3, 17, 18 and 26. Run the two demo commands and open the report."
+            ],
+            [
+              "One evening",
+              "Add pages 4 through 16. Explain one packet, one bundle and one coverage calculation aloud."
+            ],
+            [
+              "Team study",
+              "Read the code and validation pages 20 through 24, then rehearse the professor questions."
+            ],
+            [
+              "Final project",
+              "Use pages 25 and 29 to freeze an independent evaluation and divide the work."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "What to keep straight"
+        },
+        {
+          "type": "p",
+          "text": "A literature fact comes from a cited source. A design decision is our chosen rule, weight or question. A hypothesis is an expectation to test. A preliminary result is an actual saved measurement. A planned date is not a completed milestone."
+        },
+        {
+          "type": "p",
+          "text": "Main project folder: C:\\Users\\Ishaan SM\\Desktop\\IS project. Paths later in this guide are relative to that folder unless explicitly stated. All important files, including the action log and handoff archive, are stored there."
+        }
+      ]
+    },
+    {
+      "title": "1 Run the demo before tomorrow",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Use the already tested local Python environment. These commands write files only. They do not capture a live interface, send network packets or perform an attack. The main demonstration needs no internet and no third-party Python packages."
+        },
+        {
+          "type": "h2",
+          "text": "Step one open PowerShell in the project folder"
+        },
+        {
+          "type": "code",
+          "text": "Set-Location \"C:\\Users\\Ishaan SM\\Desktop\\IS project\""
+        },
+        {
+          "type": "p",
+          "text": "You can also open the project folder in File Explorer, click the address bar, type powershell and press Enter. The commands below use the existing .venv environment directly, so you do not need to activate it."
+        },
+        {
+          "type": "h2",
+          "text": "Step two generate the labelled input"
+        },
+        {
+          "type": "code",
+          "text": "& \".\\.venv\\Scripts\\python.exe\" -B demo/generate_demo_pcap.py"
+        },
+        {
+          "type": "p",
+          "text": "Expected output includes SYNTHETIC ONLY, 1,413 packets, 904,905 bytes, the PCAP path, the truth-file path and No packets were transmitted. This writes data/generated/demo.pcap and data/generated/demo.truth.json. Re-running with the same default settings produces the same packet bytes."
+        },
+        {
+          "type": "h2",
+          "text": "Step three run the actual experiment"
+        },
+        {
+          "type": "code",
+          "text": "& \".\\.venv\\Scripts\\python.exe\" -B demo/run_demo.py"
+        },
+        {
+          "type": "p",
+          "text": "The runner prints the original size and a comparison table. It executes 165 trials, checks the full capture at 8/8, writes selected PCAPs and rebuilds the core report. This small dataset completed in a few seconds in the tested environment; allow extra time on another laptop."
+        },
+        {
+          "type": "h2",
+          "text": "Step four open the report"
+        },
+        {
+          "type": "code",
+          "text": "Start-Process \".\\results\\demo\\report.html\""
+        },
+        {
+          "type": "p",
+          "text": "The report is a local HTML file with embedded graphs and tables. It needs no server. Keep it open along with docs/synopsis.docx. The results/demo/selected folder contains the actual reduced packet files."
+        },
+        {
+          "type": "h2",
+          "text": "If the local environment is missing"
+        },
+        {
+          "type": "p",
+          "text": "With Python 3.10 or newer installed, use python -m venv .venv and then the same commands. Alternatively run python demo/generate_demo_pcap.py and python demo/run_demo.py directly. requirements.txt has no core packages to install. Virtual environments are machine-specific; recreate one after copying the project to another computer."
+        }
+      ]
+    },
+    {
+      "title": "2 Show the professor a five minute demonstration",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Your purpose is to show a working research direction, not just a polished synopsis. Keep the main comparison and one evidence example visible. Run everything once beforehand and leave the saved report open as a fallback."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Time",
+            "Show",
+            "Say"
+          ],
+          "widths": [
+            0.65,
+            2.35,
+            3.75
+          ],
+          "rows": [
+            [
+              "0:00",
+              "Project title and problem",
+              "We investigate which packets preserve defined answers when storage is limited."
+            ],
+            [
+              "0:40",
+              "Generator console output",
+              "This is clearly labelled synthetic traffic written to a PCAP file, not a captured real attack."
+            ],
+            [
+              "1:10",
+              "Runner comparison table",
+              "All policies obey the same serialized-byte cap. Random selection is repeated over 30 seeds."
+            ],
+            [
+              "2:00",
+              "Coverage graph and 5% row",
+              "Evidence preserves 7/8 criteria; alert preserves 4/8; random averages 0.2/8 on this trace."
+            ],
+            [
+              "2:50",
+              "Representative answers and selected PCAP",
+              "These answers are rebuilt from the retained file; the scorer does not receive the truth labels."
+            ],
+            [
+              "3:40",
+              "Tests and synopsis",
+              "We verified byte caps, witness-loss cases, independent parsing and clean reproduction."
+            ],
+            [
+              "4:20",
+              "Limitations and future work",
+              "Next are independent traffic, stronger baselines and supported real protocol sequences."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "The strongest concrete example"
+        },
+        {
+          "type": "p",
+          "text": "Use evidence_b0.05_seed0 in the report. Show Q1 through Q7 marked YES and Q8 marked NO. Its selected PCAP is results/demo/selected/evidence_b0.05_seed0.pcap. Its explanation file is evidence_b0.05_seed0.decisions.json in the same folder."
+        },
+        {
+          "type": "p",
+          "text": "The original is 904,905 bytes. The 5% cap is floor(0.05 x 904,905) = 45,245 bytes. Evidence selection uses 45,240 bytes. Q8 requires at least 65,536 unique payload bytes, so it cannot possibly pass within this entire 5% file cap."
+        },
+        {
+          "type": "h2",
+          "text": "Then show what changes at ten percent"
+        },
+        {
+          "type": "p",
+          "text": "The 10% evidence capture passes 8/8 and contains 75,600 unique nominated outbound payload bytes. That establishes the stated lower bound. It does not reconstruct the full original 300,000-byte transfer or demonstrate exfiltration."
+        },
+        {
+          "type": "h2",
+          "text": "If time is cut to one minute"
+        },
+        {
+          "type": "p",
+          "text": "Show the 5% comparison, one preserved DNS exchange, the Q8 budget limitation and the next independent-data step. Do not spend the whole minute opening source files."
+        }
+      ]
+    },
+    {
+      "title": "3 Understand bits bytes and packets",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A bit is one binary value, 0 or 1. A byte contains eight bits. File sizes are normally expressed in bytes; network speeds are often expressed in bits per second. Confusing the two causes an eightfold mistake before any retention calculation begins."
+        },
+        {
+          "type": "p",
+          "text": "A packet is a small unit of data sent through a network. Think of it as an envelope: labels tell the network where it should go, and its contents carry some application data. A large conversation usually uses many packets rather than one giant message."
+        },
+        {
+          "type": "h2",
+          "text": "Headers and payload"
+        },
+        {
+          "type": "p",
+          "text": "A header contains control information such as addresses, ports, sequence numbers or protocol identifiers. Payload is the data carried by that protocol. A TCP packet may carry part of an HTTP request in its payload. A packet can also carry no application payload, for example a TCP acknowledgement."
+        },
+        {
+          "type": "p",
+          "text": "There are several nested layers. On our generated Ethernet network, an Ethernet frame carries an IPv4 packet, which carries TCP or UDP, which can carry an application message. What one layer calls payload can include the next layer's header."
+        },
+        {
+          "type": "h2",
+          "text": "Why packet evidence comes in pieces"
+        },
+        {
+          "type": "p",
+          "text": "One packet may reveal a destination address but not whether a connection finished. A response may reveal a status code but not the request that caused it. If retention removes an important member of a sequence, the remaining packets may no longer satisfy our question."
+        },
+        {
+          "type": "h2",
+          "text": "Units used in this project"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Unit",
+            "Meaning",
+            "Example"
+          ],
+          "widths": [
+            1.15,
+            2.65,
+            2.95
+          ],
+          "rows": [
+            [
+              "byte",
+              "Eight bits of storage",
+              "The input PCAP has 904,905 bytes."
+            ],
+            [
+              "kB",
+              "1,000 bytes in decimal usage",
+              "About 904.9 kB for this capture."
+            ],
+            [
+              "KiB",
+              "1,024 bytes",
+              "Q8 needs 64 KiB = 65,536 payload bytes."
+            ],
+            [
+              "MiB",
+              "1,048,576 bytes",
+              "Used for questions per MiB."
+            ],
+            [
+              "Mbit/s",
+              "One million bits per second",
+              "A traffic rate, not a file size."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "A storage calculation rather than a benchmark"
+        },
+        {
+          "type": "p",
+          "text": "A continuously recorded 1 Gbit/s stream gives 1,000,000,000 / 8 = 125,000,000 bytes each second. Multiply by 86,400 seconds per day to get 10.8 decimal TB/day before PCAP record overhead. This is arithmetic illustrating the motivation; it is not a measurement of our lab."
+        }
+      ]
+    },
+    {
+      "title": "4 Understand hosts ports protocols and flows",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A host is a device or endpoint. An IP address identifies an endpoint at the network layer. A port identifies a transport endpoint used by an application or service. The destination port can suggest a service, but the port number alone does not prove the application's identity or intent."
+        },
+        {
+          "type": "p",
+          "text": "TCP and UDP are transport protocols. TCP has connection and sequencing mechanisms. UDP carries individual datagrams without TCP's connection handshake. Our demo uses TCP for scan attempts, HTTP, an internal connection and bulk bytes, and UDP for DNS and background traffic."
+        },
+        {
+          "type": "h2",
+          "text": "The five tuple"
+        },
+        {
+          "type": "p",
+          "text": "A common way to group packets is source IP, destination IP, source port, destination port and transport protocol. This is called a five-tuple. Replies reverse the endpoints, so the prototype normalizes the endpoint pair to group both directions in one bidirectional flow."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Example nominated bulk flow"
+          ],
+          "widths": [
+            2.2,
+            4.55
+          ],
+          "rows": [
+            [
+              "Source IP",
+              "10.0.0.20"
+            ],
+            [
+              "Destination IP",
+              "203.0.113.9"
+            ],
+            [
+              "Source port",
+              "45000"
+            ],
+            [
+              "Destination port",
+              "9000"
+            ],
+            [
+              "Protocol",
+              "TCP"
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "A packet from 203.0.113.9:9000 back to 10.0.0.20:45000 belongs to the reverse direction of the same normalized flow. Q8 counts outbound payload in the nominated forward direction, not both directions together."
+        },
+        {
+          "type": "h2",
+          "text": "Internal and external in this experiment"
+        },
+        {
+          "type": "p",
+          "text": "config.json marks 10.0.0.0/8 as internal. The generator uses private internal addresses and documentation-range example external addresses such as 192.0.2.10 and 203.0.113.9 [16]. These are written into a file, not contacted on a network."
+        },
+        {
+          "type": "h2",
+          "text": "Indicators are prior information"
+        },
+        {
+          "type": "p",
+          "text": "The configured indicator 203.0.113.9 tells the rules to prioritize flows involving that destination. It is not something the selector learns from the truth manifest. A real system would need a legitimate source and update process for indicators. Our ablation removes it to reveal dependence on this design choice."
+        }
+      ]
+    },
+    {
+      "title": "5 Understand the protocol witnesses",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "TCP connection setup"
+        },
+        {
+          "type": "p",
+          "text": "A basic TCP three-way handshake is SYN from the initiator, SYN-ACK from the responder and ACK from the initiator. Sequence and acknowledgement values connect those messages. The prototype checks the endpoints, timing order and expected sequence/ACK relationships; three unrelated packets with those flags are insufficient."
+        },
+        {
+          "type": "p",
+          "text": "A SYN without a response may be a connection attempt, not a completed connection. The generated scan has SYNs to many destination ports. The internal-handshake question requires the complete three-message witness."
+        },
+        {
+          "type": "h2",
+          "text": "HTTP requests and responses"
+        },
+        {
+          "type": "p",
+          "text": "The generator writes complete plaintext POST /login HTTP/1.1 requests and HTTP 401 or 200 responses, each contained in one packet. A 401 is a rejection-status observation. A 200 is a success-status response observation. Neither proves a real password failure, a successful login or an attacker outcome without application context."
+        },
+        {
+          "type": "p",
+          "text": "To match an exchange, the prototype checks the flow, reversed response endpoints, order and the response acknowledgement of the request's payload. The implemented HTTP recognizer deliberately handles a narrow generated form. It does not rebuild requests spread across several TCP packets or read encrypted HTTPS content."
+        },
+        {
+          "type": "h2",
+          "text": "DNS query and answer"
+        },
+        {
+          "type": "p",
+          "text": "DNS can associate a name with an address. The demo queries archive.example and returns the A record 203.0.113.9. The evaluator needs a query and matching response with the same transaction identifier, endpoints and name. It supports ordinary DNS compression pointers in its limited UDP A-record decoder."
+        },
+        {
+          "type": "h2",
+          "text": "Unique bytes and retransmissions"
+        },
+        {
+          "type": "p",
+          "text": "TCP sequence numbers identify positions in a byte stream. A retransmission may repeat bytes already seen. Adding every payload length would overcount them, so Q8 takes the union of retained sequence intervals. Two identical 1,200-byte payload intervals contribute 1,200 unique bytes, not 2,400. Sequence-number wrap is outside this MVP."
+        },
+        {
+          "type": "h2",
+          "text": "Observation versus interpretation"
+        },
+        {
+          "type": "p",
+          "text": "A connection to TCP 445 is not proof of lateral movement. A large outbound payload is not proof of exfiltration. The project measures support for specific observations and avoids turning packet patterns into unsupported attack claims."
+        }
+      ]
+    },
+    {
+      "title": "6 Understand a PCAP and its storage cost",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A PCAP is a packet capture file. It stores captured packet bytes with record metadata such as timestamps and lengths. Wireshark can inspect such files. Our prototype reads the classic PCAP container directly using Python's struct module and preserves original records when writing a subset [13]."
+        },
+        {
+          "type": "h2",
+          "text": "The exact cost of a selected file"
+        },
+        {
+          "type": "code",
+          "text": "Selected PCAP bytes\n= 24 byte file header\n+ sum of (16 byte record header + captured packet bytes)"
+        },
+        {
+          "type": "p",
+          "text": "A retained packet of 100 captured bytes costs 116 serialized bytes. An empty valid classic PCAP still costs 24 bytes. Counting only payload or packet bytes would understate storage and allow policies to break the nominal cap."
+        },
+        {
+          "type": "h2",
+          "text": "Captured length and original length"
+        },
+        {
+          "type": "p",
+          "text": "A capture can store only a prefix of an originally larger packet. Captured length is how many bytes are in the record; original length records the length reported at capture. Our selector budgets captured bytes and preserves both lengths. It does not invent missing payload."
+        },
+        {
+          "type": "h2",
+          "text": "Whole records and chronological order"
+        },
+        {
+          "type": "p",
+          "text": "The policies choose source packet indices, then the writer copies those original record bytes in capture order. It preserves the input header, timestamps and record contents rather than constructing approximate replacement packets. Budget accounting and record copying are independently audited."
+        },
+        {
+          "type": "h2",
+          "text": "Container support is not protocol support"
+        },
+        {
+          "type": "p",
+          "text": "The reader handles classic PCAP 2.4, both byte orders, microsecond or nanosecond timestamps and Ethernet link type 1. PCAPNG and other link types fail explicitly. A container may contain a packet the metadata decoder cannot analyze; that packet can still be selected, but it contributes no supported forensic fields."
+        },
+        {
+          "type": "p",
+          "text": "The cap applies to each selected PCAP only. We keep the complete input and reports while conducting the experiment. That is useful for verification, but it is not a deployed system showing total-disk savings. A future metadata-plus-packets system must budget its extra files too."
+        }
+      ]
+    },
+    {
+      "title": "7 Understand the investigation problem",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A network investigation asks what was observed: which endpoints communicated, whether a sequence occurred, how many attempts were captured, when the observed activity began and ended, or how much payload can be witnessed. Full packet retention can preserve those observations, but storage limits force choices."
+        },
+        {
+          "type": "p",
+          "text": "Ordinary sampling can keep a representative traffic fraction while losing rare evidence. For example, it may keep many background packets but drop one DNS query or the final ACK of a handshake. A storage policy therefore needs an evaluation endpoint beyond the number of packets retained."
+        },
+        {
+          "type": "h2",
+          "text": "Our precise problem"
+        },
+        {
+          "type": "p",
+          "text": "Choose a subset of original packet records under a strict serialized-byte cap, then reconstruct a predefined set of answers using only that selected PCAP. Compare selection policies using the same cap and the same evaluator."
+        },
+        {
+          "type": "h2",
+          "text": "Why predefined questions matter"
+        },
+        {
+          "type": "p",
+          "text": "Without precise questions, we could call whichever packets our method keeps valuable. Defining criteria first makes failure observable. An exact-count criterion fails if even one distinct scan attempt is missing; a paired-transaction criterion fails if the request is missing."
+        },
+        {
+          "type": "h2",
+          "text": "What the literature already contains"
+        },
+        {
+          "type": "p",
+          "text": "Time Machine already retained connection prefixes for efficient recording and investigation [1]. Recent work explicitly examines forensic coverage and artifact survivability across representations [2]. Conditional and IDS-triggered capture also exist [5,8]. Selective retention and forensic coverage are therefore not claims of novelty."
+        },
+        {
+          "type": "h2",
+          "text": "Our realistic contribution"
+        },
+        {
+          "type": "p",
+          "text": "The engineering contribution is a readable offline retention pipeline. The evaluation contribution is a documented operational question catalogue with fresh retained-file reconstruction. The experimental contribution is an auditable equal-cap comparison with repeated random trials and mechanism checks. A wider search and independent experiments are still needed before claiming publication novelty."
+        },
+        {
+          "type": "p",
+          "text": "Do not repeat the supplied analysis's hypothetical improvements or its assertion that forensic coverage is absent from literature. The source registry distinguishes primary research, standards, vendor documentation and partial access."
+        }
+      ]
+    },
+    {
+      "title": "8 Define the research questions and hypothesis",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "The four research questions"
+        },
+        {
+          "type": "p",
+          "text": "RQ1 asks how exact counts, observed interval endpoints and complete sequence witnesses degrade as the byte cap falls from 100% to 20%, 10%, 5% and 1%. It focuses on which answers disappear, rather than treating all packets as interchangeable."
+        },
+        {
+          "type": "p",
+          "text": "RQ2 asks whether the explainable evidence heuristic preserves more criteria than random packet packing and the alert-flow policy under equal caps. The prefix policy supplies an additional established retention idea for comparison."
+        },
+        {
+          "type": "p",
+          "text": "RQ3 asks which evidence types remain weak. A bulk-byte lower bound is especially costly: compact metadata cannot replace the required retained payload witness in our current PCAP-only evaluation."
+        },
+        {
+          "type": "p",
+          "text": "RQ4 asks how outcomes change with background volume, random seed, missing indicators and removing bundles. These changes test whether the mechanism actually depends on the features we think it does."
+        },
+        {
+          "type": "h2",
+          "text": "The conditional hypothesis"
+        },
+        {
+          "type": "p",
+          "text": "On the controlled scenario, preserving sequence bundles and evidence diversity will preserve more of the selected questions at small caps than random packet packing. This is a testable statement about a specific catalogue and scenario. It is not a claim that the method wins for every investigation."
+        },
+        {
+          "type": "h2",
+          "text": "What would weaken the hypothesis"
+        },
+        {
+          "type": "p",
+          "text": "If independent scenarios or a stronger alert policy match or beat the evidence method, its advantage may be narrower than expected. If removing bundles makes no difference, their claimed role needs reconsideration. If favorable questions were chosen after the results, the evaluation would be biased."
+        },
+        {
+          "type": "h2",
+          "text": "Design choices are visible"
+        },
+        {
+          "type": "p",
+          "text": "We chose eight equal-weight binary criteria, hand-set category weights, 30 random seeds and a few byte caps. These decisions are recorded rather than presented as universal standards. Future experiments should freeze such choices before examining held-out results."
+        },
+        {
+          "type": "p",
+          "text": "A useful final study can have a negative outcome. Discovering that a simpler method preserves the same evidence at lower computation cost is a defensible result when the comparison is rigorous."
+        }
+      ]
+    },
+    {
+      "title": "9 Understand the generated scenario",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The default generator creates a controlled file-only dataset, not a real attack capture. It uses a fixed random seed and constructed timestamps so the experiment is repeatable. The scenario combines abundant background with several compact or costly evidence types."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Component",
+            "Default observations",
+            "Purpose"
+          ],
+          "widths": [
+            1.5,
+            2.5,
+            2.75
+          ],
+          "rows": [
+            [
+              "Background",
+              "800 UDP packets with varied payload sizes",
+              "Consume most storage without matching the nominated questions."
+            ],
+            [
+              "Fan-out scan",
+              "40 SYN attempts to ports 1000 through 1039",
+              "Exercise endpoint, exact-count and interval-boundary criteria."
+            ],
+            [
+              "HTTP exchanges",
+              "12 rejection responses and one HTTP 200 pair",
+              "Exercise matched application-request witnesses."
+            ],
+            [
+              "Internal connection",
+              "Three-way handshake to 10.0.0.20:445",
+              "Exercise sequence completeness."
+            ],
+            [
+              "DNS",
+              "archive.example mapped to 203.0.113.9",
+              "Exercise matched query/response evidence."
+            ],
+            [
+              "Bulk flow",
+              "250 payload packets of 1,200 bytes plus replies",
+              "Exercise a 65,536-byte unique-payload lower bound."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "The generated file and truth"
+        },
+        {
+          "type": "p",
+          "text": "data/generated/demo.pcap contains 1,413 packets and 904,905 bytes. demo.truth.json contains the expected observed values, parameters, source-event indices and hashes. Generator event indices are useful for diagnostics but never enter the selection policies."
+        },
+        {
+          "type": "p",
+          "text": "The input contains 611 TCP and 802 UDP packets. Scapy independently verified these protocol fields, checksums, known scan/HTTP counts and the DNS mapping. The packet timestamps are artificial scenario timestamps; they do not imply the traffic happened on the project execution date."
+        },
+        {
+          "type": "h2",
+          "text": "What synthetic data gives us"
+        },
+        {
+          "type": "p",
+          "text": "We know exactly which observations were generated and can deliberately remove witnesses to test evaluation. The demo is safe, fast and dependable on a laptop. It makes mechanism failures understandable."
+        },
+        {
+          "type": "h2",
+          "text": "What it does not give us"
+        },
+        {
+          "type": "p",
+          "text": "Real captures have segmentation, loss, retransmissions, concurrent sessions, encryption and unexpected protocols. Our designed traffic makes some evidence unusually compact and easy to recognize. Repeating similar generated cases does not replace independent real or realistically captured lab data."
+        }
+      ]
+    },
+    {
+      "title": "10 Learn the eight forensic criteria",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Each criterion earns one point only when its complete implemented condition is satisfied. These are observable witness rules, not labels saying an attack occurred. Several criteria can share packets, so eight points do not mean eight statistically independent facts."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "ID",
+            "What must survive in the retained file"
+          ],
+          "widths": [
+            0.5,
+            6.25
+          ],
+          "rows": [
+            [
+              "Q1",
+              "Scan source and target, with at least four distinct nominated destination ports."
+            ],
+            [
+              "Q2",
+              "The exact observed number of distinct scan SYN attempts, 40 in the default case."
+            ],
+            [
+              "Q3",
+              "Both reference first and last observed scan timestamps."
+            ],
+            [
+              "Q4",
+              "At least three distinct matched POST /login requests and HTTP 401 responses."
+            ],
+            [
+              "Q5",
+              "At least one matched POST /login request and HTTP 200 response."
+            ],
+            [
+              "Q6",
+              "The complete internal TCP SYN, SYN-ACK and final ACK sequence."
+            ],
+            [
+              "Q7",
+              "The archive.example query and a matching A response for 203.0.113.9."
+            ],
+            [
+              "Q8",
+              "At least 65,536 unique outbound payload bytes on the nominated TCP flow."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Exact answers and lower bounds differ"
+        },
+        {
+          "type": "p",
+          "text": "Q2 requires an exact count relative to the complete captured reference. Thirty-nine surviving attempts do not count as success. Q3 needs both observed endpoints, not merely some timestamp inside the interval."
+        },
+        {
+          "type": "p",
+          "text": "Q8 asks for a lower bound, not an exact reconstruction of the full 300,000-byte transfer. Retaining 75,600 unique bytes passes. Retaining 60,000 fails. Repeated bytes do not add to the count."
+        },
+        {
+          "type": "h2",
+          "text": "Targets are not discovered from nowhere"
+        },
+        {
+          "type": "p",
+          "text": "The evaluator's truth manifest identifies nominated hosts, ports and answers for this investigation. The selector does not receive those oracle labels. The experiment tests whether evidence for those predefined targets survives, not whether the system automatically discovers every unknown incident."
+        },
+        {
+          "type": "p",
+          "text": "The detailed catalogue is docs/forensic_question_catalogue.md. Read it alongside src/evaluator.py before modifying a criterion. Changing definitions changes the meaning of coverage and requires a new documented experiment."
+        }
+      ]
+    },
+    {
+      "title": "11 Follow the end to end architecture",
+      "blocks": [
+        {
+          "type": "image",
+          "path": "docs/assets/architecture_flowchart.png",
+          "width": 6.6,
+          "max_height": 4.8,
+          "caption": "The same observable input feeds four policies. The separate truth manifest goes only to the evaluator."
+        },
+        {
+          "type": "p",
+          "text": "Validation rejects unsupported containers and inconsistent records. Parsing exposes fields while retaining original bytes. Feature extraction groups flows and supported protocol structures. Each policy selects indices under the shared cap, and the writer creates a real retained PCAP."
+        },
+        {
+          "type": "p",
+          "text": "Evaluation opens that retained file again. It must not answer using the full-input feature CSV or event diagnostics. Those files describe what was available before deletion and would falsely inflate preservation."
+        },
+        {
+          "type": "p",
+          "text": "The truth branch is separate so selection cannot simply pick the generator's labelled packets. This is an important control, but it does not remove all bias: the scorer and catalogue were still designed together."
+        }
+      ]
+    },
+    {
+      "title": "12 Compare random and alert selection",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Random packet packing"
+        },
+        {
+          "type": "p",
+          "text": "The random policy creates a list of packet indices, shuffles it with a fixed seed and keeps whole records while they fit. If a packet is too large for the remaining bytes, it skips that packet and continues. The result is reproducible for a given input, cap and seed."
+        },
+        {
+          "type": "p",
+          "text": "This is a useful no-evidence-preference baseline. It can retain background instead of rare witnesses and can split a transaction. The skip-to-fit rule can favor smaller records, so we do not describe it as unbiased fixed-probability sampling [6]."
+        },
+        {
+          "type": "p",
+          "text": "Thirty seeds provide repeated trials on one trace. Their mean and sample standard deviation describe random-policy variability. They do not represent thirty independent networks."
+        },
+        {
+          "type": "h2",
+          "text": "Rule alerted flows"
+        },
+        {
+          "type": "p",
+          "text": "The alert policy first identifies flows using observable rules: SYN fan-out across at least ten ports in a ten-second bin, repeated matched HTTP 401 transactions, or a configured destination indicator. It then packs packets from those flows in timestamp order."
+        },
+        {
+          "type": "p",
+          "text": "An alert is a rule match, not proof of maliciousness. A narrow alert can miss contextual evidence such as DNS or an internal handshake. Chronological allocation can also spend the budget on early flagged events before later flagged events are reached."
+        },
+        {
+          "type": "h2",
+          "text": "Why this baseline needs improvement"
+        },
+        {
+          "type": "p",
+          "text": "The current alert policy is transparent but simple and potentially weak. It does not run Suricata, reproduce its logging decisions or establish superiority over commercial IDS products. Suricata's documented conditional capture motivates the comparison [8]."
+        },
+        {
+          "type": "p",
+          "text": "A stronger final baseline should balance allocations across events and include pre/post-alert context under the same total cap. If that closes the advantage, report it. Fairness requires comparing capable alternatives rather than keeping an intentionally disadvantaged policy."
+        },
+        {
+          "type": "h2",
+          "text": "Common condition at one hundred percent"
+        },
+        {
+          "type": "p",
+          "text": "When all input records fit, every policy returns all packets. This is an explicit full-capture control. It does not mean the ordinary alert rule would otherwise retain all background."
+        }
+      ]
+    },
+    {
+      "title": "13 Understand evidence scoring with an example",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A candidate is a set of packet indices plus a category, weight and reason. Examples are a matched DNS pair, an HTTP pair, an internal handshake, a detected scan group or a singleton payload packet. A bundle is a candidate with several related packet witnesses."
+        },
+        {
+          "type": "h2",
+          "text": "The greedy decision"
+        },
+        {
+          "type": "code",
+          "text": "new indices = candidate indices minus already selected indices\nmarginal cost = sum of record costs for new indices\ngain = weight / (1 + category selections / scale)\npriority = gain / marginal cost"
+        },
+        {
+          "type": "p",
+          "text": "The selector recomputes this ratio for each fitting candidate, selects the largest ratio, and repeats. Already selected packets are not charged again. The category count rises each time that candidate type is selected, reducing the reward for repeatedly choosing the same kind."
+        },
+        {
+          "type": "h2",
+          "text": "A toy calculation"
+        },
+        {
+          "type": "p",
+          "text": "Imagine a DNS pair with configured gain 8 requiring 180 additional record bytes and a payload packet with gain 2 requiring 1,270 bytes. Their current ratios are 8/180, about 0.0444, and 2/1,270, about 0.00157. The DNS pair ranks higher if both fit. These are explanatory toy costs, not measurements from the actual run."
+        },
+        {
+          "type": "p",
+          "text": "If one DNS packet is already selected, the pair's marginal cost includes only the missing record. If many DNS candidates have already been chosen, diminishing gain can let another category rank higher. This combines overlap awareness with diversity."
+        },
+        {
+          "type": "h2",
+          "text": "What the score is and is not"
+        },
+        {
+          "type": "p",
+          "text": "A weight is our declared preference for an observable evidence type. It is not a probability of maliciousness or an automatically measured number of questions answered. The selector never calls the question evaluator to maximize its oracle score."
+        },
+        {
+          "type": "p",
+          "text": "Greedy gain-per-byte is a heuristic. It can miss a globally better combination and can over-prioritize recognized evidence. Larger captures also increase candidate-search work. These limitations are reasons for final experiments, not excuses to hide failures."
+        },
+        {
+          "type": "h2",
+          "text": "Inspect the real decisions"
+        },
+        {
+          "type": "p",
+          "text": "Open results/demo/selected/evidence_b0.05_seed0.decisions.json. Each decision records its kind, newly added source indices, marginal bytes, current ratio and reason. Trace one matched exchange rather than memorizing all the weights."
+        }
+      ]
+    },
+    {
+      "title": "14 Understand prefixes and comparison fairness",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Flow prefix retention"
+        },
+        {
+          "type": "p",
+          "text": "A connection-prefix idea keeps the beginning of a flow because its setup and initial exchanges may contain useful context. Time Machine established this retention direction well before our project [1]."
+        },
+        {
+          "type": "p",
+          "text": "Our simplified policy tracks captured bytes per normalized bidirectional flow and allows only whole packets within its first 4,096 bytes. It then applies the global serialized-byte cap in chronological order. It does not reproduce Time Machine's traffic classes, disk architecture, retrieval indexes or full operational behavior."
+        },
+        {
+          "type": "h2",
+          "text": "Why prefixes can lose our questions"
+        },
+        {
+          "type": "p",
+          "text": "A prefix may preserve setup but not the later bulk payload needed for Q8. At tiny global caps, early background packets can consume most space. A connection policy can therefore be reasonable for another task yet weak for this selected catalogue."
+        },
+        {
+          "type": "h2",
+          "text": "Equal caps are necessary but not sufficient"
+        },
+        {
+          "type": "p",
+          "text": "All policies face the same maximum file bytes. Their attained sizes differ slightly because records remain whole. At 5%, evidence uses 45,240 bytes, alert 45,192, random averages 45,213.2 and prefix uses 45,217. These differences are small, but publishing actual bytes avoids pretending all files are exactly equal."
+        },
+        {
+          "type": "p",
+          "text": "Policies should also have comparable information and credible implementations. Selectors cannot receive truth labels. The alert baseline should not be weakened to make the proposed method win. The question set should not be chosen after looking at favorable outputs."
+        },
+        {
+          "type": "h2",
+          "text": "Percentages can hide absolute cost"
+        },
+        {
+          "type": "p",
+          "text": "Five percent of a larger background-heavy trace permits more absolute retained bytes. A stronger final comparison should examine both fraction caps and common absolute byte caps. Otherwise an apparently improved score may simply reflect a larger allowed file."
+        },
+        {
+          "type": "p",
+          "text": "The offline prototype sees the full capture before choosing packets. An online collector must decide with limited future information and bounded memory. Do not present these offline results as demonstrated live-capture performance."
+        }
+      ]
+    },
+    {
+      "title": "15 Calculate the metrics carefully",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Let S0 be input serialized bytes, b the configured cap fraction, S selected serialized bytes, N input packets, n selected packets and A successful criteria. The question count Q is eight."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Measure",
+            "Definition",
+            "How to read it"
+          ],
+          "widths": [
+            1.5,
+            2.25,
+            3
+          ],
+          "rows": [
+            [
+              "Byte cap",
+              "floor(b x S0)",
+              "Maximum selected-file size."
+            ],
+            [
+              "Byte retention",
+              "r = S / S0",
+              "Actual fraction stored, not the configured fraction."
+            ],
+            [
+              "Packet retention",
+              "n / N",
+              "Different from byte retention when sizes vary."
+            ],
+            [
+              "Storage reduction",
+              "1 - r",
+              "Selected-PCAP reduction only."
+            ],
+            [
+              "Question coverage",
+              "C = A / 8",
+              "The primary task-specific answer score."
+            ],
+            [
+              "Efficiency",
+              "C / r",
+              "Dimensionless secondary ratio."
+            ],
+            [
+              "Question density",
+              "A / (S / 1,048,576)",
+              "Questions per MiB; also secondary."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Work through the five percent evidence result"
+        },
+        {
+          "type": "p",
+          "text": "S0 = 904,905. The cap is floor(0.05 x 904,905) = 45,245. Selected S = 45,240. Actual retention is approximately 4.9994%. A = 7, so coverage is 7/8 = 87.5%. Selected-file reduction is approximately 95.0006%."
+        },
+        {
+          "type": "p",
+          "text": "Efficiency is about 0.875 / 0.049994 = 17.50. A large ratio does not mean evidence is 17.5 times better in every sense. It is merely coverage normalized by retained fraction for this catalogue."
+        },
+        {
+          "type": "h2",
+          "text": "Percentage points and percentage improvements"
+        },
+        {
+          "type": "p",
+          "text": "Evidence's 87.5% minus alert's 50% is a 37.5 percentage-point gap. Report the raw scores first. Large relative percentage improvements against a tiny random baseline can sound impressive while hiding the small number of questions."
+        },
+        {
+          "type": "h2",
+          "text": "Why there is no partial credit"
+        },
+        {
+          "type": "p",
+          "text": "The MVP uses objective all-or-nothing criteria. An exact count of 39 instead of 40 fails Q2. Future partial scoring would need a predeclared justification and separate reporting; it cannot be added after seeing which output benefits."
+        },
+        {
+          "type": "p",
+          "text": "Processing times are measured and saved, but this small run does not establish sustained throughput or large-file scaling. C/r can reward cheap questions; always show coverage, actual bytes and per-question outcomes alongside it."
+        }
+      ]
+    },
+    {
+      "title": "16 Read the actual preliminary results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "These measurements come from the executed default synthetic trace: 1,413 packets, 904,905 bytes and eight binary criteria. Random scores below are means across seeds 0 through 29. Deterministic policies have one measured trial at each cap."
+        },
+        {
+          "type": "results_table"
+        },
+        {
+          "type": "image",
+          "path": "results/demo/coverage_comparison.png",
+          "width": 6.65,
+          "max_height": 2.7,
+          "caption": "Graphs are generated from saved measurements. Random error bars show sample standard deviation, not confidence intervals."
+        },
+        {
+          "type": "p",
+          "text": "Evidence reaches 7/8 at 1% and 5%, then 8/8 at 10% and 20%. The alert policy reaches 4/8 at small caps and 5/8 at larger caps. Random coverage varies by seed. The 100% bypass control returns the full capture and passes all eight for every policy."
+        },
+        {
+          "type": "p",
+          "text": "The report also plots coverage against actual retained bytes. That is useful because a configured 5% cap does not mean every policy stores exactly 5%."
+        }
+      ]
+    },
+    {
+      "title": "17 Deduce only what the measurements support",
+      "blocks": [
+        {
+          "type": "question_matrix"
+        },
+        {
+          "type": "h2",
+          "text": "What we can conclude now"
+        },
+        {
+          "type": "p",
+          "text": "On this designed trace and catalogue, the evidence policy preserves more criteria at low byte caps than these particular baselines. Its compact bundles preserve counts, timing boundaries and matched transactions. Its failure on Q8 at 5% is a physical budget constraint, not merely a scoring failure."
+        },
+        {
+          "type": "p",
+          "text": "At 10%, the evidence method witnesses 75,600 unique nominated payload bytes, enough for Q8's 65,536 lower bound. The alert policy witnesses 72,000 and also passes Q8. Both still preserve only part of the original 300,000-byte stream."
+        },
+        {
+          "type": "h2",
+          "text": "What we cannot conclude"
+        },
+        {
+          "type": "p",
+          "text": "We cannot claim a universal security score, accurate reconstruction of every incident, detection accuracy, legal sufficiency, general superiority over IDS products or proven real-network storage savings. The experiment has one designed main trace and a question set chosen alongside the scorer."
+        },
+        {
+          "type": "h2",
+          "text": "A mean is not a single trial"
+        },
+        {
+          "type": "p",
+          "text": "At 5%, random mean coverage is 2.5%, equivalent to 0.2 of eight questions on average. No individual trial answers 0.2 questions; each answers an integer. The representative seed-zero run answers zero. Keep mean rows separate from seed-zero witness tables."
+        },
+        {
+          "type": "h2",
+          "text": "Why the small budget looks so successful"
+        },
+        {
+          "type": "p",
+          "text": "The scan contains only 40 small SYNs, and several questions share their witnesses. HTTP/DNS pairs and a handshake are also compact. This catalogue has seven relatively cheap criteria and one costly criterion. A different question mix can change the conclusion."
+        }
+      ]
+    },
+    {
+      "title": "18 Understand sensitivity and ablations",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A sensitivity test changes conditions and observes whether the result remains stable. An ablation removes one mechanism to test its role. These checks help explain a method, but they are not a substitute for independent validation."
+        },
+        {
+          "type": "image",
+          "path": "results/sensitivity/evidence_sensitivity.png",
+          "width": 6.65,
+          "max_height": 2.75,
+          "caption": "Three generated variants and three evidence modes were actually executed. The figure is a mechanism check on related synthetic scenarios."
+        },
+        {
+          "type": "p",
+          "text": "demo/run_sensitivity.py executed three scenarios, three evidence modes, four small caps and 33 trials per condition: 3 x 3 x 4 x 33 = 1,188. The trials include 30 random seeds and three deterministic policies. Design and aggregate files record the conditions."
+        },
+        {
+          "type": "h2",
+          "text": "Indicator removal"
+        },
+        {
+          "type": "p",
+          "text": "Removing the known destination indicator prevents the evidence policy from preserving the bulk-byte criterion even at 20% on these generated variants. Other compact criteria survive. This reveals dependence on recognized context rather than proving the method understands every suspicious flow."
+        },
+        {
+          "type": "h2",
+          "text": "Bundle removal"
+        },
+        {
+          "type": "p",
+          "text": "Keeping only singleton candidates lowers evidence coverage in these variants. Paired witnesses can be broken when packets are treated separately. This supports the role of bundles within the designed tests, but not a general causal conclusion about all real traffic."
+        },
+        {
+          "type": "h2",
+          "text": "Background changes"
+        },
+        {
+          "type": "p",
+          "text": "More background makes the whole input larger and therefore increases absolute bytes permitted by the same percentage cap. An improved score can result from that larger allowance. Final analysis should control absolute budgets as well as percentage budgets."
+        },
+        {
+          "type": "p",
+          "text": "Supplementary measurements are saved under results/sensitivity. Only the last working supplementary subset was retained, unlike the primary experiment's 165 saved captures. Rerun the supplementary script to reproduce its trial outputs."
+        }
+      ]
+    },
+    {
+      "title": "19 Know which file does what",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Run the entry-point scripts, not each module separately. Modules under src are building blocks imported by the runner. The table identifies the important files without implying that every one needs to be opened during the demonstration."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "File or folder",
+            "Purpose"
+          ],
+          "widths": [
+            2.8,
+            3.95
+          ],
+          "rows": [
+            [
+              "demo/generate_demo_pcap.py",
+              "Run first to create the synthetic input and matching truth."
+            ],
+            [
+              "demo/run_demo.py",
+              "Run second for all main policies, budgets, saved subsets and reports."
+            ],
+            [
+              "demo/run_sensitivity.py",
+              "Optional longer mechanism study; not needed for the five-minute demo."
+            ],
+            [
+              "config.json",
+              "Budgets, seeds, indicators, thresholds, category weights and prefix limit."
+            ],
+            [
+              "src/packet_parser.py",
+              "Validate input, decode limited metadata and preserve raw record bytes."
+            ],
+            [
+              "src/feature_extraction.py",
+              "Group flows and detect supported sequence candidates."
+            ],
+            [
+              "src/evidence_scoring.py",
+              "Construct explainable bundles and singleton categories."
+            ],
+            [
+              "src/selectors.py",
+              "Choose indices and enforce shared budget accounting."
+            ],
+            [
+              "src/evaluator.py",
+              "Reconstruct the eight criteria from retained packets."
+            ],
+            [
+              "src/metrics.py",
+              "Compute byte/packet retention, coverage and secondary ratios."
+            ],
+            [
+              "src/visualization.py",
+              "Produce core SVG charts, summary and local HTML report."
+            ],
+            [
+              "tests/test_pipeline.py",
+              "Correctness and deliberately missing/duplicate witness tests."
+            ],
+            [
+              "tools/audit_results.py",
+              "Audit every main retained file against hashes, cap and source records."
+            ],
+            [
+              "tools/check_with_scapy.py",
+              "Optional independent protocol/checksum/subset validation."
+            ],
+            [
+              "tools/plot_results.py",
+              "Optional scientific figures from the saved default results."
+            ],
+            [
+              "tools/export_handoff.py",
+              "Refresh the verified continuation archive."
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "data/generated stores input PCAPs and truth files. results/demo stores the main report, metrics, manifest, question answers and selected captures. docs stores research and submission documents. logs stores actions, verification outputs and continuation notes."
+        }
+      ]
+    },
+    {
+      "title": "20 Walk through the code as a beginner",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "In Python, a module is a .py file and a function is a named set of reusable steps. A list holds ordered values, a set holds unique values and a dictionary maps labels to values. A loop repeats steps; an exception reports a problem. Follow data through demo/run_demo.py, then inspect the small functions it calls."
+        },
+        {
+          "type": "h2",
+          "text": "The runner coordinates the experiment"
+        },
+        {
+          "type": "p",
+          "text": "run reads the capture and truth, verifies the input hash and demands 8/8 from the full capture. It extracts observable features once. For each budget, strategy and seed, it calls select, writes a subset, re-reads it, calls answer, calculates metrics and saves the trial."
+        },
+        {
+          "type": "h2",
+          "text": "The parser supplies packets and their costs"
+        },
+        {
+          "type": "p",
+          "text": "read_pcap validates the container and returns packet objects with fields such as index, timestamp_ns, src, dst, sport, dport, flags, seq, payload and raw record. cost includes the packet record header. write_subset checks the cap and copies records in original order."
+        },
+        {
+          "type": "h2",
+          "text": "Feature extraction supplies observable groups"
+        },
+        {
+          "type": "p",
+          "text": "extract returns grouped flows, fan-out bins, matched HTTP pairs, matched DNS pairs, handshakes and alerted flows. It does not accept the truth manifest. Understanding this function explains what the selector can recognize and what it misses."
+        },
+        {
+          "type": "h2",
+          "text": "The selector returns source indices"
+        },
+        {
+          "type": "p",
+          "text": "select branches by strategy. Random shuffles indices; alert and prefix prepare an ordered list; evidence repeatedly evaluates fitting candidate ratios. The result is a set of source indices plus human-readable decision records. Selection does not directly produce a forensic answer."
+        },
+        {
+          "type": "h2",
+          "text": "The evaluator computes observed answers"
+        },
+        {
+          "type": "p",
+          "text": "answer extracts features from the retained packets, applies nominated target criteria and returns the eight observations, pass/fail values and witnesses. unique_payload_bytes merges overlapping sequence intervals to avoid double-counting retransmissions."
+        },
+        {
+          "type": "h2",
+          "text": "Indices and witnesses"
+        },
+        {
+          "type": "p",
+          "text": "Decision and subset manifests use original source indices. Question reports use positions in the newly read retained capture. These two index spaces differ because discarded packets disappear. Use the manifest mapping when tracing a retained witness back to its source."
+        },
+        {
+          "type": "p",
+          "text": "Practice exercise: find the DNS candidate, locate its newly added indices in a decision file, and then find Q7's retained witnesses. Explain why both query and response are necessary."
+        }
+      ]
+    },
+    {
+      "title": "21 Change configuration without confusing results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A configuration is a recorded set of design choices. Keeping those choices outside the core functions makes experiments easier to understand and repeat. Use a new output directory when changing settings so the original preliminary results stay intact."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Setting",
+            "Default and role"
+          ],
+          "widths": [
+            2.15,
+            4.6
+          ],
+          "rows": [
+            [
+              "budgets",
+              "0.01, 0.05, 0.10, 0.20, 1. These are fractions, not percentages."
+            ],
+            [
+              "random_seeds",
+              "0 through 29. Seeds affect random order, not ground truth."
+            ],
+            [
+              "scan_min_ports",
+              "10 distinct ports for feature fan-out detection."
+            ],
+            [
+              "scan_window_seconds",
+              "10-second bins for fan-out grouping."
+            ],
+            [
+              "http_failure_alert_count",
+              "3 matched rejection transactions to mark those flows."
+            ],
+            [
+              "indicator_ips",
+              "203.0.113.9; remove it for the indicator ablation."
+            ],
+            [
+              "flow_prefix_bytes",
+              "4,096 captured bytes per normalized flow."
+            ],
+            [
+              "weights and diminishing_scale",
+              "Transparent evidence priorities and repeated-category gain reduction."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "A separate custom run"
+        },
+        {
+          "type": "code",
+          "text": "& \".\\.venv\\Scripts\\python.exe\" -B demo/run_demo.py --random-runs 7 --budgets 0.30 1 --output results/my_experiment"
+        },
+        {
+          "type": "p",
+          "text": "This changes the random seed count and caps, then generates the corresponding core HTML/SVG report. A 30%/100%, seven-seed configuration was checked during verification. Interpret custom results from that directory, not from the original table."
+        },
+        {
+          "type": "h2",
+          "text": "A supported alternative input"
+        },
+        {
+          "type": "code",
+          "text": "python demo/run_demo.py --input path/to/input.pcap --truth path/to/input.truth.json --output results/new_input"
+        },
+        {
+          "type": "p",
+          "text": "That input must have valid matching annotation in the implemented truth schema and a passing full-capture control. An arbitrary public PCAP cannot reuse demo.truth.json. Changing the input hash or expected answers requires a new legitimate annotation, not editing truth to force a desired score."
+        },
+        {
+          "type": "p",
+          "text": "The core runner refreshes HTML/SVG charts. The supplied optional Matplotlib PNGs are generated separately by tools/plot_results.py from the default saved experiment; they are not automatically updated for every custom output folder."
+        }
+      ]
+    },
+    {
+      "title": "22 Know what was tested and what that proves",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "A program producing a graph is not enough. We need to know that the file really fits, records really survive and the evaluator fails when required evidence is absent."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Executed check",
+            "What it supports"
+          ],
+          "widths": [
+            2.55,
+            4.2
+          ],
+          "rows": [
+            [
+              "15 unit tests",
+              "Caps and record preservation, format errors, endian/timestamp variants, reproducible randomness, missing sequence members and duplicate-byte handling."
+            ],
+            [
+              "165-subset audit",
+              "Saved-file size, input/truth/subset hashes, exact original records and fresh answer reconstruction."
+            ],
+            [
+              "Clean environment",
+              "No-pip Python regenerated byte-identical input and reproduced coverage, selected sizes and random SD."
+            ],
+            [
+              "Independent Scapy 2.6.1",
+              "Input fields, timestamps, recomputed checksums, known generated events and all primary subset bytes/caps."
+            ],
+            [
+              "Configuration and relocation checks",
+              "Changed cap/seed report captions and portable relative provenance paths work."
+            ],
+            [
+              "Document and plot inspection",
+              "Final rendered pages and figures are readable; this does not validate scientific generalization."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Run the core checks"
+        },
+        {
+          "type": "code",
+          "text": "& \".\\.venv\\Scripts\\python.exe\" -B -m unittest discover -s tests -v\n& \".\\.venv\\Scripts\\python.exe\" -B tools/audit_results.py"
+        },
+        {
+          "type": "p",
+          "text": "Expected summaries are Ran 15 tests followed by OK, and AUDIT PASSED for 165 retained captures. Test logs are saved in logs. Use the documented test command without Python's -I flag: isolated mode removes the working-directory import path needed by the test imports."
+        },
+        {
+          "type": "h2",
+          "text": "Negative tests are especially valuable"
+        },
+        {
+          "type": "p",
+          "text": "Deleting the DNS response invalidates its pair. Deleting the final ACK invalidates the internal handshake. Deleting the HTTP request invalidates a response pair. Dropping a scan attempt/boundary changes exact count/interval outcomes. Duplicating payload must not inflate Q8."
+        },
+        {
+          "type": "p",
+          "text": "These checks support implementation correctness within the scope. They do not prove that the question catalogue is unbiased, a real capture is complete or the method scales. Independent Scapy checks add a different parser but are not an independent full incident reconstruction."
+        }
+      ]
+    },
+    {
+      "title": "23 Think like a careful researcher",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Selection bias and shared evidence"
+        },
+        {
+          "type": "p",
+          "text": "The scorer and question catalogue were developed together. Even without direct oracle leakage, their alignment can favor the method. Future questions and test scenarios should be chosen independently and frozen before tuning. Shared packet witnesses also mean question scores are correlated."
+        },
+        {
+          "type": "h2",
+          "text": "Uncertainty at the right level"
+        },
+        {
+          "type": "p",
+          "text": "Random-seed variation measures the random policy on one input. It does not measure how performance varies across organizations, incident types or traffic conditions. A final study needs multiple independently chosen scenarios and separate analysis of between-scenario variation."
+        },
+        {
+          "type": "h2",
+          "text": "Capture loss and unsupported protocols"
+        },
+        {
+          "type": "p",
+          "text": "The complete PCAP is a reference for what it contains, not omniscient truth. Real capture can miss packets. Encryption hides application content. Fragmented or segmented messages need reconstruction that the MVP lacks. Define supported evidence instead of pretending those limitations vanish."
+        },
+        {
+          "type": "h2",
+          "text": "Heuristic versus optimal allocation"
+        },
+        {
+          "type": "p",
+          "text": "The selection problem resembles choosing items under a capacity limit, with overlaps and sequence dependencies. Greedy ratios are practical but not optimal in general. A small-instance exhaustive or exact comparison could assess heuristic quality later; it is not implemented now."
+        },
+        {
+          "type": "h2",
+          "text": "Offline versus online"
+        },
+        {
+          "type": "p",
+          "text": "The current selector sees future packets because it operates after capture. Live capture would require bounded state, decisions before future context arrives, buffer limits, eviction and sustained throughput. It is a different engineering challenge and should be an optional extension."
+        },
+        {
+          "type": "h2",
+          "text": "Provenance versus legal sufficiency"
+        },
+        {
+          "type": "p",
+          "text": "SHA-256 hashes help detect changed bytes against a trusted manifest. They do not prove origin, preserve a trusted custody history or prevent replacement of both file and manifest. NIST forensic guidance motivates a broader collection, examination, analysis and reporting process [12]."
+        },
+        {
+          "type": "p",
+          "text": "Professional work keeps unsupported cases visible, publishes failed questions, budgets all retained representations and changes conclusions when stronger evidence arrives."
+        }
+      ]
+    },
+    {
+      "title": "24 Build the final project in realistic phases",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The current MVP is the starting point. The most valuable next work is independent evidence and fairer comparisons, rather than adding a dashboard, database or ML simply to look advanced. The detailed roadmap is final_project_roadmap.md."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Phase",
+            "Work and exit condition"
+          ],
+          "widths": [
+            1.55,
+            5.2
+          ],
+          "rows": [
+            [
+              "Guide review",
+              "Team can run and explain the pipeline; professor reviews criteria and baseline fairness."
+            ],
+            [
+              "Evaluation freeze",
+              "Review closest full papers; freeze questions, weights, hypotheses and held-out protocol."
+            ],
+            [
+              "Independent data",
+              "Use licensed, adequately annotated public traffic or authorised controlled lab capture; full-reference criteria verified independently."
+            ],
+            [
+              "Stronger policies",
+              "Add event-balanced alert allocation, context windows and prefix sweeps under equal caps."
+            ],
+            [
+              "Technical scope",
+              "Add only needed reassembly, format or IPv6 support; targeted witness tests still pass."
+            ],
+            [
+              "Final experiments",
+              "Independent scenarios, held-out outcomes, parameter sensitivity and time/memory scaling."
+            ],
+            [
+              "Submission",
+              "Rewrite claims to match actual outcomes; final report, demonstration and teammate reproduction."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Choose data that can answer the questions"
+        },
+        {
+          "type": "p",
+          "text": "An attack label alone may not tell us exact attempts, matching application exchanges or timing boundaries. An independent annotation protocol is needed. A controlled lab can record harmless actions and endpoint logs, then determine what packet evidence actually supports them."
+        },
+        {
+          "type": "h2",
+          "text": "Freeze before the final test"
+        },
+        {
+          "type": "p",
+          "text": "Tune on development scenarios and keep another scenario held out. Do not repeatedly inspect held-out results and retune until they look good. If a criterion changes, label the new experiment exploratory and obtain fresh independent evaluation."
+        },
+        {
+          "type": "h2",
+          "text": "Measure total cost if representations change"
+        },
+        {
+          "type": "p",
+          "text": "If future flow summaries preserve counts alongside a selected PCAP, include summary/index bytes in the budget. Report retained representations and reconstruction rules explicitly. Otherwise packet-only and metadata-plus-packets methods are not comparable."
+        },
+        {
+          "type": "p",
+          "text": "The synopsis's week labels reproduce the reference's planned academic schedule. They are not evidence that August milestones occurred. The actual prototype checkpoint is 7 October 2026; the operational roadmap is prospective and subject to the guide's submission calendar."
+        }
+      ]
+    },
+    {
+      "title": "25 Deliver a clear presentation tomorrow",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Opening script"
+        },
+        {
+          "type": "p",
+          "text": "Our project asks which packets should be kept when storage is too limited for full capture. We compare four transparent policies using the same byte cap. We measure investigation usefulness through eight predefined packet-supported criteria, then reconstruct their answers from the retained PCAP."
+        },
+        {
+          "type": "h2",
+          "text": "Implementation script"
+        },
+        {
+          "type": "p",
+          "text": "We have an offline synthetic generator, a limited PCAP parser, observable feature extraction, an evidence-bundle heuristic, strict record-size enforcement and a fresh retained-file evaluator. The core runs with the Python standard library. The generator writes a file and transmits no traffic."
+        },
+        {
+          "type": "h2",
+          "text": "Result script"
+        },
+        {
+          "type": "p",
+          "text": "On the default synthetic trace, the 5% evidence capture uses 45,240 bytes under a 45,245-byte cap and preserves seven criteria. Our alert baseline preserves four; random selection averages 0.2 questions across thirty seeds. At 10%, evidence preserves all eight. This is a preliminary result on one designed case, not a general real-network claim."
+        },
+        {
+          "type": "h2",
+          "text": "Research and next step script"
+        },
+        {
+          "type": "p",
+          "text": "Selective retention and forensic coverage have prior art. Our contribution is a reproducible question-level comparison under equal serialized-byte caps. Next we will strengthen the alert baseline, freeze independently chosen criteria and evaluate independently annotated traffic."
+        },
+        {
+          "type": "h2",
+          "text": "Know these five facts without reading"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Fact",
+            "Value"
+          ],
+          "widths": [
+            3.3,
+            3.45
+          ],
+          "rows": [
+            [
+              "Input",
+              "1,413 packets and 904,905 bytes"
+            ],
+            [
+              "5% evidence file",
+              "45,240 bytes under a 45,245-byte cap"
+            ],
+            [
+              "Coverage",
+              "Successful criteria divided by eight"
+            ],
+            [
+              "Main repetitions",
+              "30 random seeds, four policies, five caps: 165 trials"
+            ],
+            [
+              "Major limitation",
+              "Designed synthetic data and a co-designed question/scorer pair"
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "A confident answer includes the boundary"
+        },
+        {
+          "type": "p",
+          "text": "If asked something outside the implementation, say what is supported and what remains planned. For example: we do not currently reassemble real TCP streams; that extension will be driven by the independent dataset. This is more defensible than claiming an untested feature."
+        }
+      ]
+    },
+    {
+      "title": "26 Prepare for professor questions",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "What is your novelty"
+        },
+        {
+          "type": "p",
+          "text": "Selective retention and forensic coverage already exist. Our current contribution is transparent byte-cap selection and a reproducible retained-answer comparison. Wider review and independent evaluation are still required before a publication novelty claim."
+        },
+        {
+          "type": "h2",
+          "text": "Why not keep everything or use machine learning"
+        },
+        {
+          "type": "p",
+          "text": "Full capture is preferable when affordable and permitted; our study addresses constrained retention. Explainable rules are appropriate now because we need a clear evaluator and lack a justified training/held-out benchmark. ML is not necessary to answer the immediate question."
+        },
+        {
+          "type": "h2",
+          "text": "How do you know the truth is right"
+        },
+        {
+          "type": "p",
+          "text": "The generator records what it writes. The full PCAP must pass all criteria, hash checks bind input to annotation, missing-witness tests check scoring, and Scapy verifies protocol fields/checksums. This is controlled synthetic truth, not independent real incident truth."
+        },
+        {
+          "type": "h2",
+          "text": "Why seven answers at only one percent"
+        },
+        {
+          "type": "p",
+          "text": "The first seven criteria have compact and sometimes shared witnesses. Forty SYNs and a few pairs fit cheaply. The eighth needs at least 65,536 payload bytes and cannot fit the 9,049-byte 1% cap. The question cost distribution matters."
+        },
+        {
+          "type": "h2",
+          "text": "Is the comparison fair"
+        },
+        {
+          "type": "p",
+          "text": "Caps and information access are controlled, but chronological alert allocation is weak. We plan event-balanced/context-window policies and independent questions. We cannot claim we beat Suricata or reproduce Time Machine."
+        },
+        {
+          "type": "h2",
+          "text": "Can it work on real traffic"
+        },
+        {
+          "type": "p",
+          "text": "The parser accepts supported classic PCAP, but meaningful evaluation needs independently annotated targets and matching truth. Real reassembly, encrypted content, IPv6 and capture loss need explicit support or revised questions."
+        },
+        {
+          "type": "h2",
+          "text": "What happens when the scorer misses something"
+        },
+        {
+          "type": "p",
+          "text": "Evidence can be lost. Indicator removal loses Q8 in our supplementary cases. We must report such failures and use held-out scenarios. A heuristic is not an evidence-preservation guarantee."
+        },
+        {
+          "type": "h2",
+          "text": "Does this prove an attack or save all disk storage"
+        },
+        {
+          "type": "p",
+          "text": "No. HTTP status, handshakes and payload thresholds are observations. The cap measures one selected PCAP; input and experimental reports remain stored separately. Legal sufficiency and deployment-wide savings are outside the MVP."
+        }
+      ]
+    },
+    {
+      "title": "27 Use the glossary and reading path",
+      "blocks": [
+        {
+          "type": "table",
+          "headers": [
+            "Term",
+            "Plain meaning"
+          ],
+          "widths": [
+            1.65,
+            5.1
+          ],
+          "rows": [
+            [
+              "PCAP",
+              "A file of captured packet records and timestamps."
+            ],
+            [
+              "Flow",
+              "Packets grouped by transport protocol and endpoint pairs."
+            ],
+            [
+              "Witness",
+              "A retained packet or sequence required by a criterion."
+            ],
+            [
+              "Bundle",
+              "Related witnesses treated as one selection candidate."
+            ],
+            [
+              "Ground truth",
+              "Reference observations used for evaluation, separate from selection."
+            ],
+            [
+              "Baseline",
+              "A comparison policy with a clear implementation."
+            ],
+            [
+              "Budget",
+              "Maximum allowed selected-file bytes."
+            ],
+            [
+              "Coverage",
+              "Fraction of the chosen criteria successfully preserved."
+            ],
+            [
+              "Heuristic",
+              "An understandable rule that may miss the optimal answer."
+            ],
+            [
+              "Ablation",
+              "Removing a mechanism to examine its role."
+            ],
+            [
+              "Held out",
+              "Data reserved from tuning for independent evaluation."
+            ],
+            [
+              "Reassembly",
+              "Rebuilding messages or streams from packet pieces."
+            ],
+            [
+              "Provenance",
+              "Records about origin and handling of data."
+            ],
+            [
+              "Manifest",
+              "A machine-readable inventory with configuration and hashes."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Read these sources for the right purpose"
+        },
+        {
+          "type": "p",
+          "text": "The full 18-source registry is docs/sources.json and the review is docs/literature_review.md. This guide uses the same reference numbers. Time Machine [1] explains earlier retention ideas; coverage work [2] bounds novelty; RFC 5475 [6] explains sampling/filtering; Suricata docs [8] motivate alert capture; NIST [12] provides forensic-process context; the PCAP draft [13] describes the classic file layout; RFC 5737 [16] documents example addresses."
+        },
+        {
+          "type": "p",
+          "text": "The SANS 2026 source [5] was reviewed only at official-abstract level. The 2026 coverage paper was reviewed as a preprint; its final publisher version was rate-limited. Do not quote inaccessible full-paper findings or merge version-specific results."
+        },
+        {
+          "type": "h2",
+          "text": "Useful source links"
+        },
+        {
+          "type": "source_links",
+          "ids": [
+            1,
+            2,
+            5,
+            6,
+            8,
+            12,
+            13,
+            16
+          ],
+          "labels": {
+            "1": "Time Machine connection prefix retention",
+            "2": "Forensic coverage and artifact survivability",
+            "5": "IDS triggered PCAP official abstract",
+            "6": "RFC 5475 sampling and filtering",
+            "8": "Suricata conditional PCAP documentation",
+            "12": "NIST forensic process guidance",
+            "13": "Classic PCAP format Internet Draft",
+            "16": "RFC 5737 documentation addresses"
+          }
+        }
+      ]
+    },
+    {
+      "title": "28 Check readiness and preserve continuity",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Before leaving for the progress check"
+        },
+        {
+          "type": "bullets",
+          "items": [
+            "Run the generator and main experiment once on the laptop you will carry.",
+            "Open the report and revised synopsis; keep a saved report available if the live rerun is interrupted.",
+            "Explain one DNS or handshake bundle and locate its retained witness.",
+            "Calculate the 5% cap and 7/8 coverage aloud.",
+            "Distinguish the random mean from the representative seed-zero trial.",
+            "State the synthetic-data, parser and weak-baseline limitations without prompting.",
+            "Choose one concrete next task to propose to the professor."
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Divide the team study"
+        },
+        {
+          "type": "p",
+          "text": "One member can trace packet IO and budget checks, one can verify literature and annotation criteria, and one can trace selectors and result plots. Everyone should understand the complete demo. These are proposed responsibilities, not claims of prior work."
+        },
+        {
+          "type": "h2",
+          "text": "Troubleshooting"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Symptom",
+            "Action"
+          ],
+          "widths": [
+            2.3,
+            4.45
+          ],
+          "rows": [
+            [
+              "Python command missing",
+              "Use the existing .venv path, or install a suitable Python and recreate the environment on a new machine."
+            ],
+            [
+              "Input file missing",
+              "Run the generator from the project folder."
+            ],
+            [
+              "Truth hash mismatch",
+              "Use the matching PCAP/truth pair; regenerate the default pair rather than editing answers."
+            ],
+            [
+              "Full control fails",
+              "Stop the comparison and fix annotation or supported evidence. Do not publish that score as a valid comparison."
+            ],
+            [
+              "Report seems old",
+              "Check the output folder used by the runner; core HTML/SVG are regenerated there."
+            ],
+            [
+              "Optional plot/parser package missing",
+              "Use the package-free core demo; optional QA has separate requirements."
+            ]
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "Maintain an auditable project"
+        },
+        {
+          "type": "p",
+          "text": "Append real changes and outcomes to logs/action_log.md. Update logs/continuation_notes.md when scope or status changes. Keep original references unchanged and store future experiments in new result folders."
+        },
+        {
+          "type": "code",
+          "text": "& \".\\.venv\\Scripts\\python.exe\" -B tools/export_handoff.py"
+        },
+        {
+          "type": "p",
+          "text": "This refreshes logs/agent_handoff.zip with code, documents, synthetic data, all 165 primary subsets and logs. Included-file hashes are in its HANDOFF_MANIFEST.json. Machine-specific virtual environments are excluded. A future agent should read the continuation notes before changing the project."
+        }
+      ]
+    }
+  ]
+}

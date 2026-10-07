@@ -1,0 +1,143 @@
+{
+  "title": "Evidence Aware Packet Retention Under Storage Budgets",
+  "paragraphs": {
+    "10": "Packet captures preserve network observations that can be examined during incident response [12]. Retaining every packet for long periods can be costly: Time Machine already addressed selective recording through connection-prefix retention [1]. Flow export and structured monitoring logs offer alternative representations [7,9], while recent work explicitly examines forensic inference lost during evidence abstraction [2].\n\nThis project studies a concrete retention decision: under an equal serialized PCAP byte cap, which policy preserves the most correct answers to predefined questions about observed traffic? The prototype compares random packet packing, rule-alerted flow retention, an explainable evidence-bundle heuristic, and a connection-prefix baseline. It uses synthetic file-only traffic and a separate ground-truth manifest; no packets are transmitted.\n\nThe immediate outcome is a reproducible offline experiment suitable for an Information Security Lab progress check. A later phase will extend the evidence catalogue and validate on independently captured, authorised lab traffic.",
+    "13": "A limited packet archive can lose rare transactions, sequence members, exact observed counts and timing boundaries. Preserving a large packet count does not directly establish that the retained data supports an investigation. Existing retention and coverage research [1,2,5] motivates evaluating the specific answers that remain reproducible under a stated storage constraint.\n\nThe problem is to choose a subset of original packet records whose serialized PCAP size does not exceed a configured fraction of the input size, then reconstruct the same predefined observations from that subset. The full input provides the reference observations; it is not proof that every real-world incident fact was captured.\n\nScope and Assumptions: The MVP operates on offline classic PCAP files with Ethernet framing and limited IPv4/TCP/UDP/HTTP/DNS decoding. Full-input metadata is excluded from retained answers. Online capture, TLS decryption, TCP stream reassembly, IP defragmentation, production deployment and legal evidential sufficiency are outside the immediate scope.",
+    "16": "The project makes the storage-versus-investigation trade-off visible and measurable in ICT3141. It allows the team to explain why a matched request and response, a complete handshake, or an observed interval boundary may be more useful for a particular question than isolated packets.\n\nThe engineering emphasis is on understandable Python functions, transparent rules, byte-exact limits and reproducibility. No machine-learning training is needed for this controlled comparison. The team can inspect the retained PCAP, follow each scoring decision and repeat the experiment locally.\n\nThe research motivation is a careful comparison of concrete question preservation under equal byte caps. Selective capture and forensic coverage already exist; the contribution is a small, auditable experimental case study rather than a claim of an entirely new field.",
+    "19": "1. To implement offline PCAP parsing and lossless whole-record subset writing with exact byte-budget enforcement.",
+    "20": "2. To compare random, alert-flow, evidence-bundle and connection-prefix policies under the same configured caps.",
+    "21": "3. To define eight objective question criteria for endpoints, counts, intervals, HTTP exchanges, TCP sequence, DNS mapping and retained bulk bytes.",
+    "22": "4. To generate labelled synthetic observations and evaluate every selected PCAP independently of full-input metadata.",
+    "23": "5. To report actual coverage curves, trial variability, sequence witnesses, sensitivity checks and known limitations.\n\nResearch Questions: RQ1: How do exact counts, interval endpoints and sequence witnesses degrade as the byte cap falls? RQ2: Does the evidence heuristic preserve more answers than random and alert-flow selection? RQ3: Which evidence types remain weak, especially bulk-byte lower bounds? RQ4: How do background volume, missing indicators and bundle removal change the result?\n\nHypothesis: On the controlled scenario, evidence bundles and diversity will preserve more question answers at small caps than random packet packing. This is conditional on the selected traffic, catalogue and heuristic.",
+    "25": "The system retains original packets while using observed metadata to propose candidate evidence bundles. A bundle can contain a DNS request and response, a matched HTTP exchange, a TCP handshake, or the boundaries of a detected SYN fan-out. The scorer applies configured weights and diminishing gains per category, then greedily selects the highest marginal gain per additional record byte. It is a heuristic with no optimality guarantee.\n\nRandom selection shuffles packets using a reproducible seed and packs those that fit. Alert selection retains chronologically ordered packets in flows flagged by fan-out, repeated HTTP 401 responses or a configured destination indicator. It is an illustrative rule baseline, not a Suricata benchmark [8]. The connection-prefix comparison retains whole packets within a per-flow cutoff inspired by Time Machine [1].\n\nAfter writing each subset, the system re-parses that PCAP, computes the available observations and checks eight binary criteria against the generator manifest. It records per-question witnesses, coverage, storage retention, processing times and hashes. All policies retain the full capture when it fits the 100% control cap.",
+    "28": "The four policies use the same serialized PCAP byte cap and write original packet records. Each retained file is independently re-parsed before its eight question criteria are evaluated.\n\nThe synthetic generator writes a separate ground-truth manifest. Only the evaluation stage receives reference answers. Selection uses observable packet features and configured indicators; it does not receive event labels or oracle packet IDs. Diagnostic metadata and reports are outside the retained-PCAP cap and cannot be used to claim preserved answers.",
+    "31": "Stage 1 - Experimental Design: Define the eight binary questions before measurement and configure 1%, 5%, 10%, 20% and 100% serialized byte caps. Each input and configuration is hashed for reproducibility.\n\nStage 2 - Traffic Generation: Write synthetic Ethernet/IPv4 records locally with valid transport checksums. Include SYN fan-out, plaintext HTTP rejection/success responses, an internal handshake, a DNS A exchange, a bulk outbound transfer and benign background. These are generated observations, not real attacks.\n\nStage 3 - Parsing and Evidence Extraction: Read classic PCAP header and record formats [13]. Extract endpoints, ports, TCP flags, timestamps, sequence numbers and payload lengths; identify supported single-packet transactions and handshake candidates.\n\nStage 4 - Selection: Apply the four policies using identical per-file caps. Account for the 24-byte file header and each 16-byte record header. Copy original record bytes in capture order.\n\nStage 5 - Evaluation: Re-parse every retained file and reconstruct its answers. Require exact observed SYN count, both interval endpoints, complete specified exchanges and at least 65,536 unique outbound TCP payload bytes for the volume question. Do not infer discarded bytes from original metadata.\n\nStage 6 - Validation and Reporting: Run correctness and evidence-loss tests, audit retained bytes and hashes, repeat random sampling over 30 seeds, and check sensitivity to background volume, missing indicators and removal of bundles. Extend to independently captured authorised traffic in the final phase.",
+    "35": "1. A functional and reproducible offline prototype with lossless subset writing and configurable caps.\n\n2. A documented question catalogue and separate reference manifest that distinguish preserved observations from attack claims.\n\n3. Measured tables and plots comparing four policies, with random trial variability and actual retained sizes.\n\n4. Clear scoring explanations and evidence witnesses suitable for professor demonstration.\n\n5. A credible final-project study using additional scenarios, stronger baselines and independent lab captures. Generalisation beyond the synthetic examples remains an expected investigation, not a completed result.",
+    "38": "Storage and Packet Retention: Report selected serialized bytes divided by original bytes, selected packet fraction, unused cap and storage reduction. The cap applies to each selected PCAP; input data, diagnostic metadata and experiment reports are separate overhead.\n\nQuestion Coverage: Let A be the number of correctly preserved answers out of Q=8. Coverage is A/Q with equal binary weights. No partial scoring is used. Interval scoring checks the observed capture boundaries and does not prove that no earlier activity occurred. TCP/DNS/HTTP criteria require the stated sequence witnesses; the volume criterion uses a retained unique-byte lower bound.\n\nEfficiency: Report coverage divided by byte-retention fraction and questions per MiB only as secondary measures alongside coverage and bytes. These ratios are design conventions, not a claimed novel metric or a legal-quality measure.\n\nPreliminary Results: An executed synthetic capture contained 1,413 packets and 904,905 bytes. At the 5% cap, evidence selection retained 45,240 bytes and preserved 7/8 answers; alert selection preserved 4/8; random selection averaged 2.50% coverage across 30 seeds (SD 5.09 percentage points). At 10%, evidence selection preserved 8/8. These results apply only to this designed scenario.\n\nValidation and Limitations: Fifteen correctness tests passed, 165 primary subsets passed record/cap/hash audits, an independent Scapy check verified packet fields/checksums and all primary subset bytes, and a clean package-free Python environment reproduced the primary outcomes. Supplementary synthetic trials exposed sensitivity to a missing destination indicator and bundle removal. The final study must strengthen the chronological alert baseline, control absolute budgets, validate on independently captured traffic and avoid tuning questions to favourable results.",
+    "42": "Time Machine [1] establishes connection-prefix retention and operational forensic use. The reviewed 2026 preprint [2] explicitly measures artifact survivability and supportable hypotheses across packet, flow and aggregated representations; therefore forensic coverage is not a new concept. HybridMon [3] and P4DDLe [4] address monitoring and resource-efficient packet features. Feature-Sniffer [14] illustrates metadata-first collection.\n\nGaster's SANS white paper [5], published on 28 September 2026, is directly related to alert-driven PCAP and forensic viability. Only its official abstract was reviewed, so no empirical result is attributed to it. RFC 5475 [6] distinguishes sampling and filtering; Suricata [8] documents conditional PCAP logging. Commercial documentation [10,11,18] confirms existing capture and retention mechanisms, but does not provide an independent comparison with this prototype. FileTSAR [15] is prior work on selective analysis and reconstruction, with operational concerns also reported by NIJ.\n\nGap Identified: The project's defensible contribution is an auditable comparison of concrete, correctly reconstructed answers from retained PCAPs under equal serialized-byte caps. This differs in experimental target from the reviewed representations and detection studies, but is not evidence that no identical methodology exists. Broader database searching and the closest 2026 full-paper reviews remain necessary before claiming publication novelty."
+  },
+  "team": [
+    "Planned role: architecture, Python retention modules, integration and reproducibility.",
+    "Planned role: protocol inspection, scenario design, literature review and documentation.",
+    "Planned role: question criteria, baseline checks, visual reporting and validation."
+  ],
+  "tools": [
+    [
+      "Programming Language",
+      "Python 3.10+",
+      "Offline experiment",
+      "Standard-library core; no package installation required"
+    ],
+    [
+      "PCAP Parser",
+      "struct and socket modules",
+      "Classic PCAP and limited protocols",
+      "Small explicit parser; bounded format support"
+    ],
+    [
+      "Packet Inspection",
+      "Wireshark / Scapy",
+      "Optional independent inspection",
+      "Scapy verification is separate from demo runtime"
+    ],
+    [
+      "Result Storage",
+      "CSV and JSON",
+      "Metrics, answers and manifests",
+      "Sufficient for this small experiment"
+    ],
+    [
+      "Traffic Generation",
+      "File-only Python generator",
+      "Known synthetic observations",
+      "No traffic transmission or live attacks"
+    ],
+    [
+      "Operating System",
+      "Windows laptop; portable Python",
+      "Local demonstration",
+      "Current implementation tested on Windows"
+    ],
+    [
+      "Visualisation",
+      "SVG, HTML and Matplotlib",
+      "Executed result curves",
+      "Core report is package-free; scientific plots optional"
+    ],
+    [
+      "Dataset",
+      "Synthetic PCAP and truth manifest",
+      "Immediate experiment input",
+      "Explicitly labelled; no real-world inference"
+    ],
+    [
+      "Version Control",
+      "Git (planned)",
+      "Later team collaboration",
+      "Source and action logs retained locally"
+    ]
+  ],
+  "timeline": [
+    [
+      "1",
+      "Research framing and MVP",
+      "Week 1-2 (Aug 2026)",
+      "Prototype and initial results"
+    ],
+    [
+      "2",
+      "Team code study and viva preparation",
+      "Week 3-4 (Aug-Sep 2026)",
+      "Explainable demonstration"
+    ],
+    [
+      "3",
+      "Broader literature verification",
+      "Week 5 (Sep 2026)",
+      "Closest-work comparison"
+    ],
+    [
+      "4",
+      "Independent lab capture and truth",
+      "Week 6-7 (Sep 2026)",
+      "Authorised capture scenarios"
+    ],
+    [
+      "5",
+      "Protocol robustness and validation",
+      "Week 8 (Oct 2026)",
+      "Parser and evaluator checks"
+    ],
+    [
+      "6",
+      "Stronger baselines and ablations",
+      "Week 9-10 (Oct 2026)",
+      "Controlled comparison"
+    ],
+    [
+      "7",
+      "Multiple scenarios and repeated runs",
+      "Week 11 (Oct-Nov 2026)",
+      "Generalisation evidence"
+    ],
+    [
+      "8",
+      "Performance and overhead study",
+      "Week 12 (Nov 2026)",
+      "Time and total-storage account"
+    ],
+    [
+      "9",
+      "Final report and reproducibility pack",
+      "Week 13-14 (Nov 2026)",
+      "Reviewed project report"
+    ],
+    [
+      "10",
+      "Demonstration / Viva",
+      "As scheduled (Nov-Dec 2026)",
+      "Final demonstration"
+    ]
+  ],
+  "timeline_note": "Planned Completion labels follow the supplied academic schedule and describe proposed milestones, not records of completed work. The implemented prototype checkpoint is 7 October 2026; independent traffic validation and final evaluation remain planned."
+}

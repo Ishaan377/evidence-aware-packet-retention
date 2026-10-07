@@ -1,0 +1,30 @@
+# Local Python environments and caches
+.venv/
+.qa-venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+# Credentials and machine settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+# Reproducible runtime traffic and experiment outputs
+/data/generated/
+/results/
+# Large local render history and archived document revisions
+/docs/qa/*
+!/docs/qa/template_evidence.json
+/docs/archive/
+# Local exports, publishing payloads and fresh-download checks
+/logs/agent_handoff.zip
+/logs/export_manifest.json
+/logs/github_upload_inventory.json
+/logs/github_clone_check/
+/logs/github_publish_payload*
