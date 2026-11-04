@@ -1,0 +1,552 @@
+% ---------------------------------------------------------------------------
+\bookpart{IV}{How EBR works}{The algorithm, one step at a time. Each step is explained in plain words, then with a small calculation using the project's real code.}{caqua}{Tiers \textperiodcentered\ Bits of surprise \textperiodcentered\ Automation and pivoting \textperiodcentered\ Diminishing returns \textperiodcentered\ The knapsack \textperiodcentered\ The ledger \textperiodcentered\ Verify before delete}
+
+\chapter{The idea in one picture}
+\chapintro{EBR asks one question of every byte: given a fixed storage budget, would an investigator regret losing this?}
+
+\section{The pipeline}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=4.5mm and 6mm]
+  \tikzset{step/.style={box=#1,text width=70mm,minimum height=11mm,align=left,font=\footnotesize}}
+  \node[box=muted,text width=70mm,align=left,font=\footnotesize,minimum height=9mm] (in) {\textbf{Input:} one or more PCAP files and a storage cap};
+  \node[step=cblue,below=of in] (a) {\textbf{1. Profile pass.} Read every packet once. Build flows, tag each packet with a tier, and fingerprint the protocols};
+  \node[step=caqua,below=of a] (b) {\textbf{2. Value.} Give every flow a score in bits, from rarity, automation and pivoting};
+  \node[step=cgreen,below=of b] (c) {\textbf{3. Diminishing returns.} Lower the score of repeats};
+  \node[step=cyellow,below=of c] (d) {\textbf{4. Knapsack.} Choose how much of each flow to keep, within the exact byte cap};
+  \node[step=corange,below=of d] (e) {\textbf{5. Write pass.} Copy the chosen packets, byte for byte, and write the flow ledger};
+  \node[box=muted,text width=70mm,align=left,font=\footnotesize,below=of e,minimum height=9mm] (out) {\textbf{Output:} a reduced PCAP and a compressed ledger of all flows};
+  \foreach \p/\q in {in/a,a/b,b/c,c/d,d/e,e/out} \draw[flow] (\p) -- (\q);
+  \node[note,text width=52mm,align=left,anchor=west] at ([xshift=7mm]a.east) {Uses no rules, labels or training data. Everything is learned from this capture alone.};
+  \node[note,text width=52mm,align=left,anchor=west] at ([xshift=7mm]c.east) {This step does most of the work (Chapter~\ref{ch:parts}).};
+  \node[note,text width=52mm,align=left,anchor=west] at ([xshift=7mm]d.east) {The cap is never exceeded, and the ledger counts against it.};
+  \node[note,text width=52mm,align=left,anchor=west] at ([xshift=7mm]e.east) {Standard tools can open the result.};
+\end{tikzpicture}
+\caption{The EBR pipeline. Chapter~\ref{ch:verify} adds an optional checking loop around it.}
+\end{figure}
+
+\section{Why two passes?}
+The October version held every packet in memory, which is why it could not scale. EBR \textbf{streams}: it reads a packet, notes a few numbers about it, and moves on. Packet contents do not stay in memory. Only the summary of each flow and a little information per packet remain.
+
+The first pass decides. The second pass simply copies the chosen packets from the original file to the new one. With this design, the whole 11.3 GB first test was profiled and scored in about 231 seconds of processing time, roughly 20 seconds per gigabyte.
+
+\section{What makes it ``evidence based''?}
+Each byte is kept according to how much evidence it adds. That evidence is measured in bits of surprise, then discounted for repetition. The next six chapters take these ideas one at a time.
+
+\begin{bigidea}[EBR's value formula]
+For each flow:
+\[
+\text{value} = \bigl(1 + \max(\text{rarity},\ \text{automation}) + \text{pivot}\bigr) \times \text{repetition discount}
+\]
+All parts are in bits, so they can be added without inventing arbitrary weights between them.
+\end{bigidea}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=3mm and 9mm]
+  \node[box=caqua,text width=28mm] (r) at (0,0) {\textbf{Rarity}\\how unusual?};
+  \node[box=cgreen,text width=28mm] (a) at (0,-17mm) {\textbf{Automation}\\how machine-like?};
+  \node[box=muted,text width=17mm] (m) at (41mm,-8.5mm) {take the larger};
+  \node[box=cviolet,text width=38mm] (p) at (41mm,12mm) {\textbf{Pivot}\\is a suspicious host involved?};
+  \node[box=cblue,text width=14mm] (s) at (71mm,-8.5mm) {add up\\+ 1 bit};
+  \node[box=cyellow,text width=20mm] (d) at (99mm,-8.5mm) {\textbf{Discount}\\for repeats};
+  \node[solid box=navy,text width=19mm] (v) at (127mm,-8.5mm) {\textbf{Flow value}};
+  \draw[flow] (r.east) -- (m.west); \draw[flow] (a.east) -- (m.west); \draw[flow] (m) -- (s);
+  \draw[flow] (p.east) -| (s.north); \draw[flow] (s) -- (d); \draw[flow] (d) -- (v);
+\end{tikzpicture}
+\caption{How the parts of the score combine.}
+\end{figure}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 1: keep part of a flow}
+\label{ch:tiers}
+\chapintro{Older methods keep or drop a whole packet, or a whole flow. EBR's first idea is a middle ground: every flow can be kept at one of several levels of detail.}
+
+\section{Five fidelity tiers}
+During the first pass, each packet gets a tier based on the role it plays in its flow.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={minimum height=11mm,align=center,font=\footnotesize,text=ink,inner sep=2pt}]
+  \node[fill=cviolet!18,draw=cviolet,minimum width=17mm] (t0) {\textbf{Tier 0}\\Skeleton};
+  \node[fill=cblue!14,draw=cblue,minimum width=23mm,right=0mm of t0] (t1) {\textbf{Tier 1}\\Head, 1 KB};
+  \node[fill=caqua!16,draw=caqua,minimum width=36mm,right=0mm of t1] (t2) {\textbf{Tier 2}\\Deep head, to 16 KB};
+  \node[fill=cyellow!22,draw=cyellow,minimum width=30mm,right=0mm of t2] (t3) {\textbf{Tier 3}\\Turn heads};
+  \node[fill=corange!16,draw=corange,minimum width=52mm,right=0mm of t3] (t4) {\textbf{Tier 4}\\Bulk: everything else};
+  \draw[-{Latex[length=2.3mm]},line width=.9pt,color=muted] ([yshift=-3mm]t0.south west) -- node[below,note,minimum height=0pt] {keep up to some level: more detail costs more bytes} ([yshift=-3mm]t4.south east);
+\end{tikzpicture}
+\caption{The five tiers. Choosing a level for a flow keeps that tier and every lower tier.}
+\end{figure}
+
+\begin{gtable}{What each tier holds.}
+\begin{tabularx}{\linewidth}{l l L L}
+\toprule
+\hd{Tier} & \hd{Name} & \hd{Contents} & \hd{Why it matters}\\
+\midrule
+0 & Skeleton & SYN, FIN, RST, first and last packet & Proves the connection happened, and when\\
+1 & Head & First 1 KB each way & Requests, banners and response headers\\
+2 & Deep head & First 16 KB each way & Longer headers and the start of transfers\\
+3 & Turn heads & First 1 KB of each later message & Commands sent late in a long session\\
+4 & Bulk & Everything else & File bodies and encrypted data\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+UDP has no sequence numbers, so its tiers go by packet count in each direction: the first packet is the skeleton, packets up to the 8th are the head, packets up to the 64th are the deep head, and the rest are bulk.
+
+\section{Turn heads: finding commands late in a session}
+A plain cutoff keeps the start of a connection and nothing else. Imagine an attacker with a remote shell who types the important command an hour in. A cutoff has long since stopped recording.
+
+A conversation goes back and forth, and each change of speaker starts a new \textbf{turn}. EBR's Tier 3 keeps the first kilobyte of every turn.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[yscale=.5,every node/.style={font=\footnotesize}]
+  \node[note,anchor=east] at (-2mm,.5) {Client};
+  \node[note,anchor=east] at (-2mm,-1.5) {Server};
+  \draw[paleline,line width=.5pt] (0,-.1) -- (145mm,-.1);
+  \draw[paleline,line width=.5pt] (0,-1.1) -- (145mm,-1.1);
+  \foreach \x/\w/\k in {0/8/9,20/6/6,44/5/5,70/9/9,104/4/4} {
+    \fill[cblue!22] (\x mm,0) rectangle ++(\w mm,1);
+    \fill[cyellow] (\x mm,0) rectangle ++(\k*.4mm,1);
+  }
+  \foreach \x/\w in {9/10,27/16,50/19,80/23,109/30} {
+    \fill[caqua!22] (\x mm,-1) rectangle ++(\w mm,1);
+    \fill[cyellow] (\x mm,-1) rectangle ++(3mm,1);
+  }
+  \fill[cyellow] (60mm,-3) rectangle ++(4mm,1); \node[note,anchor=west] at (65mm,-2.5) {kept by turn heads};
+  \fill[cblue!22] (100mm,-3) rectangle ++(4mm,1); \node[note,anchor=west] at (105mm,-2.5) {dropped bulk};
+\end{tikzpicture}
+\caption{A long session in time order. Each message keeps its opening bytes, so the fiftieth command is still visible.}
+\end{figure}
+
+\section{Two details that keep evidence usable}
+\textbf{Positions come from TCP sequence numbers.} A retransmitted packet lands in the same tier as the data it repeats, so a resend cannot sneak in or drop out by accident.
+
+\textbf{Pure ACKs follow the data they acknowledge.} An ACK packet carries no data of its own, but an IDS that rebuilds conversations needs to see it. So each ACK takes on the tier of the data it confirms, which keeps the kept stream readable by Suricata.
+
+\begin{recap}
+A flow can be kept at five levels of detail, from a bare skeleton to everything. This lets EBR spend bytes in small steps, instead of making an all-or-nothing choice.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 2: measuring surprise in bits}
+\label{ch:bits}
+\chapintro{EBR needs a single number for how interesting a flow is. It borrows that number from information theory, which started with Claude Shannon in 1948~\cite{shannon}.}
+
+\section{Surprise, in plain words}
+If your friend tells you the sun rose this morning, you learn nothing. If they tell you it snowed in the desert, you learn a lot. \textbf{Rare events carry more information.}
+
+The information in an event with probability $P$ is measured in \textbf{bits}:
+\[
+\text{surprise} = -\log_2 P
+\]
+One bit is the information in one fair coin flip. The formula counts how many coin flips in a row would be as unlikely as this event.
+
+\begin{gtable}{Probability and surprise.}
+\begin{tabularx}{.74\linewidth}{l l L}
+\toprule
+\hd{How often it happens} & \hd{Surprise} & \hd{As unlikely as}\\
+\midrule
+1 in 2 & 1 bit & 1 head\\
+1 in 8 & 3 bits & 3 heads in a row\\
+1 in 1,024 & 10 bits & 10 heads in a row\\
+1 in 65,536 & 16 bits & 16 heads in a row\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[guideaxis,width=105mm,height=38mm,xmode=log,xlabel={Share of flows with this trait (log scale)},ylabel={Surprise in bits},
+  xmin=.00001,xmax=1,ymin=0,ymax=18,xtick={.00001,.0001,.001,.01,.1,1},
+  xticklabels={0.001\%,0.01\%,0.1\%,1\%,10\%,100\%},ytick={0,4,8,12,16}]
+\addplot[color=caqua,line width=1.6pt,domain=.00001:1,samples=40] {-ln(x)/ln(2)};
+\end{axis}
+\end{tikzpicture}
+\caption{The rarer a trait, the more bits it is worth. A trait on half of all flows is worth just 1 bit.}
+\end{figure}
+
+\section{Five traits of a flow}
+EBR measures surprise on five traits, using the capture itself as the baseline.
+
+\begin{gtable}{The five traits EBR measures.}
+\begin{tabularx}{\linewidth}{l L L}
+\toprule
+\hd{Trait} & \hd{What it is} & \hd{Example of a surprise}\\
+\midrule
+Service & Protocol, port and application & A file-sharing service seen once\\
+Flow shape & Application, how it ended, sizes each way & A web flow with a huge upload\\
+Client--server pair & Who talked to whom & Two machines that never otherwise talk\\
+Client fingerprint & HTTP header layout and User-Agent, a hash of the TLS ClientHello, or the SSH banner & Software nobody else on the network uses\\
+Content skeleton & The structure of the request, with the words removed & An odd-looking web address\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+The content skeleton is a neat trick. It keeps punctuation and removes words:
+\begin{lstlisting}
+/page?id=7                 ->  /a?a=a
+/page?id=9                 ->  /a?a=a            (the same skeleton: boring)
+/page?id=1'%20OR%201=1--   ->  /a?a=a'%a%a=a--   (a different skeleton: surprising)
+\end{lstlisting}
+The third line is the SQL injection from Chapter 7, with spaces encoded as \texttt{\%20}, as in a real web address. EBR has no idea what SQL injection is. The attack has an unusual shape, and that is enough to raise its value.
+
+\section{Combining the traits}
+For each trait, EBR first subtracts the typical (median) surprise, because only surprise above normal counts. It then lets the most surprising trait dominate and adds a quarter of the rest:
+\[
+\text{rarity} = \text{largest excess} + 0.25 \times (\text{sum of the other excesses})
+\]
+Each trait is capped at 16 bits, so one extreme value cannot run away with the score.
+
+\section{The Good--Turing correction}
+There is a trap. Suppose a spam bot looks up thousands of different mail servers. Every name appears once, so every name looks extremely rare, and plain counting would give each of them a huge score. The budget would disappear into junk.
+
+The problem is that when almost everything is new, one more new thing is not surprising. Alan Turing and I.\,J.\ Good worked out how to handle this~\cite{good}: the share of values seen exactly once estimates the chance that the next value will be new. EBR calls this share the \textbf{novelty}, and it estimates probability as:
+\[
+P(\text{value seen } n \text{ times out of } N) = \max\!\left(\frac{n}{N},\ \frac{\text{novelty}}{n}\right)
+\]
+
+\begin{example}[Real output from the project's code, 100 flows]
+\textbf{Case A: one-offs are rare.} 99 flows share one DNS name, and 1 flow has a unique name. Novelty is 1\%. The unique name scores \textbf{6.64 bits}.
+
+\textbf{Case B: one-offs are common.} 50 flows share one name, and 50 flows each have a unique name. Novelty is 50\%. Each unique name now scores just \textbf{1.00 bit}. Plain counting would have given it 6.64 bits.
+
+So a one-off only scores highly when one-offs are rare.
+\end{example}
+
+\begin{recap}
+Rarity is measured in bits, using the capture itself as the baseline. Five traits are combined. The Good--Turing correction stops floods of unique junk from looking interesting.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 3: automation and pivoting}
+\label{ch:auto}
+\chapintro{Rarity alone has two blind spots. A flood is not rare, because its traits become common. A quiet flow from a bad host looks harmless on its own. Two more signals cover these gaps.}
+
+\section{Automation: when many flows look machine-made}
+A person does not send 10,000 near-identical connections. For each group of flows sharing a client, server, port and protocol, with at least 8 flows, EBR computes:
+\[
+\text{automation} = \log_2(n) \times \text{likeness}
+\]
+Here $n$ is the number of flows, and \textbf{likeness} (0 to 1) is the strongest of three clues that the group is machine-made:
+\begin{itemize}
+\item \textbf{Same sizes:} the flows are nearly identical in size.
+\item \textbf{Regular timing:} the gaps between flows are even, like a clock.
+\item \textbf{Failures:} a large share of the flows failed (S0, REJ or RSTO).
+\end{itemize}
+
+\begin{example}[A brute-force group]
+1,024 login attempts from one client to one server, nearly all the same size, gives likeness close to 1 and automation of about $\log_2(1024) \times 1 = $ \textbf{10 bits}. That is as much as a 1-in-1,024 rare event, even though each attempt looks common.
+\end{example}
+
+\textbf{Scanners get the same treatment.} A client whose failed attempts reach many different endpoints scores $\log_2$ of the number of endpoints, even if each endpoint saw only one flow.
+
+\section{Pivoting: spreading suspicion like an investigator}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=7mm and 22mm]
+  \node[solid box=corange,minimum width=28mm,minimum height=12mm] (a) {\textbf{Suspicious host}\\made surprising flows};
+  \node[box=corange,minimum width=28mm,minimum height=10mm,right=of a,yshift=9mm] (q) {Its quiet flows\\also get lifted};
+  \node[box=cviolet,minimum width=28mm,minimum height=10mm,right=of a,yshift=-9mm] (v) {\textbf{Attacked host}\\the victim};
+  \node[box=cviolet,text width=32mm,minimum height=10mm,right=of v] (n) {Its next connections to rare peers, for 30 minutes};
+  \draw[flowc=corange] (a.east) -- node[above,note,sloped] {weight 0.5} (q.west);
+  \draw[flowc=corange] (a.east) -- node[below,note,sloped] {attack} (v.west);
+  \draw[flowc=cviolet] (v) -- node[above,note] {0.25} (n);
+\end{tikzpicture}
+\caption{Pivoting. Suspicion spreads to everything a suspicious host touched, and to what its victims did next.}
+\end{figure}
+
+An investigator who distrusts a host looks at everything it touched, so EBR does too, in two ways:
+\begin{enumerate}
+\item Suspicion spreads from a host to all of its flows, with half weight. Quiet flows from a bad host get a lift.
+\item If a host was attacked, its next connections to rarely seen peers are lifted for 30 minutes, with quarter weight. That is where a compromise shows up.
+\end{enumerate}
+
+A host's suspicion is the \emph{total} surprise it initiated, not its single strangest flow, so one odd connection does not condemn it. Only flows above 6 bits count, and each host's score is measured relative to the typical host.
+
+\begin{honest}
+Testing later showed that pivoting made no measurable difference to signature recall on these captures (Chapter~\ref{ch:parts}). It is sensible, and it produces the useful ``suspect list'', but we cannot claim it improves retention.
+\end{honest}
+
+\begin{recap}
+Automation catches floods, using $\log_2 n$ scaled by how machine-like a group looks. Pivoting copies the way investigators follow a suspicious host.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 4: diminishing returns}
+\label{ch:diminishing}
+\chapintro{This is the most important step in EBR. Testing showed that it does more than any other part.}
+
+\section{The key insight}
+The first failed login tells you an attack is happening. The ten-thousandth tells you almost nothing new, provided you still know the count. So the value of each extra copy of a behaviour should fall.
+
+\begin{analogy}
+A photo album of a holiday needs one good picture of the beach. Fifty near-identical shots add little, and a note saying ``we took fifty'' covers the rest. But a photo of a different beach is new, even if it looks similar.
+\end{analogy}
+
+\section{Two strengths}
+That analogy explains why EBR uses two rates of decline.
+
+\begin{itemize}
+\item \textbf{Repeats fall steeply.} The same message, from the same client, to the same server. The discount is $1/\sqrt{r}$.
+\item \textbf{Variations fall gently.} New content or a new endpoint may be a new indicator of compromise, so it keeps most of its value. The discount is $1/\sqrt[4]{r}$.
+\end{itemize}
+Here $r$ is the flow's place in the line once the first 16 flows have been set aside, which the next section explains. The 17th flow has $r=2$, the 18th has $r=3$, and so on.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[guideaxis,width=108mm,height=56mm,xmode=log,xlabel={Position of the flow within its behaviour (log scale)},ylabel={Share of value kept},
+  xmin=1,xmax=10016,ymin=0,ymax=1.06,xtick={1,16,116,1016,10016},xticklabels={1,16,116,1016,10016},ytick={0,.25,.5,.75,1},yticklabels={0\%,25\%,50\%,75\%,100\%}]
+\addplot[idsfill,mark=none] coordinates {(1,1)(16,1)(17,.7071)(18,.5774)(20,.4472)(32,.2425)(116,.0995)(1016,.0316)(10016,.01)};
+\addplot[repair,mark=none] coordinates {(1,1)(16,1)(17,.8409)(18,.7598)(20,.6687)(32,.4925)(116,.3154)(1016,.1778)(10016,.1)};
+\legend{Repeat,Variation}
+\end{axis}
+\end{tikzpicture}
+\caption{The real discount curves. The first 16 flows keep full value, then value falls. By flow 10,016, a repeat is worth 1\% and a variation 10\%.}
+\end{figure}
+
+\section{How behaviours are grouped}
+EBR groups each flow in several ways, so that floods collapse from any direction:
+\begin{itemize}
+\item \textbf{Exact repeat:} same client, server, service, content and shape.
+\item \textbf{Same client:} same client and flow shape. Leaving the port out makes a thousand-port scan count as one behaviour.
+\item \textbf{Same server:} same server, service and shape. This collapses many clients hitting one target.
+\item \textbf{Silent flows:} a flow with no payload holds nothing the ledger lacks, so it falls at the steep rate too.
+\end{itemize}
+
+\section{Exemplar bursts}
+The first 16 flows of each behaviour keep their full value. This is deliberate. Rate-based IDS rules need several events close together, and spreading out single samples would never trigger them. These first flows are called \textbf{exemplars}.
+
+\section{Bit-reversed order}
+After the first 16, which flows should be favoured? If value simply fell with time, you would keep the start of a long attack and lose its end. EBR visits the remaining flows in \textbf{bit-reversed order}, so that any prefix of the list covers the whole time span.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={font=\footnotesize}]
+  \foreach \i in {0,...,7} {
+    \draw[paleline,fill=white] (\i*17mm,0) rectangle ++(14mm,7mm);
+    \node[text=muted] at (\i*17mm+7mm,3.5mm) {flow \i};
+  }
+  \foreach \i/\r/\c in {0/1/cblue,4/2/cblue,2/3/caqua,6/4/caqua,1/5/cyellow,5/6/cyellow,3/7/corange,7/8/corange} {
+    \fill[\c!80] (\i*17mm+4mm,-7mm) circle (2.5mm);
+    \node[text=white,font=\scriptsize\bfseries] at (\i*17mm+4mm,-7mm) {\r};
+  }
+  \node[note,anchor=west] at (0,-13mm) {Visiting order 0, 4, 2, 6, 1, 5, 3, 7. After 2 picks the capture is split in half, after 4 in quarters.};
+\end{tikzpicture}
+\caption{Bit-reversed order for 8 flows, taken from the real code. Numbers in circles show the order of visiting. Evidence stays spread across time however early the budget runs out.}
+\end{figure}
+
+\begin{careful}[The blind spot]
+Two login attempts with different passwords have the same size and shape. For a Telnet login, EBR's content summary looks only at the shape of the opening bytes, so the password never reaches it. As a result, a password spray looks like pure repetition, and most of it is discarded. The third sealed test exposed this, as Chapter~\ref{ch:third} explains.
+\end{careful}
+
+\begin{recap}
+Repeats lose value quickly and variations slowly. The first 16 of any behaviour keep full value for rate-based rules. Bit-reversed order keeps evidence spread across time.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 5: the knapsack}
+\label{ch:knapsack}
+\chapintro{Every flow now has a value. EBR still has to decide how much of each flow to keep. This is a classic problem in computer science.}
+
+\section{The problem}
+\begin{analogy}
+You are packing a bag with a weight limit. Each item is worth something and weighs something, and you want the most value in the bag. Now add a twist: each item comes in versions, such as a thin book, a thick book or the full encyclopaedia, and you may pack only one version of each.
+\end{analogy}
+
+That twisted version is the \textbf{multiple-choice knapsack problem}~\cite{mckp}. Here, the items are flows, the versions are fidelity levels, the weight is bytes, and the limit is the cap. Solving it perfectly is very hard at this scale. Happily, a simple greedy method comes very close.
+
+\section{How much is each tier worth?}
+Each tier is worth a share of the flow's value. The head is the most valuable by far.
+
+\begin{gtable}{The share of a flow's value earned by each tier.}
+\begin{tabular}{l c c c c c}
+\toprule
+ & \hd{Skeleton} & \hd{Head} & \hd{Deep head} & \hd{Turn heads} & \hd{Bulk}\\
+\midrule
+Readable flows & 20\% & 50\% & 15\% & 10\% & 5\%\\
+Encrypted flows & 20\% & 50\% & 1.5\% & 1\% & 0.5\%\\
+\bottomrule
+\end{tabular}
+\end{gtable}
+
+For flows that nobody can read, everything past the head is worth a tenth as much, because extra encrypted bytes reveal little. SMB counts as readable, since it is unencrypted and is where human attackers move.
+
+A flow earns value only for evidence it actually contains. A bare SYN has no head to keep, so it cannot outbid a real request just by being cheap.
+
+\section{The greedy method}
+\begin{enumerate}
+\item For each flow, work out its levels: the bytes they cost and the value they earn.
+\item Remove any level that is poor value compared with its neighbours. What is left is called the \textbf{upper concave hull}: each step up gives less value per byte than the one before.
+\item Put every step from every flow into one list, sorted by value per byte.
+\item Take steps from the top until the budget runs out.
+\end{enumerate}
+
+\begin{example}[Real numbers from the project's code]
+Take two flows with a value of 10 and the same tier sizes: 300, 1,800, 6,000, 2,000 and 40,000 bytes. Flow A is readable HTTP. Flow B is encrypted TLS.
+
+\vspace{3pt}
+{\footnotesize
+\begin{tabularx}{\linewidth}{l l r L}
+\toprule
+\hd{Step} & \hd{Flow} & \hd{Bytes added} & \hd{Value per byte}\\
+\midrule
+1 & A and B: skeleton & 300 each & 0.00667\\
+2 & A and B: head & 1,800 each & 0.00278\\
+3 & A: deep head and turns together & 8,000 & 0.00031\\
+4 & B: deep head and turns together & 8,000 & 0.00003\\
+5 & A: bulk & 40,000 & 0.00001\\
+\bottomrule
+\end{tabularx}}
+\vspace{3pt}
+
+With 13,000 bytes to spend, EBR takes steps 1, 2 and 3. Flow A keeps 10,100 bytes and Flow B keeps 2,100. Both had equal value, but the readable flow gets the extra budget because its bytes are worth ten times more. Tier 2 merges with Tier 3 because, alone, it is poorer value than the step after it.
+\end{example}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[guideaxis,width=108mm,height=42mm,xlabel={Bytes kept},ylabel={Value earned (bits)},xmin=0,xmax=52000,ymin=0,ymax=10.6,
+  scaled x ticks=false,xticklabel style={/pgf/number format/1000 sep={,}},xtick={0,10000,20000,30000,40000,50000}]
+\addplot[repair] coordinates {(0,0)(300,2)(2100,7)(10100,9.5)(50100,10)};
+\addplot[idsfill] coordinates {(0,0)(300,2)(2100,7)(10100,7.25)(50100,7.3)};
+\legend{Readable flow,Encrypted flow}
+\end{axis}
+\end{tikzpicture}
+\caption{The concave hull for the two example flows. The curve bends over quickly: the first few kilobytes earn most of the value.}
+\end{figure}
+
+\section{The scan cap}
+\label{sec:scancap}
+Flows with no payload are so cheap that a scan storm can outbid real evidence on price alone. On one red-team capture, they took 186 MB of a 227 MB packet budget. So payload-free flows may use at most \textbf{30\%} of the budget at first. Anything that real content leaves unused goes back to them afterwards.
+
+\begin{honest}
+With the cap added, the problem gains a second constraint, so the result becomes a good approximation rather than the fractional best. The cap also failed its own pre-registered test, so it is a safeguard, not a proven gain (Chapter~\ref{ch:third}).
+\end{honest}
+
+\begin{recap}
+EBR picks one level per flow. It sorts all possible steps by value per byte and takes them until the cap is reached. Readable bytes win over encrypted ones. A 30\% share stops scan storms from crowding out content.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Step 6: the flow ledger and the output}
+\chapintro{Whatever happens to a flow's packets, EBR never forgets that the flow existed.}
+
+\section{The ledger}
+EBR writes a small compressed table, the \textbf{flow ledger}, with one row per flow. Even a flow with no surviving packets is recorded.
+
+\begin{lstlisting}
+start_ns, seconds, proto, client, cport, server, sport, app, state, pkts_c2s, pkts_s2c, ...
+\end{lstlisting}
+
+This answers questions that packets alone cannot, once most of them are gone. How many login attempts were there? When did the scan start and stop? Which hosts took part?
+
+\begin{example}[Why the ledger matters]
+In the first sealed test at a 5\% cap, the ledger gave the attacker's exact flow count in all five labelled cases, including all 1,908,929 flows in the largest, with first and last times correct to within a millisecond.
+\end{example}
+
+\section{Folding, when space is tight}
+When the budget is small, even the ledger must shrink. Its share is capped at 10\% of the budget. Low-value flows are then folded into grouped rows that still keep exact totals: how many flows, when they ran, how many bytes. Individual details are lost, but the counts stay correct.
+
+\section{The ledger pays its way}
+\begin{bigidea}
+The ledger is charged against the same byte budget as the packets. If it were free, EBR would get extra storage that other methods do not get, and the comparison would be unfair.
+\end{bigidea}
+
+The ablation test showed the cost: removing the ledger raised the attacks caught at a 1\% cap from 5 to 7. That is the price of exact accounting, and a real trade-off.
+
+\section{The reduced capture}
+In the second pass, EBR copies every chosen packet into a new PCAP file, byte for byte. It changes nothing and invents nothing. It also records SHA-256 hashes, so anyone can check the files later.
+
+\section{A real example}
+Here is one real case from the demonstration at a 5\% cap, a day of denial-of-service attacks from the CSE-CIC-IDS2018 dataset.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \fill[cblue!22] (0,0) rectangle (150mm,7mm);
+  \node[anchor=west,font=\footnotesize] at (2mm,3.5mm) {\textbf{Original capture:} 932 MB, 1,143,271 packets, 51,122 flows};
+  \fill[caqua] (0,-10mm) rectangle (7.5mm,-3mm);
+  \node[anchor=west,font=\footnotesize] at (9mm,-6.5mm) {\textbf{After EBR:} 46.6 MB, 254,567 packets, 36,791 flows with packets, 687,540-byte ledger};
+\end{tikzpicture}
+\caption{Bars are drawn to scale. The reduced file holds 5\% of the bytes but 22\% of the packets, because EBR drops bulk and keeps small packets.}
+\end{figure}
+
+\begin{itemize}
+\item It kept 72\% of all flows with at least some packets, and the ledger accounts for the rest.
+\item EBR's suspect list put one of the two labelled attackers, \texttt{18.219.211.138}, first of 1,964 hosts. The other attacker ranked 167th, so the list is a helpful starting point and not a verdict.
+\item Processing this file took about 5.6 seconds.
+\end{itemize}
+
+\begin{recap}
+The ledger records every flow, folds when space is tight, and is paid for out of the budget. The reduced PCAP contains only exact copies of original packets.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Verify before delete}
+\label{ch:verify}
+\chapintro{This is the project's most successful idea, and it came from questioning an assumption that everyone in this field makes.}
+
+\section{The assumption}
+Selective retention is normally a blind bet: choose what to keep, delete the rest, and hope. Nobody finds out what was lost until an investigation fails.
+
+\begin{bigidea}
+The original capture still exists until the moment you delete it. So before deleting, you can measure what the reduced copy lost, and fix it.
+\end{bigidea}
+
+\section{The loop}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=5mm and 12mm]
+  \tikzset{st/.style={box=#1,text width=47mm,minimum height=11mm,font=\footnotesize}}
+  \node[st=cblue] (a) {\textbf{1. EBR selection}\\made without seeing any rule};
+  \node[st=caqua,below=of a] (b) {\textbf{2. Scan the original}\\with Suricata, once};
+  \node[st=caqua,below=of b] (c) {\textbf{3. Scan the reduced copy}};
+  \node[diamond,aspect=2.6,draw=corange,fill=corange!10,below=of c,font=\footnotesize,align=center,inner sep=1pt] (d) {Any detections\\lost?};
+  \node[st=cgreen,below=7mm of d] (e) {\textbf{Safe to delete the original}};
+  \node[st=corange,right=20mm of d] (f) {\textbf{4. Boost the flows behind each lost alert}\\Their value becomes 1,000 times the highest value};
+  \node[st=cyellow,above=9mm of f] (g) {\textbf{5. Select again}\\The cap still holds, and the lowest-value evidence makes room};
+  \draw[flow] (a) -- (b); \draw[flow] (b) -- (c); \draw[flow] (c) -- (d);
+  \draw[flow] (d) -- node[right,note] {no, or after 2 repairs} (e);
+  \draw[flow] (d) -- node[above,note] {yes} (f);
+  \draw[flow] (f) -- (g);
+  \draw[flow] (g.west) -- ++(-5mm,0) |- (c.east);
+\end{tikzpicture}
+\caption{The verify-before-delete loop. There are at most two repair rounds.}
+\end{figure}
+
+\section{The details}
+\textbf{First try.} EBR restores the flow that raised each lost alert, found by its five-tuple.
+
+\textbf{Second try.} If an alert is still lost after its own flow came back, it is probably a rate-based rule, which needs many flows. The next round adds up to 64 neighbouring flows between the same two hosts, within the same minutes as the alert.
+
+\textbf{The cap never moves.} A repaired flow simply outbids everything else, and the lowest-value evidence is pushed out.
+
+\section{Does this not defeat the point?}
+A fair objection is that EBR was meant to avoid depending on an IDS. The answer has two parts.
+\begin{itemize}
+\item The first selection is still free of rules, so protection against unknown threats still comes from EBR alone.
+\item The IDS only repairs what it can already see. It runs once per batch, not live, so it does not steer what gets captured.
+\end{itemize}
+
+\section{The costs}
+\begin{gtable}{What verification costs.}
+\begin{tabularx}{\linewidth}{l L}
+\toprule
+\hd{Cost} & \hd{Measured}\\
+\midrule
+Scanning time & The original must be scanned before deletion, about 62 seconds per GB on our lab setup\\
+Budget & Repaired flows used 15.6\%, 13.1\%, 5.0\% and 1.4\% of the budget at the 1, 2, 5 and 10\% caps in the third test\\
+Some cases get worse & 3 of 64 case comparisons fell in the third test, because repaired flows displace other evidence\\
+Some alerts stay lost & 249 of 2,041 usable alerts at 5\%, mostly rate-based scan rules\\
+Unknown threats & Repair only protects what a rule can already see\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{recap}
+Do not delete blindly. Scan both copies, restore what was lost, and only then delete. This stays within the same budget and was the strongest idea in the project.
+\end{recap}

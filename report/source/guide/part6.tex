@@ -1,0 +1,236 @@
+% ---------------------------------------------------------------------------
+\bookpart{VI}{What it means, and how to use it}{Whether the idea is new, where it falls short, how it could be used for real, and how to run and defend the project yourself.}{cgreen}{Novelty \textperiodcentered\ Limits \textperiodcentered\ Real-world use \textperiodcentered\ Running the project \textperiodcentered\ Viva questions}
+
+\chapter{What is new, and what is not}
+\label{ch:novel}
+\chapintro{``Novel'' is a word that gets people into trouble. This chapter sets out exactly what can be claimed.}
+
+\section{Related work}
+\begin{gtable}{The closest prior work, and how EBR differs.}
+\begin{tabularx}{\linewidth}{l L L}
+\toprule
+\hd{Prior work} & \hd{What it does} & \hd{How EBR differs}\\
+\midrule
+Time Machine~\cite{timemachine,timetravel} & A per-connection cutoff, with storage classes an IDS can adjust & Value-driven levels per flow, no IDS needed, an exact byte cap, and turn heads\\
+XNET~\cite{xnet} & Dynamic sampling at very high speed, favouring rare destinations and DNS & Learns from the capture alone, reads content, and optimises against a byte budget. XNET runs live, while EBR runs offline\\
+Conditional logging~\cite{suricata}, IDS-triggered PCAP~\cite{sanspcap} & Keep traffic that matches rules & No rules at selection time, so later detections stay possible\\
+TrimPCAP~\cite{trimpcap}, selective capping~\cite{capping} & Fixed trimming per session or packet & Trim depth varies per flow according to value\\
+Patents on value-based retention & Value-based retention as a general concept & Retaining by value is not new. These were seen through search summaries, not read in full\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{The claim you can defend}
+\begin{bigidea}
+In a bounded literature search, we found no published method that combines signature-free surprisal with Good--Turing correction, two-level diminishing returns, per-flow fidelity selection as a knapsack, and a budget-charged ledger, or that verifies a reduction against an IDS and repairs it inside the same budget before deletion.
+\end{bigidea}
+
+The word that matters is \emph{combines}. The individual ideas have relatives, and the contribution lies in how they are put together and how they were tested. Two contributions stand out:
+\begin{enumerate}
+\item \textbf{Behaviour-aware diminishing returns}, which the ablation study shows makes retention work under a tight cap.
+\item \textbf{Verify before delete inside a fixed budget}, which gave the largest sealed-tested gain.
+\end{enumerate}
+
+\section{Claims you should not make}
+\begin{careful}
+\begin{itemize}
+\item \textbf{``This has never been done.''} A bounded search cannot show that.
+\item \textbf{``Value-based retention is a new idea.''} The patents above contradict this.
+\item \textbf{``EBR beats an IDS.''} Two small tests and mixed results on alert instances cannot show this in general.
+\item \textbf{``Repair works on unknown attacks.''} It only protects what a rule can already see.
+\end{itemize}
+\end{careful}
+
+\begin{recap}
+The combination is new as far as a bounded search can tell. Verify before delete is the strongest novel angle, and it is the one with sealed evidence behind it.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{The limits of EBR}
+\chapintro{Every method has limits. Knowing them is a sign that you understand the work.}
+
+\begin{gtable}{Known limitations.}
+\begin{tabularx}{\linewidth}{l L}
+\toprule
+\hd{Limit} & \hd{What it means}\\
+\midrule
+Not an intrusion detector & The suspect list helps triage. It is not proof of compromise\\
+Discarded data is gone & Bulk file contents and most encrypted payload cannot be recovered from the reduced copy\\
+Works offline & It makes two passes over a finished capture. A live version is future work\\
+Reads classic PCAP & PCAPNG files must be converted first\\
+Login sprays look like repeats & Diminishing returns cannot see that identical-looking logins carry different passwords\\
+Rate-based rules are hard to repair & They need many flows close together, which can cost more than the budget allows\\
+Low-and-slow attacks are harder & A handful of quiet flows produce little surprise to work with\\
+The scan cap is unproven & It failed its test. Treat it as a safeguard\\
+Repair needs an IDS and time & The original must be scanned before deletion\\
+The tests are small & A few independent cases, so intervals are wide. Many come from one generated lab dataset\\
+Settings are design choices & Tier weights and powers were tuned on development data and could suit other networks less well\\
+A rule match is not attribution & A ``Ponmocup'' alert means a rule matched, not that Ponmocup was present\\
+Detection is not investigation & We measured what an IDS can find. We did not measure what a human analyst can reconstruct\\
+Reduced files can raise new alerts & Missing packets can change what an IDS sees. Every method showed a few of these\\
+Hashes are not chain of custody & They show files have not changed, not that evidence would be admissible\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+% ---------------------------------------------------------------------------
+\chapter{Could this work in the real world?}
+\chapintro{EBR is a research prototype. This chapter sketches a real deployment, and that design is untested.}
+
+\section{A three-tier storage design}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=5mm and 10mm]
+  \tikzset{st/.style={box=#1,text width=40mm,minimum height=20mm,font=\footnotesize,align=left}}
+  \node[st=corange] (h) {\textbf{Hot: days}\\Full packets\\Expensive, kept briefly\\All evidence available};
+  \node[st=caqua,right=of h] (w) {\textbf{Warm: months}\\EBR-reduced PCAP with ledger, 1--10\% of the size\\Most detections survive};
+  \node[st=cblue,right=of w] (c) {\textbf{Cold: years}\\Flow ledger only\\Tiny\\Who talked to whom};
+  \draw[flow] (h) -- node[above,note] {nightly} (w);
+  \draw[flow] (w) -- node[above,note] {later} (c);
+\end{tikzpicture}
+\caption{A proposed way to use EBR. The storage budget buys longer memory, not less evidence.}
+\end{figure}
+
+For the same disk space, a 5\% cap means keeping twenty days of reduced evidence for each day of full recording. EBR is a way of buying time.
+
+\section{Can it keep up?}
+\begin{example}[Rough arithmetic from our measurements]
+EBR took about 20 seconds per GB to profile and score, and Suricata about 62 seconds per GB to scan. That is roughly 12 MB per second, so one machine like ours could keep up with about 100 megabits per second of sustained traffic. A full 1 gigabit link would need about ten times that. These figures come from different runs, so this is an estimate.
+\end{example}
+
+\section{What would come next}
+\begin{enumerate}
+\item \textbf{See credentials.} Make content comparison notice login attempts with different passwords, so sprays stop looking like repeats. This is the most valuable next step.
+\item \textbf{Retest the blind-spot estimate} on captures with more later-published rules.
+\item \textbf{Try other networks}, especially a real organisation's traffic, and build a streaming version.
+\item \textbf{Measure real analysts.} Give investigators reduced evidence and time how well they do.
+\item \textbf{Simplify.} Test whether a smaller EBR, without the parts that showed no benefit, does as well.
+\end{enumerate}
+
+\begin{recap}
+EBR suits a nightly batch that turns a short full-packet buffer into months of reduced evidence. Large links would need batches running across several machines, and the real-world design is untested.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Running the project yourself}
+\label{ch:run}
+\chapintro{Everything needed to show the project working, and where to find things.}
+
+\section{What is in the folder}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={font=\footnotesize,anchor=west,inner sep=1.5pt},node distance=0mm]
+  \def\row#1#2#3{\node at (#1,#2) {#3};}
+  \row{0}{0}{\textbf{IS project/}}
+  \row{.4}{-.5}{\texttt{START\_HERE.md}\quad\textcolor{muted}{the first file to open}}
+  \row{.4}{-1}{\texttt{Run\_FORENSIC\_DEMO.cmd}\quad\textcolor{muted}{double-click to run the demonstration}}
+  \row{.4}{-1.5}{\texttt{EBR\_ALGORITHM.md}\quad\textcolor{muted}{technical summary and viva answers}}
+  \row{.4}{-2}{\texttt{report/}\quad\textcolor{muted}{this guide and the IEEE paper, with their sources}}
+  \row{.4}{-2.5}{\texttt{final/}\quad\textcolor{muted}{all the working code, data and results}}
+  \row{.9}{-3}{\texttt{ebr/}\quad\textcolor{muted}{the algorithm: profile, value, allocate, retain, verify, baselines, forensic, report}}
+  \row{.9}{-3.5}{\texttt{lab/}\quad\textcolor{muted}{Suricata lab setup and checks}}
+  \row{.9}{-4}{\texttt{tests/test\_ebr.py}\quad\textcolor{muted}{45 automated tests}}
+  \row{.9}{-4.5}{\texttt{data/forensic/}\quad\textcolor{muted}{the captures}}
+  \row{.9}{-5}{\texttt{results/forensic/}\quad\textcolor{muted}{every test's saved results and reports}}
+  \row{.9}{-5.5}{\texttt{results/forensic\_demo/}\quad\textcolor{muted}{two finished demonstration runs}}
+  \row{.9}{-6}{\texttt{forensic\_demo.py}\quad\textcolor{muted}{the demonstration}}
+  \row{.9}{-6.5}{\texttt{forensic\_test.py}\quad\textcolor{muted}{the main test harness}}
+  \row{.9}{-7}{\texttt{sealed3\_plan.json}, \texttt{FREEZE*.json}\quad\textcolor{muted}{the pre-registered plan and the seals}}
+\end{tikzpicture}
+\caption{The project folder.}
+\end{figure}
+
+\section{The demonstration}
+The demonstration shrinks real captures with EBR, then has Suricata investigate what is left.
+
+\begin{lstlisting}
+python -B final/forensic_demo.py --quick       one 1.5 GB case, about a minute
+python -B final/forensic_demo.py               11.3 GB with labelled attacks, 5% cap
+python -B final/forensic_demo.py --sealed      7 GB never seen during tuning
+python -B final/forensic_demo.py --cap 0.02    a harder cap
+\end{lstlisting}
+
+Or double-click \texttt{Run\_FORENSIC\_DEMO.cmd}. The report opens in your browser when it finishes.
+
+\begin{gtable}{Demonstration results already saved in the project, at a 5\% cap.}
+\begin{tabularx}{\linewidth}{L l c c}
+\toprule
+\hd{Run} & \hd{Reduced} & \hd{Signatures kept} & \hd{Labelled attacks}\\
+\midrule
+Default, labelled captures & 11.28 GB to 564.2 MB (95.0\% smaller) & 143 of 147 & 8 of 8\\
+\texttt{--sealed}, unseen captures & 7.03 GB to 296.0 MB (95.8\% smaller) & 82 of 87 & 1 of 1\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{careful}[What the demonstration does and does not show]
+The demonstration runs \textbf{EBR alone}, without the repair loop, so do not present its numbers as the 99.6\% result. The default captures also helped shape the current version, so that run is a demonstration and not a clean test. Three labelled attacks in it raise no alert even on the complete capture.
+\end{careful}
+
+\section{Checking the work}
+\begin{lstlisting}
+python -B -m unittest final/tests/test_ebr.py    the 45 automated tests
+python -B final/freeze.py check v3               recompute the seal of the third test
+\end{lstlisting}
+
+\section{Setting up on a new PC}
+The demonstration needs the Suricata lab. On a Windows PC with WSL 2, create it once, then fetch the captures:
+\begin{lstlisting}
+powershell -ExecutionPolicy Bypass -File final\lab\setup_lab.ps1
+python -B final/fetch_forensic_data.py
+\end{lstlisting}
+
+\section{Where to find each result}
+\begin{gtable}{Saved reports.}
+\begin{tabularx}{\linewidth}{l L}
+\toprule
+\hd{Result} & \hd{File}\\
+\midrule
+Third sealed test & \texttt{final/results/forensic/sealed3/report.html}\\
+Second sealed test & \texttt{final/results/forensic/sealed2/report.html}\\
+First sealed test & \texttt{final/results/forensic/test/report.html}\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+% ---------------------------------------------------------------------------
+\chapter{Viva questions}
+\chapintro{The questions you are most likely to be asked, with short answers you can say out loud. Read them aloud once before the viva.}
+
+\newcommand{\qa}[2]{\paragraph{Q.\,#1}\mbox{}\par\vspace{1pt}#2\par}
+
+\section{The basics}
+\qa{What problem does this project solve?}{Full packet captures are the best evidence after an attack, but they are too large to keep for long. We reduce them to a fixed cap of 1 to 10\% while keeping the evidence an investigator needs.}
+\qa{What is EBR, in one sentence?}{It is an algorithm that decides how much of each network conversation to keep, based on how much evidence those bytes add, measured in bits of surprise and discounted for repetition.}
+\qa{Why not just use gzip?}{Gzip keeps everything, but it still needed about 40--56\% of the original size on our test sets. EBR reaches 1--10\% by choosing what to give up, and the two can be combined.}
+\qa{What does ``evidence-based'' mean here?}{Each byte is kept according to how much evidence it adds. It does not mean that EBR detects attacks.}
+\qa{Isn't this just anomaly detection?}{It uses anomaly signals, but its output is a retention decision. A wrong guess costs a few kilobytes of storage, not an analyst's time, so imperfect scores are affordable.}
+
+\section{The algorithm}
+\qa{Why measure value in bits?}{Rarity, automation and pivoting then share one unit, so they can be combined without arbitrary weights between them.}
+\qa{Why does Good--Turing matter?}{Without it, a spam bot's thousands of unique DNS names all look very rare and take the whole budget. It accounts for the fact that if most values are unique, a new unique value is expected.}
+\qa{Which part matters most?}{Diminishing returns. Removing it cut signature recall at a 1\% cap from 88\% to 52\%. Pivoting and turn heads showed no measurable benefit here, so a simpler version may do just as well.}
+\qa{Why give the first 16 flows full value?}{Rate-based IDS rules need several events close together. Evenly spread single samples would not trigger them.}
+\qa{Is the knapsack solution optimal?}{The greedy method is optimal for the fractional relaxation, and within one flow's final segment of the true integer optimum. With the scan cap added it becomes a good heuristic. The value model is itself a design choice, so ``optimal'' only means optimal for that model.}
+\qa{Why charge the ledger to the budget?}{Otherwise EBR would get free storage that the comparators do not, and the comparison would be unfair.}
+
+\section{The tests}
+\qa{How do you know it works?}{An independent IDS with 52,778 public rules judged what survived, on 24.5 GB of real captures across three sealed tests. EBR never saw those rules.}
+\qa{What does sealed mean?}{We hashed the code, settings and scoring before the test data was opened, so nothing could be tuned to the answers. Anyone can recompute those hashes.}
+\qa{Why pre-register?}{We wrote the hypotheses and the pass rule down, hashed them, and only then opened the data. That stops results being explained away afterwards.}
+\qa{Did you tune it on the test data?}{No. Tuning used development cases only. Each test used captures opened after the freeze was recorded.}
+\qa{Is EBR better than everything else?}{Not on its own. It led an IDS in the first two tests, but on scan-dominated captures it fell well behind at 1\% and 2\%. With the repair loop, it beat the IDS method at 2\%, 5\% and 10\% in a pre-registered sealed test, and the 1\% result was inconclusive. There are few cases, so this is strong evidence and not proof.}
+\qa{Did your fix work?}{Not as hoped. The scan cap fixed the capture that exposed the flaw, but it failed its pre-registered test on fresh scan-heavy captures. It helped 3 of 8 cases and hurt none on signature recall, so we keep it as a safeguard.}
+\qa{How many hypotheses passed?}{One of five in full. Three failed and one could not be scored. We report that as it came out, because a result is only credible if its failures are visible.}
+\qa{What was your most surprising finding?}{The ``FTP brute force'' in the dataset is 192,300 refused connections, because the server was not listening. Keeping a few exemplars and an exact count was the right forensic answer.}
+
+\section{Verify before delete}
+\qa{What is verify before delete?}{The original still exists until it is deleted. So we scan both copies, restore what was lost within the same budget, and only then delete. At a 5\% cap it kept 99.6\% of attack signatures, against 84.7\% for EBR alone.}
+\qa{Doesn't that need the IDS you were trying to avoid?}{The first selection uses no rules, so unknown threats still depend on EBR. The IDS only repairs what it can see, and it runs once per batch instead of steering capture live.}
+\qa{Does the blind-spot estimate work?}{It looked promising on unsealed data, then did worse than guessing on the few usable pairs in the sealed test. It is an open idea, not a finding.}
+
+\section{Limits and novelty}
+\qa{What is the biggest weakness?}{Login sprays. Diminishing returns treats attempts that differ only in the password as repeats, so EBR alone loses them. On one capture it lost 110 of 158 attack alert instances at a 10\% cap.}
+\qa{What exactly is novel?}{The combination, and verifying inside a fixed budget before deletion. We found no published method that does this in a bounded search. Retaining by value is not new, and we do not claim it is.}
+\qa{Would you use this in production?}{Not yet. It is an offline prototype tested on few cases. It would need testing on real networks and engineering for speed.}
+\qa{What would you do next?}{Make content comparison see credentials, so sprays stop looking like repeats. Then try other networks, build a streaming version, and measure real analysts.}

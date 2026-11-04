@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "source": "https://www.unb.ca/cic/datasets/ids-2018.html attack table. Addresses and times are copied from the published schedule; each attacker and victim is listed by every address the schedule gives it.",
+  "schedule_to_utc_hours": 4,
+  "schedule_offset_note": "Calibrated on dev_web only: attacker flows appear in UTC hours 14-15, 17-18 and 20, matching the published 10:17, 13:50 and 16:15 starts plus four hours.",
+  "address_groups": {
+    "web_server_25": [
+      "172.31.69.25",
+      "18.217.21.148"
+    ],
+    "web_server_28": [
+      "172.31.69.28",
+      "18.218.83.150"
+    ],
+    "infil_24": [
+      "172.31.69.24",
+      "18.221.148.137"
+    ],
+    "infil_13": [
+      "172.31.69.13",
+      "18.216.254.154"
+    ],
+    "bot_victims": [
+      "172.31.69.23",
+      "18.217.218.111",
+      "172.31.69.17",
+      "18.222.10.237",
+      "172.31.69.14",
+      "18.222.86.193",
+      "172.31.69.12",
+      "18.222.62.221",
+      "172.31.69.10",
+      "13.59.9.106",
+      "172.31.69.8",
+      "18.222.102.2",
+      "172.31.69.6",
+      "18.219.212.0",
+      "172.31.69.26",
+      "18.216.105.13",
+      "172.31.69.29",
+      "18.219.163.126",
+      "172.31.69.30",
+      "18.216.164.12"
+    ],
+    "ddos_sources": [
+      "18.218.115.60",
+      "18.219.9.1",
+      "18.219.32.43",
+      "18.218.55.126",
+      "52.14.136.135",
+      "18.219.5.43",
+      "18.216.200.189",
+      "18.218.229.235",
+      "18.218.11.51",
+      "18.216.24.42"
+    ]
+  },
+  "episodes": {
+    "dev_bruteforce": [
+      {
+        "id": "ftp_patator",
+        "name": "FTP brute force (Patator)",
+        "attackers": [
+          "172.31.70.4",
+          "18.221.219.4"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-14 10:32",
+        "end": "2018-02-14 12:09"
+      },
+      {
+        "id": "ssh_patator",
+        "name": "SSH brute force (Patator)",
+        "attackers": [
+          "172.31.70.6",
+          "13.58.98.64"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-14 14:01",
+        "end": "2018-02-14 15:31"
+      }
+    ],
+    "dev_web": [
+      {
+        "id": "web_bruteforce_d1",
+        "name": "Web login brute force",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-22 10:17",
+        "end": "2018-02-22 11:24"
+      },
+      {
+        "id": "web_xss_d1",
+        "name": "Cross-site scripting",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-22 13:50",
+        "end": "2018-02-22 14:29"
+      },
+      {
+        "id": "web_sqli_d1",
+        "name": "SQL injection",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-22 16:15",
+        "end": "2018-02-22 16:29"
+      }
+    ],
+    "dev_infiltration": [
+      {
+        "id": "infil_a1",
+        "name": "Infiltration, first wave",
+        "attackers": [
+          "13.58.225.34"
+        ],
+        "victims": [
+          "infil_24"
+        ],
+        "start": "2018-02-28 10:50",
+        "end": "2018-02-28 12:05"
+      },
+      {
+        "id": "infil_a2",
+        "name": "Infiltration, second wave",
+        "attackers": [
+          "13.58.225.34"
+        ],
+        "victims": [
+          "infil_24"
+        ],
+        "start": "2018-02-28 13:42",
+        "end": "2018-02-28 14:40"
+      }
+    ],
+    "test_dos_feb15": [
+      {
+        "id": "goldeneye",
+        "name": "DoS GoldenEye",
+        "attackers": [
+          "172.31.70.46",
+          "18.219.211.138"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-15 09:26",
+        "end": "2018-02-15 10:09"
+      },
+      {
+        "id": "slowloris",
+        "name": "DoS Slowloris",
+        "attackers": [
+          "172.31.70.8",
+          "18.217.165.70"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-15 10:59",
+        "end": "2018-02-15 11:40"
+      }
+    ],
+    "test_dos_feb16": [
+      {
+        "id": "slowhttptest",
+        "name": "DoS SlowHTTPTest",
+        "attackers": [
+          "172.31.70.23",
+          "13.59.126.31"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-16 10:12",
+        "end": "2018-02-16 11:08"
+      },
+      {
+        "id": "hulk",
+        "name": "DoS Hulk",
+        "attackers": [
+          "172.31.70.16",
+          "18.219.193.20"
+        ],
+        "victims": [
+          "web_server_25"
+        ],
+        "start": "2018-02-16 13:45",
+        "end": "2018-02-16 14:19"
+      }
+    ],
+    "test_web_feb23": [
+      {
+        "id": "web_bruteforce_d2",
+        "name": "Web login brute force",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-23 10:03",
+        "end": "2018-02-23 11:03"
+      },
+      {
+        "id": "web_xss_d2",
+        "name": "Cross-site scripting",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-23 13:00",
+        "end": "2018-02-23 14:10"
+      },
+      {
+        "id": "web_sqli_d2",
+        "name": "SQL injection",
+        "attackers": [
+          "18.218.115.60"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-23 15:05",
+        "end": "2018-02-23 15:18"
+      }
+    ],
+    "test_infiltration_mar01": [
+      {
+        "id": "infil_b1",
+        "name": "Infiltration, first wave",
+        "attackers": [
+          "13.58.225.34"
+        ],
+        "victims": [
+          "infil_13"
+        ],
+        "start": "2018-03-01 09:57",
+        "end": "2018-03-01 10:55"
+      },
+      {
+        "id": "infil_b2",
+        "name": "Infiltration, second wave",
+        "attackers": [
+          "13.58.225.34"
+        ],
+        "victims": [
+          "infil_13"
+        ],
+        "start": "2018-03-01 14:00",
+        "end": "2018-03-01 15:37"
+      }
+    ],
+    "test_bot_mar02": [
+      {
+        "id": "bot_a1",
+        "name": "Bot C2 (Ares/Zeus), first window",
+        "attackers": [
+          "18.219.211.138"
+        ],
+        "victims": [
+          "bot_victims"
+        ],
+        "start": "2018-03-02 10:11",
+        "end": "2018-03-02 11:34"
+      },
+      {
+        "id": "bot_a2",
+        "name": "Bot C2 (Ares/Zeus), second window",
+        "attackers": [
+          "18.219.211.138"
+        ],
+        "victims": [
+          "bot_victims"
+        ],
+        "start": "2018-03-02 14:24",
+        "end": "2018-03-02 15:55"
+      }
+    ],
+    "sealed2_ddos_feb21": [
+      {
+        "id": "ddos_loic_udp",
+        "name": "DDoS LOIC-UDP",
+        "attackers": [
+          "ddos_sources"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-21 10:09",
+        "end": "2018-02-21 10:43"
+      },
+      {
+        "id": "ddos_hoic",
+        "name": "DDoS HOIC",
+        "attackers": [
+          "ddos_sources"
+        ],
+        "victims": [
+          "web_server_28"
+        ],
+        "start": "2018-02-21 14:05",
+        "end": "2018-02-21 15:05"
+      }
+    ]
+  }
+}

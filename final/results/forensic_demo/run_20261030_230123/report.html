@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Forensic Demo Report</title><style>
+:root{color-scheme:light;--surface:#fcfcfb;--page:#f9f9f7;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--axis:#c3c2b7;--ring:rgba(11,11,11,.10);
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--good:#006300;--bad:#d03b3b;--note:#52514e;--wash:#f0efec}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--surface:#1a1a19;--page:#0d0d0d;--ink:#f0efec;--ink2:#c3c2b7;--muted:#a3a198;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--good:#0ca30c;--bad:#e66767;--note:#c3c2b7;--wash:#262624}}
+:root[data-theme="dark"]{color-scheme:dark;--surface:#1a1a19;--page:#0d0d0d;--ink:#f0efec;--ink2:#c3c2b7;--muted:#a3a198;--grid:#2c2c2a;--axis:#383835;--ring:rgba(255,255,255,.10);
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--good:#0ca30c;--bad:#e66767;--note:#c3c2b7;--wash:#262624}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1020px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:30px;line-height:1.2;margin:0 0 10px}
+h2{font-size:21px;margin:44px 0 8px}
+h3{font-size:16px;margin:24px 0 6px}
+p{margin:8px 0;max-width:74ch}
+.lede{font-size:18px;color:var(--ink2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:24px 0}
+.tile{background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font-size:30px;line-height:1.15;font-weight:650}
+.tile span{color:var(--ink2);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:16px;margin:14px 0;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;color:var(--ink2);font-weight:600;border-bottom:1px solid var(--axis);padding:7px 10px 7px 0;vertical-align:bottom}
+td{border-bottom:1px solid var(--grid);padding:7px 10px 7px 0;vertical-align:top}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.emph td{font-weight:650;background:var(--wash)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.ok{color:var(--good);font-weight:600;white-space:nowrap}.no{color:var(--bad);font-weight:600;white-space:nowrap}.na{color:var(--note);white-space:nowrap}
+.small{font-size:14px;color:var(--ink2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2);margin:0 0 8px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+.charts .card{min-width:0}
+svg text{font:12px system-ui,-apple-system,"Segoe UI",sans-serif;fill:var(--muted)}
+svg .value{fill:var(--ink);font-weight:600}
+#tip{position:fixed;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);box-shadow:0 2px 10px rgba(0,0,0,.14);border-radius:8px;padding:8px 10px;font-size:13px;z-index:5;max-width:280px}
+</style></head><body><main><h1>Forensic test on compressed evidence</h1><p class="lede">7.03 GB of real attack captures were reduced to 296.0 MB with Evidence-Based Retention. Suricata then investigated only the reduced copy.</p><div class="tiles"><div class="tile"><b>95.8%</b><span>storage saved</span></div><div class="tile"><b>1 of 1</b><span>detectable labelled attacks still caught</span></div><div class="tile"><b>533 of 599</b><span>attack alert instances preserved</span></div><div class="tile"><b>5%</b><span>storage cap, ledger included</span></div></div><h2>Verdict for each labelled attack</h2><p>Attack windows and addresses come from the dataset publisher, not from this project. EBR saw no labels and no signatures. The suspect column is EBR's own ranking of hosts.</p><div class="card"><table><thead><tr><th>Attack</th><th>Verdict</th><th class="n">Signatures kept</th><th class="n">Flows in ledger</th><th>EBR suspect rank</th><th>Example detection on reduced copy</th></tr></thead><tbody><tr><td>DDoS LOIC-UDP</td><td><span class="na">– No rule fires</span></td><td class="n">0 of 0</td><td class="n">0</td><td>#1</td><td><span class="small"></span></td></tr><tr><td>DDoS HOIC</td><td><span class="ok">✓ Caught</span></td><td class="n">3 of 4</td><td class="n">1,082,293</td><td>#1</td><td><span class="small">ET POLICY Unsupported/Fake Internet Explorer Version MSIE 5.</span></td></tr></tbody></table></div><p class="small">1 labelled episode(s) raise no ET Open alert even on the complete capture, so an IDS test cannot score them. Their traffic is still accounted for in the flow ledger.</p><h2>What was stored</h2><div class="card"><table><thead><tr><th>Case</th><th class="n">Original</th><th class="n">Kept</th><th class="n">Packets kept</th><th class="n">Flows in capture</th><th class="n">Attack signatures kept</th></tr></thead><tbody><tr><td>sealed2_wrccdc2019</td><td class="n">600.0 MB</td><td class="n">30.0 MB</td><td class="n">146,378</td><td class="n">8,399</td><td class="n">16 of 16</td></tr><tr><td>sealed2_wrccdc2024</td><td class="n">1.00 GB</td><td class="n">28.0 MB</td><td class="n">70,138</td><td class="n">2,946</td><td class="n">15 of 15</td></tr><tr><td>sealed2_wrccdc2026</td><td class="n">1.28 GB</td><td class="n">30.4 MB</td><td class="n">81,280</td><td class="n">618</td><td class="n">0 of 0</td></tr><tr><td>sealed2_ctu_mixed1</td><td class="n">893.7 MB</td><td class="n">44.7 MB</td><td class="n">227,748</td><td class="n">53,929</td><td class="n">15 of 18</td></tr><tr><td>sealed2_ctu_mixed2</td><td class="n">526.1 MB</td><td class="n">26.3 MB</td><td class="n">113,686</td><td class="n">16,387</td><td class="n">13 of 14</td></tr><tr><td>sealed2_ddos_feb21</td><td class="n">2.73 GB</td><td class="n">136.6 MB</td><td class="n">675,761</td><td class="n">1,098,039</td><td class="n">23 of 24</td></tr></tbody></table></div><p class="small">Every retained packet is a byte-identical copy of its original record. Reduction created 22 attack alert instance(s) absent from the complete capture. Reference run: <code>sealed2</code>. Configuration SHA-256: <code>c667606cb6371008…</code>. A forensic reduction is not legal chain of custody, and the complete capture cannot be rebuilt from it.</p></main><div id="tip"></div><script>
+const tip=document.getElementById('tip');
+document.querySelectorAll('svg[data-chart]').forEach(svg=>{
+ const hit=svg.querySelectorAll('[data-tip]');
+ hit.forEach(h=>{
+  const show=e=>{tip.innerHTML=h.dataset.tip;tip.style.display='block';const r=h.getBoundingClientRect();
+   tip.style.left=Math.min(innerWidth-290,Math.max(8,r.left+r.width/2+10))+'px';tip.style.top=Math.max(8,r.top-10)+'px'};
+  h.addEventListener('mouseenter',show);h.addEventListener('focus',show);
+  h.addEventListener('mouseleave',()=>tip.style.display='none');h.addEventListener('blur',()=>tip.style.display='none');
+ })});
+</script></body></html>

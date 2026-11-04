@@ -1,0 +1,366 @@
+% ---------------------------------------------------------------------------
+\colorlet{accent}{cblue}
+\chapter{The whole project in two pages}
+\chapintro{Read this first. It gives the complete story, so that everything later has a place to fit. Do not worry if some words are new; each one is explained in later chapters.}
+
+\section{The problem}
+Computers on a network talk by sending small pieces of data called \emph{packets}. A company can record every packet that crosses its network. That recording is the best evidence it will ever have if it is attacked, because it shows exactly what happened. The trouble is size. A single busy 1 gigabit-per-second connection can produce 10.8 terabytes in one day. Nobody keeps that for long, so the recording is usually deleted within days, often before anyone knows an attack took place.
+
+\section{The question}
+Suppose you can only keep 5\% of the recording. \textbf{Which 5\% would an investigator most regret losing?}
+
+\section{Our answer: Evidence-Based Retention (EBR)}
+EBR is an algorithm. It reads a recording and decides, for every conversation in it, how much to keep. It keeps almost everything that is unusual or that shows an attacker's behaviour, and it throws away repetition and bulk. It needs no list of known attacks. It works purely from the traffic itself, using an idea from information theory: \emph{a surprising thing carries more information than an expected thing}.
+
+We then added a second idea called \textbf{verify before delete}. The original recording still exists until the moment you delete it, so you can check what your reduced copy has lost and repair the damage first.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=5mm and 7mm]
+  \node[box=cblue,text width=27mm,minimum height=18mm] (a) {\textbf{Full recording}\\100 GB of packets};
+  \node[box=caqua,text width=27mm,minimum height=18mm,right=of a] (b) {\textbf{EBR}\\decides what is worth keeping};
+  \node[box=cyellow,text width=27mm,minimum height=18mm,right=of b] (c) {\textbf{Verify}\\scan both copies, put back what was lost};
+  \node[box=cgreen,text width=27mm,minimum height=18mm,right=of c] (d) {\textbf{Reduced copy}\\5 GB, safe to store for months};
+  \draw[flow] (a) -- (b); \draw[flow] (b) -- (c); \draw[flow] (c) -- (d);
+\end{tikzpicture}
+\caption{The project in one line. The sizes are an illustration of a 5\% cap.}
+\end{figure}
+
+\section{How we tested it}
+Claims about security tools are easy to make and hard to trust, so the tests were built to be hard to fool:
+\begin{itemize}
+\item \textbf{An independent judge.} Suricata, a real intrusion detection system with 52,778 public detection rules, decides what counts as an attack. EBR never sees those rules while choosing what to keep.
+\item \textbf{Real recordings.} We used public captures from research datasets and cyber-defence competitions, 24.5 GB across the three final tests.
+\item \textbf{Sealed tests.} The code and settings were locked with digital fingerprints before the test data was opened, so nothing could be tuned to the answers.
+\item \textbf{Pre-registration.} Before the third test, we wrote down five predictions and the exact rule for passing each one.
+\end{itemize}
+
+\section{What we found}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[guideaxis,ybar,bar width=8.5mm,width=118mm,height=62mm,
+  symbolic x coords={First test,Second test,Third test},xtick=data,enlarge x limits=.22,
+  ymin=0,ymax=112,ytick={0,25,50,75,100},yticklabel={\pgfmathprintnumber{\tick}\%},
+  ylabel={Attack signatures kept at a 5\% cap},
+  nodes near coords,nodes near coords style={font=\footnotesize,color=ink,/pgf/number format/.cd,fixed,fixed zerofill,precision=1},
+  legend style={at={(1.02,.5)},anchor=west}]
+\addplot[fill=caqua,draw=caqua] coordinates {(First test,91.7)(Second test,94.4)(Third test,84.7)};
+\addplot[fill=corange,draw=corange] coordinates {(First test,86.5)(Second test,85.9)(Third test,84.9)};
+\addplot[fill=cblue,draw=cblue] coordinates {(Third test,99.6)};
+\legend{EBR alone,IDS-triggered,EBR with repair}
+\end{axis}
+\end{tikzpicture}
+\caption{Attack signatures still detectable after shrinking to 5\% of the original size. ``IDS-triggered'' is the strong existing method: it uses real detection rules to pick what to keep. Repair was only sealed-tested in the third test.}
+\end{figure}
+
+\begin{bigidea}[The headline]
+In a pre-registered sealed test, EBR with verify-before-delete kept \textbf{99.6\% of attack signatures at a 5\% cap}, against 84.9\% for the best existing method we compared with, using the same rule knowledge.
+\end{bigidea}
+
+\begin{honest}
+Only one of the five predictions passed in full. Three failed and one could not be scored. The test had only 8 scored cases, so this is strong evidence, not proof. Chapter~\ref{ch:third} goes through every verdict. Reporting those failures is part of what makes the one clear pass believable.
+\end{honest}
+
+% ---------------------------------------------------------------------------
+\bookpart{I}{Networks from zero}{What a network is, how data travels across it, and how that traffic can be recorded.}{cblue}{Computers and addresses \textperiodcentered\ Packets \textperiodcentered\ Protocols \textperiodcentered\ Flows \textperiodcentered\ PCAP files}
+
+\chapter{What is a computer network?}
+\chapintro{A network is a set of computers that can send messages to each other. Almost everything else in this book builds on four ideas: clients, servers, addresses and ports.}
+
+\section{Clients and servers}
+When you open a website, your laptop asks another computer for a page, and that computer sends it back. The one asking is the \textbf{client}. The one answering is the \textbf{server}. A server is just a computer whose job is to wait for requests.
+
+Between them sit \textbf{routers}, devices that pass messages along towards their destination, much as sorting offices pass along a letter. The internet is a huge number of networks joined by routers.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=6mm and 13mm]
+  \node[box=cblue,minimum width=24mm,minimum height=12mm] (c) {\textbf{Your laptop}\\client};
+  \node[box=cviolet,minimum width=22mm,minimum height=12mm,right=of c] (r) {\textbf{Router}\\office or home};
+  \node[box=muted,minimum width=24mm,minimum height=12mm,right=of r] (i) {\textbf{The internet}\\many routers};
+  \node[box=caqua,minimum width=24mm,minimum height=12mm,right=of i] (s) {\textbf{Web server}\\answers requests};
+  \draw[flowc=cblue] ([yshift=2mm]c.east) -- node[above,note] {request} ([yshift=2mm]r.west);
+  \draw[flowc=cblue] ([yshift=2mm]r.east) -- ([yshift=2mm]i.west);
+  \draw[flowc=cblue] ([yshift=2mm]i.east) -- ([yshift=2mm]s.west);
+  \draw[flowc=caqua] ([yshift=-2mm]s.west) -- ([yshift=-2mm]i.east);
+  \draw[flowc=caqua] ([yshift=-2mm]i.west) -- ([yshift=-2mm]r.east);
+  \draw[flowc=caqua] ([yshift=-2mm]r.west) -- node[below,note] {answer} ([yshift=-2mm]c.east);
+\end{tikzpicture}
+\caption{A client asks, a server answers, and routers carry the messages in between.}
+\end{figure}
+
+\section{IP addresses}
+Every device needs an address so messages can reach it. This is its \textbf{IP address}, usually written as four numbers from 0 to 255, such as \texttt{192.168.1.20}. Newer addresses, called IPv6, are longer, but they do the same job.
+
+Some ranges, such as those starting \texttt{192.168.} or \texttt{10.}, are \textbf{private}. They are used inside a home or company and are not reachable directly from the internet. EBR does not need to know this, but one of the methods we compare against does.
+
+\section{Ports}
+One computer can run many programs at once: a website, an email service and a file share. A \textbf{port} is a number from 0 to 65,535 that says which program a message is for.
+
+\begin{analogy}
+An IP address is the address of a block of flats. A port is the flat number. The postal service gets the letter to the building, and the flat number gets it to the right person.
+\end{analogy}
+
+Servers use well-known ports so clients know where to knock. Clients usually pick a random high number for their own side, called an \textbf{ephemeral port}.
+
+\begin{gtable}{Well-known ports you will meet in this book.}
+\begin{tabularx}{\linewidth}{lll L}
+\toprule
+\hd{Port} & \hd{Service} & \hd{Readable?} & \hd{What it does}\\
+\midrule
+22 & SSH & Encrypted & Secure remote control of a computer\\
+23 & Telnet & Plain text & Old remote control. Passwords travel in the clear\\
+25 & SMTP & Plain text & Sending email\\
+53 & DNS & Plain text & Turning names like \texttt{example.com} into IP addresses\\
+80 & HTTP & Plain text & Web pages without encryption\\
+443 & HTTPS (TLS) & Encrypted & Web pages with encryption\\
+445 & SMB & Often readable & Windows file sharing, and a favourite route for attackers moving inside a network\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{recap}
+A client asks and a server answers. Routers carry the messages. An IP address finds the computer, and a port finds the program on it.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Packets: how data really travels}
+\chapintro{Data does not travel as one long stream. It is cut into small numbered pieces. This single fact is why recording traffic is possible, and why so much of it can be thrown away.}
+
+\section{Why data is cut into pieces}
+A video or a large file is split into small pieces called \textbf{packets}, usually no larger than about 1,500 bytes. Each packet finds its own way across the network, and the receiver puts them back in order.
+
+This has real advantages. If one packet is lost, only that piece needs resending. Many people can share one connection, because everyone's packets take turns.
+
+\begin{analogy}
+Imagine posting a book by sending each page on its own numbered postcard. A card can go missing and only that one needs resending. Your cards can mix with everyone else's in the postbox. At the other end, the numbers let the reader put the pages back in order.
+\end{analogy}
+
+\section{Inside a packet}
+A packet has two parts. The \textbf{headers} are the addressing and control information, like the writing on an envelope. The \textbf{payload} is the actual content, like the letter inside.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={minimum height=15mm,align=center,font=\footnotesize,text=ink,inner sep=2pt}]
+  \node[fill=cviolet!16,draw=cviolet,minimum width=26mm] (e) {\textbf{Ethernet}\\which device\\on this wire};
+  \node[fill=cblue!14,draw=cblue,minimum width=30mm,right=0mm of e] (i) {\textbf{IP}\\source address\\destination address};
+  \node[fill=caqua!16,draw=caqua,minimum width=30mm,right=0mm of i] (t) {\textbf{TCP or UDP}\\source port\\destination port};
+  \node[fill=cyellow!20,draw=cyellow,minimum width=70mm,right=0mm of t] (p) {\textbf{Payload}\\the actual content, such as part of a web page,\\a password, or a piece of a file};
+  \draw[decorate,decoration={brace,amplitude=5pt},color=muted] ([yshift=1.5mm]e.north west) -- ([yshift=1.5mm]t.north east) node[midway,above=4pt,note,minimum height=0pt] {headers: the envelope (tens of bytes)};
+  \draw[decorate,decoration={brace,amplitude=5pt},color=muted] ([yshift=1.5mm]p.north west) -- ([yshift=1.5mm]p.north east) node[midway,above=4pt,note,minimum height=0pt] {payload: the letter (up to about 1,460 bytes)};
+\end{tikzpicture}
+\caption{A packet is nested like envelopes inside envelopes. Each layer adds its own header.}
+\end{figure}
+
+\begin{newword}
+\textbf{Header:} the control information at the front of a packet. \textbf{Payload:} the content being carried. \textbf{Metadata:} data about data, such as who talked to whom and when, without the content.
+\end{newword}
+
+\section{Units of size}
+Sizes matter throughout this book, so here they are in one place. We use the decimal units that storage makers use.
+
+\begin{gtable}{Units of data.}
+\begin{tabularx}{\linewidth}{lll L}
+\toprule
+\hd{Unit} & \hd{Size} & \hd{Roughly} & \hd{Example}\\
+\midrule
+Byte & 8 bits & One letter & The letter ``A''\\
+Kilobyte (KB) & 1,000 bytes & A short email & Half a page of text\\
+Megabyte (MB) & 1,000 KB & A photo & About 700 full-size packets\\
+Gigabyte (GB) & 1,000 MB & An hour of video & About 700,000 full-size packets\\
+Terabyte (TB) & 1,000 GB & A large hard drive & A busy link can fill ten of these in a day\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+Network speeds are measured in \emph{bits} per second, and storage in \emph{bytes}. One byte is 8 bits, which is why a ``1 gigabit'' link moves 125 megabytes each second, not 1,000.
+
+\begin{recap}
+Data travels as packets of up to about 1,500 bytes. Each has headers (the envelope) and a payload (the letter). Even when the letter is encrypted, the envelope stays readable.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Protocols: the rules of conversation}
+\chapintro{A protocol is an agreed set of rules for talking. Computers made by different companies can work together only because they follow the same protocols.}
+
+\section{Layers}
+Networking is organised in layers. Each layer does one job and relies on the layer below it. A web browser does not need to know about cables, and a cable does not need to know about web pages.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={minimum height=9mm,align=left,font=\footnotesize,text=ink,inner xsep=6pt}]
+  \node[fill=cyellow!20,draw=cyellow,minimum width=30mm] (a) {\textbf{Application}};
+  \node[fill=caqua!16,draw=caqua,minimum width=30mm,below=0mm of a] (t) {\textbf{Transport}};
+  \node[fill=cblue!14,draw=cblue,minimum width=30mm,below=0mm of t] (i) {\textbf{Internet}};
+  \node[fill=cviolet!16,draw=cviolet,minimum width=30mm,below=0mm of i] (l) {\textbf{Link}};
+  \node[right=2mm of a,anchor=west,text width=118mm,minimum height=0pt] {What the program is saying. HTTP, DNS, SMB, SSH, Telnet};
+  \node[right=2mm of t,anchor=west,text width=118mm,minimum height=0pt] {Which program, and is delivery reliable? TCP and UDP};
+  \node[right=2mm of i,anchor=west,text width=118mm,minimum height=0pt] {Which computer, anywhere in the world? IP};
+  \node[right=2mm of l,anchor=west,text width=118mm,minimum height=0pt] {Which device on this cable or Wi-Fi? Ethernet};
+\end{tikzpicture}
+\caption{Four layers of networking. The header sections in the previous chapter's packet diagram match these layers.}
+\end{figure}
+
+\section{TCP: the reliable conversation}
+\textbf{TCP} makes sure everything arrives, in order. Before sending data, the two sides shake hands. This three-way handshake is one of the most important patterns in network forensics, because of what it shows when it \emph{fails}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[yscale=.62,every node/.style={font=\footnotesize}]
+  \node[box=cblue,minimum width=26mm] (c) at (0,1) {\textbf{Client}};
+  \node[box=caqua,minimum width=26mm] (s) at (9.4,1) {\textbf{Server}};
+  \draw[muted,line width=.5pt] (0,.4) -- (0,-7.6);
+  \draw[muted,line width=.5pt] (9.4,.4) -- (9.4,-7.6);
+  \draw[flowc=cblue] (0,0) -- node[above,sloped,text=ink] {SYN: ``Can we talk?''} (9.4,-.9);
+  \draw[flowc=caqua] (9.4,-1.5) -- node[above,sloped,text=ink] {SYN-ACK: ``Yes. Can you hear me?''} (0,-2.4);
+  \draw[flowc=cblue] (0,-3) -- node[above,sloped,text=ink] {ACK: ``Yes.''} (9.4,-3.9);
+  \draw[flowc=cblue,line width=1.5pt] (0,-4.7) -- node[above,sloped,text=ink] {Data: the request} (9.4,-5.5);
+  \draw[flowc=caqua,line width=1.5pt] (9.4,-6) -- node[above,sloped,text=ink] {Data: the answer} (0,-6.8);
+  \draw[flowc=cblue] (0,-7.2) -- node[above,sloped,text=ink] {FIN: ``Finished.''} (9.4,-7.9);
+\end{tikzpicture}
+\caption{A normal TCP conversation. Control messages are carried in packets with little or no payload.}
+\end{figure}
+
+The small labels SYN, ACK, FIN and RST are \textbf{flags}, single bits in the TCP header that say what a packet is for. Every byte is also numbered with a \textbf{sequence number}, so the receiver can reorder packets and spot gaps. EBR uses these numbers to know where in a conversation each packet belongs, and it does not need to reassemble the whole conversation to do this.
+
+Conversations can end badly, and the way they fail tells a story:
+
+\begin{gtable}{How EBR labels a TCP conversation.}
+\begin{tabularx}{\linewidth}{l L L}
+\toprule
+\hd{Label} & \hd{What happened} & \hd{What it often means}\\
+\midrule
+SF & Normal finish & An ordinary conversation\\
+S0 & A SYN was sent and nothing answered & Scanning, or a dead address\\
+REJ & The server refused straight away & Scanning a closed port\\
+RSTO & The connection was reset before any data & An aborted attempt\\
+RST & Reset after some exchange & Either side gave up part way through\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{UDP: the quick note}
+\textbf{UDP} sends a packet and hopes. There is no handshake and no resending. It suits small, quick exchanges such as DNS lookups, and it also suits attackers who want to flood a target.
+
+\section{The application protocols that matter here}
+\subsection{DNS: the phone book}
+People remember names, and computers need numbers. \textbf{DNS} turns \texttt{example.com} into an IP address. Malware has to find its controller somehow, so DNS records are valuable evidence.
+
+\subsection{HTTP: the web, in plain text}
+A web request is readable text. This is a real request, and every line of it is visible to anyone recording the traffic:
+\begin{lstlisting}
+GET /page?id=7 HTTP/1.1
+Host: shop.example
+User-Agent: Mozilla/5.0
+\end{lstlisting}
+The first few lines of a conversation often hold the most useful evidence, which is why keeping only the start of a conversation works so well. Chapter~\ref{ch:tiers} builds on this.
+
+\subsection{TLS: the sealed envelope}
+\textbf{TLS} encrypts the content, and it is the S in HTTPS. A recording then shows only scrambled bytes. The headers, and some details of how the connection was set up, are still visible.
+
+\begin{bigidea}
+Encrypted traffic is nearly useless to keep in full, because nobody can read it later. Readable traffic is far more valuable per byte. EBR values the two differently.
+\end{bigidea}
+
+\subsection{Telnet, SSH and SMB}
+\textbf{Telnet} gives remote control of a device in plain text, and many cheap internet-connected devices still use it, often with factory passwords. \textbf{SSH} does the same job with encryption. \textbf{SMB} shares files on Windows networks and is a common route for attackers moving from one computer to the next.
+
+\begin{recap}
+Protocols are rules. TCP is reliable and shakes hands first. UDP just sends. DNS finds names, HTTP carries readable web traffic, and TLS seals it. How a conversation starts and ends often tells you more than its middle.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Flows: from packets to conversations}
+\label{ch:flows}
+\chapintro{Packets are the letters. A flow is the whole exchange. EBR thinks in flows, because investigators do.}
+
+\section{What a flow is}
+All the packets of one conversation share five values, the \textbf{five-tuple}: source address and port, destination address and port, and protocol. Grouping packets by these values gives a \textbf{flow}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=2mm]
+  \foreach \i/\c in {0/cblue,1/corange,2/cblue,3/caqua,4/cblue,5/corange,6/caqua,7/cblue,8/corange,9/cblue,10/caqua,11/corange} {
+    \fill[\c!75,rounded corners=1pt] (\i*5.6mm,0) rectangle ++(4.6mm,6mm);
+  }
+  \node[note,anchor=east] at (-2mm,3mm) {Packets\\on the wire};
+  \draw[flow] (34mm,-2mm) -- (34mm,-9mm);
+  \node[note,anchor=west] at (36mm,-5.5mm) {group by five-tuple};
+  \begin{scope}[yshift=-11mm]
+    \foreach \i in {0,1,2,3,4} \fill[cblue!75,rounded corners=1pt] (\i*5.6mm,-5mm) rectangle ++(4.6mm,5mm);
+    \node[anchor=west,font=\footnotesize] at (31mm,-2.5mm) {\textbf{Flow 1}\ \ 10.0.0.5:51000 $\to$ 93.1.2.3:443 TCP};
+    \foreach \i in {0,1,2,3} \fill[corange!75,rounded corners=1pt] (\i*5.6mm,-11.5mm) rectangle ++(4.6mm,5mm);
+    \node[anchor=west,font=\footnotesize] at (31mm,-9mm) {\textbf{Flow 2}\ \ 10.0.0.5:51002 $\to$ 10.0.0.9:445 TCP};
+    \foreach \i in {0,1,2} \fill[caqua!75,rounded corners=1pt] (\i*5.6mm,-18mm) rectangle ++(4.6mm,5mm);
+    \node[anchor=west,font=\footnotesize] at (31mm,-15.5mm) {\textbf{Flow 3}\ \ 10.0.0.7:53124 $\to$ 8.8.8.8:53 UDP};
+  \end{scope}
+\end{tikzpicture}
+\caption{Packets from different conversations are mixed together on the wire. The five-tuple sorts them back out.}
+\end{figure}
+
+\begin{analogy}
+A phone bill lists calls, not words: who called whom, when, and for how long. A flow record is the phone bill of a network. The packets are the recording of the call itself.
+\end{analogy}
+
+A flow ends when it finishes, or after 300 quiet seconds for TCP or 60 for UDP. A fresh handshake also starts a new flow.
+
+\section{Mice and elephants}
+\begin{bigidea}[Most flows are small, and most bytes are in a few flows]
+Network people call small flows \emph{mice} and huge ones \emph{elephants}. A movie download is one elephant holding gigabytes. A scan may be a million mice holding almost nothing. Attacks tend to live among the mice and at the start of conversations. Storage is eaten by the elephants.
+\end{bigidea}
+
+So dropping the middle of the elephants saves a great deal of space. The hard part is that some mice are noise, and some attacks hide deep inside long sessions. The rest of this book is about getting that decision right.
+
+\begin{recap}
+A flow is one conversation, identified by its five-tuple. Bytes are concentrated in a few elephants, and evidence is often concentrated in the mice and the opening bytes.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Recording traffic: packet capture}
+\chapintro{Recording every packet is called packet capture. The result is usually a PCAP file, which is the raw material of this entire project.}
+
+\section{How traffic gets recorded}
+A company places a sensor where traffic passes, such as the connection between its network and the internet. A network switch or a device called a tap copies every packet to the sensor, which writes them to disk. Users do not notice, because the sensor only listens.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=7mm and 13mm]
+  \node[box=muted,minimum width=25mm,minimum height=11mm] (n) {Internet};
+  \node[box=cviolet,minimum width=25mm,minimum height=11mm,right=of n] (t) {\textbf{Switch or tap}};
+  \node[box=cblue,minimum width=30mm,minimum height=11mm,right=of t] (o) {Company network};
+  \node[box=caqua,minimum width=30mm,minimum height=11mm,below=of t] (s) {\textbf{Capture sensor}};
+  \node[box=cyellow,minimum width=30mm,minimum height=11mm,right=of s] (d) {PCAP files on disk};
+  \draw[{Latex[length=2.3mm]}-{Latex[length=2.3mm]},line width=.9pt,color=muted] (n) -- (t);
+  \draw[{Latex[length=2.3mm]}-{Latex[length=2.3mm]},line width=.9pt,color=muted] (t) -- (o);
+  \draw[flowc=cviolet] (t) -- node[right,note] {a copy of every packet} (s);
+  \draw[flow] (s) -- (d);
+\end{tikzpicture}
+\caption{The sensor gets a copy of the traffic. Normal traffic is not interrupted.}
+\end{figure}
+
+\section{The PCAP file}
+\textbf{PCAP} stands for packet capture. A classic PCAP file is very simple: one 24-byte file header, then each packet in order, with a 16-byte record header giving its time and length.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={minimum height=12mm,align=center,font=\footnotesize,text=ink,inner sep=2pt}]
+  \node[fill=cviolet!16,draw=cviolet,minimum width=23mm] (g) {File header\\24 bytes};
+  \node[fill=cblue!14,draw=cblue,minimum width=21mm,right=0mm of g] (r1) {Record\\16 bytes};
+  \node[fill=cyellow!20,draw=cyellow,minimum width=30mm,right=0mm of r1] (p1) {Packet 1\\exact bytes};
+  \node[fill=cblue!14,draw=cblue,minimum width=21mm,right=0mm of p1] (r2) {Record\\16 bytes};
+  \node[fill=cyellow!20,draw=cyellow,minimum width=30mm,right=0mm of r2] (p2) {Packet 2\\exact bytes};
+  \node[fill=white,draw=paleline,minimum width=22mm,right=0mm of p2] {more\\packets \dots};
+\end{tikzpicture}
+\caption{A classic PCAP file. Because the format is this simple, a reduced PCAP is just a shorter list of the same untouched packets.}
+\end{figure}
+
+A newer format called PCAPNG also exists. EBR reads classic PCAP, so PCAPNG files must be converted first, and the project includes a converter. \textbf{Wireshark} is the most popular free program for looking inside these files. Open any PCAP in it and you will see the packets, headers, flags and payloads from this part of the book.
+
+\begin{bigidea}
+A reduced PCAP made by EBR is still a normal PCAP. Each kept packet is byte-for-byte identical to the original. Any standard tool, such as Wireshark or Suricata, can open it.
+\end{bigidea}
+
+\begin{recap}
+A sensor copies traffic and writes it to a PCAP file: a header followed by every packet. That file is complete, exact and very large.
+\end{recap}

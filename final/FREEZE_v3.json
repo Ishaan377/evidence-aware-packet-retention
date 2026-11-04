@@ -1,0 +1,29 @@
+{
+ "frozen_at": "2026-10-31T00:54:12",
+ "rules_sha256": "87db9268528953f871e3734498ff5597de20be1fe97edfdabaea1ac4468f6109",
+ "note": "Written before any sealed capture was opened; only their sizes and format headers were read.",
+ "files": {
+  "ebr/__init__.py": "400bdc47a3cc68f2cb2491f5e74eb500a84643b8216b58ce49866e9c326d0b08",
+  "ebr/pcapstream.py": "fd40c6905ba3fe8b2475efa27574b64f8c011a7729c77a567eda48648d98638e",
+  "ebr/profile.py": "fb1000dd5fef1bf9c371a4e5bc231f2fef2c4688838d86fb2c1edf6935997212",
+  "ebr/value.py": "af88778af8c4948e59c8be441d3eff6a8a98c2921593afa7d667f6e56931ea25",
+  "ebr/allocate.py": "4c2054b481e5c7058a6e09d0a42f273acc630302a874d9e8ebe8b77fc3ae5a72",
+  "ebr/retain.py": "a474e57876fa1a86d1cc85f18993e0af29f21402195cdcd0babb481228339f0f",
+  "ebr/baselines.py": "e96746915b22fd918d1c268c161f92977a87156a7b825b110a56257e315fb6e2",
+  "ebr/forensic.py": "abc05d310803664606869c43468a6004eda12a6d997e7df4a8273d2b09bd79e8",
+  "ebr_config.json": "c667606cb6371008ea983a13b62b32071b11cfa9f7aff2e6b0046d5cced44f4d",
+  "forensic_test.py": "417e4e0a8bdbf4179981246aa7677cb4609029288bd2c5e304f8bbdf465e5133",
+  "forensic_cases.json": "febbb624b84c5d5886b5c35a8c03383af7b52ca88cdf11f78407a846589a8641",
+  "forensic_truth.json": "100f55a2e5952c5b1c6dfe2f16da320473347ef3c6f82583fd6ad1c783b9e15c",
+  "lab/scan_batch.sh": "3a2a26d51607db31a554ebee51476e9eed4fb3ed4235468c36fac3f74c008298",
+  "lab/summarize_eve.py": "35e4022389a5107cb3f46f881a31929353e6bff50e643990a1d162a81e0e696e",
+  "lab/setup_lab.sh": "6d1da98572ee4e29fc9f43df7c058c8ff3c7a34b5e9ad7420034fb3f9fc88c2d",
+  "ebr_config_frozen.json": "c4f1eb6251ec57c713ea378eec5b15e213e56b23565c568fd5b04719608f3e17",
+  "ebr/verify.py": "bdff6d5aba642ebe7aba039d2a56bd2df8da3343bdd5aa36c429ea3013d0dc36",
+  "verify_before_delete.py": "ea5d56fe4c0bde75941685b7bf11d0f4ce4db11ecab3042464c3399a7bab3245",
+  "verify_summary.py": "5513c104f14b5ae9e03d9f9a4195eb354e76df8db5c3664ad2ae70cc9b468571",
+  "lab/check_cap_engaged.py": "69f95d553fbb52c108065ccc4376710b2d38d33e8b1ea89a788de2860113fcb8",
+  "run_sealed3.py": "5715284cf9e6b934af41295b88c49529763ec33808972dc831d47ef86ce12bae",
+  "sealed3_plan.json": "4ed642c3b75d756ecd17340cd9da0505de1a4416a7616392ef176ab827f3efa3"
+ }
+}

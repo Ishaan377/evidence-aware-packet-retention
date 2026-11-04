@@ -1,0 +1,8 @@
+# Local source captures and generated experiment files are reproducible.
+/data/downloads/
+/data/evaluation/
+/data/forensic/
+/results/
+/docs/qa/
+__pycache__/
+*.py[cod]
