@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "rationale": "Development cases are the only data used to design and tune EBR. Test cases stay unopened until the algorithm is frozen. Each CIC test case mixes the attacked host with one benign host from the same day, so attacks are a minority of the bytes.",
+  "cic_base": "https://cse-cic-ids2018.s3.ca-central-1.amazonaws.com/Original Network Traffic and Log data/",
+  "wrccdc_base": "https://archive.wrccdc.org/pcaps/",
+  "cases": {
+    "dev_ctu_neris": {
+      "split": "dev",
+      "source": "local",
+      "year": "2011",
+      "files": [
+        "neris.pcap"
+      ]
+    },
+    "dev_ctu_rbot": {
+      "split": "dev",
+      "source": "local",
+      "year": "2011",
+      "files": [
+        "rbot.pcap"
+      ]
+    },
+    "dev_ctu_donbot": {
+      "split": "dev",
+      "source": "local",
+      "year": "2011",
+      "files": [
+        "donbot.pcap"
+      ]
+    },
+    "v1_test_web": {
+      "split": "v1",
+      "source": "alias",
+      "of": "test_web_feb23",
+      "year": "2018",
+      "files": [
+        "UCAP172.31.69.28.pcap"
+      ]
+    },
+    "dev_bruteforce": {
+      "split": "dev",
+      "day": "Wednesday-14-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/UCAP172.31.69.25",
+        "pcap/capPC1-172.31.64.37",
+        "pcap/capPC1-172.31.66.110"
+      ]
+    },
+    "dev_web": {
+      "split": "dev",
+      "day": "Thursday-22-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/UCAP172.31.69.28"
+      ]
+    },
+    "dev_infiltration": {
+      "split": "dev",
+      "day": "Wednesday-28-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.24- part1",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.24-part2"
+      ]
+    },
+    "dev_wrccdc2017": {
+      "split": "dev",
+      "source": "wrccdc",
+      "year": "2017",
+      "files": [
+        "wrccdc.2017-03-24.111201000000000.pcap.gz",
+        "wrccdc.2017-03-24.111223000000000.pcap.gz"
+      ]
+    },
+    "test_dos_feb15": {
+      "split": "test",
+      "day": "Thursday-15-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/UCAP172.31.69.25",
+        "pcap/capPC1-172.31.66.111"
+      ]
+    },
+    "test_dos_feb16": {
+      "split": "test",
+      "day": "Friday-16-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/UCAP172.31.69.25-part1.pcap",
+        "pcap/capPC1-172.31.64.31"
+      ]
+    },
+    "test_web_feb23": {
+      "split": "test",
+      "day": "Friday-23-02-2018",
+      "source": "cic",
+      "members": [
+        "pcap/UCAP172.31.69.28",
+        "pcap/capPC1-172.31.64.52"
+      ]
+    },
+    "test_infiltration_mar01": {
+      "split": "test",
+      "day": "Thursday-01-03-2018",
+      "source": "cic",
+      "members": [
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.13 part1",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.13 part2",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.13 part3",
+        "pcap/capPC1-172.31.64.40"
+      ]
+    },
+    "test_bot_mar02": {
+      "split": "test",
+      "day": "Friday-02-03-2018",
+      "source": "cic",
+      "members": [
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.10",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.12",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.14",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.17",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.23",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.26",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.29",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.30",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.6",
+        "pcap/capEC2AMAZ-O4EL3NG-172.31.69.8",
+        "pcap/capPC1-172.31.64.116"
+      ]
+    },
+    "test_wrccdc2018": {
+      "split": "test",
+      "source": "wrccdc",
+      "year": "2018",
+      "files": [
+        "wrccdc.2018-03-24.012434000000000.pcap.gz",
+        "wrccdc.2018-03-24.012449000000000.pcap.gz",
+        "wrccdc.2018-03-24.012503000000000.pcap.gz",
+        "wrccdc.2018-03-24.012518000000000.pcap.gz",
+        "wrccdc.2018-03-24.012533000000000.pcap.gz"
+      ]
+    },
+    "sealed2_wrccdc2019": {
+      "split": "sealed2",
+      "source": "wrccdc",
+      "year": "2019/regionals",
+      "date": "2019-03-02",
+      "files": [
+        "wrccdc.regionals.2019-03-02.102939000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.102953000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103011000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103018000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103022000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103055000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103100000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103104000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103106000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103108000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103110000000000.pcap.gz",
+        "wrccdc.regionals.2019-03-02.103130000000000.pcap.gz"
+      ]
+    },
+    "sealed2_wrccdc2024": {
+      "split": "sealed2",
+      "source": "wrccdc",
+      "year": "2024/31",
+      "date": "2024-02-17",
+      "files": [
+        "wrccdc.2024-02-17.125251.pcap.gz",
+        "wrccdc.2024-02-17.125254.pcap.gz",
+        "wrccdc.2024-02-17.125257.pcap.gz",
+        "wrccdc.2024-02-17.125300.pcap.gz",
+        "wrccdc.2024-02-17.125304.pcap.gz",
+        "wrccdc.2024-02-17.125308.pcap.gz",
+        "wrccdc.2024-02-17.125309.pcap.gz",
+        "wrccdc.2024-02-17.125310.pcap.gz",
+        "wrccdc.2024-02-17.125311.pcap.gz",
+        "wrccdc.2024-02-17.125312.pcap.gz",
+        "wrccdc.2024-02-17.125313.pcap.gz",
+        "wrccdc.2024-02-17.125314.pcap.gz",
+        "wrccdc.2024-02-17.125315.pcap.gz",
+        "wrccdc.2024-02-17.125317.pcap.gz",
+        "wrccdc.2024-02-17.125318.pcap.gz",
+        "wrccdc.2024-02-17.125319.pcap.gz",
+        "wrccdc.2024-02-17.125320.pcap.gz",
+        "wrccdc.2024-02-17.125321.pcap.gz",
+        "wrccdc.2024-02-17.125326.pcap.gz",
+        "wrccdc.2024-02-17.125330.pcap.gz"
+      ]
+    },
+    "sealed2_wrccdc2026": {
+      "split": "sealed2",
+      "source": "wrccdc",
+      "year": "2026/quals",
+      "date": "2026-02-07",
+      "files": [
+        "wrccdc-quals.2026-02-07.1505180000.pcap.gz",
+        "wrccdc-quals.2026-02-07.1505200000.pcap.gz",
+        "wrccdc-quals.2026-02-07.1505220000.pcap.gz",
+        "wrccdc-quals.2026-02-07.1505240000.pcap.gz"
+      ]
+    },
+    "sealed2_ctu_mixed1": {
+      "split": "sealed2",
+      "source": "direct",
+      "date": "2015-07-28",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/CTU-Mixed-Capture-1/2015-07-28_mixed.pcap"
+      ]
+    },
+    "sealed2_ctu_mixed2": {
+      "split": "sealed2",
+      "source": "direct",
+      "date": "2015-09-08",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/CTU-Mixed-Capture-2/2015-09-08_mixed.pcap"
+      ]
+    },
+    "sealed2_ddos_feb21": {
+      "split": "sealed2",
+      "source": "cic",
+      "day": "Wednesday-21-02-2018",
+      "members": [
+        "pcap/UCAP172.31.69.28 part 2",
+        "pcap/capPC1-172.31.67.35"
+      ]
+    },
+    "sealed3_wrccdc2017_p75": {
+      "split": "sealed3",
+      "source": "wrccdc",
+      "year": "2017",
+      "date": "2017-03-25",
+      "files": [
+        "wrccdc.2017-03-25.031421000000000.pcap.gz",
+        "wrccdc.2017-03-25.031511000000000.pcap.gz",
+        "wrccdc.2017-03-25.031620000000000.pcap.gz"
+      ]
+    },
+    "sealed3_wrccdc2018_p75": {
+      "split": "sealed3",
+      "source": "wrccdc",
+      "year": "2018",
+      "date": "2018-03-24",
+      "files": [
+        "wrccdc.2018-03-24.062259000000000.pcap.gz",
+        "wrccdc.2018-03-24.063233000000000.pcap.gz",
+        "wrccdc.2018-03-24.064503000000000.pcap.gz"
+      ]
+    },
+    "sealed3_wrccdc2018_p25": {
+      "split": "sealed3",
+      "source": "wrccdc",
+      "year": "2018",
+      "date": "2018-03-23",
+      "files": [
+        "wrccdc.2018-03-23.070623000000000.pcap.gz",
+        "wrccdc.2018-03-23.070714000000000.pcap.gz",
+        "wrccdc.2018-03-23.070736000000000.pcap.gz"
+      ]
+    },
+    "sealed3_iot_1_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2018-05-09",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-1-1/2018-05-09-192.168.100.103.pcap"
+      ]
+    },
+    "sealed3_iot_7_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2018-07-20",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-7-1/2018-07-20-17-31-20-192.168.100.108.pcap"
+      ],
+      "max_bytes": 300000000
+    },
+    "sealed3_iot_9_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2018-07-25",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-9-1/2018-07-25-10-53-16-192.168.100.111.pcap"
+      ],
+      "max_bytes": 300000000
+    },
+    "sealed3_iot_36_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2018-12-21",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-36-1/2018-12-21-13-36-41-192.168.1.198.pcap"
+      ],
+      "max_bytes": 300000000
+    },
+    "sealed3_iot_48_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2019-02-28",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-48-1/2019-02-28-19-15-13-192.168.1.200.pcap"
+      ],
+      "max_bytes": 300000000
+    },
+    "sealed3_iot_49_1": {
+      "split": "sealed3",
+      "source": "direct",
+      "date": "2019-02-28",
+      "urls": [
+        "https://mcfp.felk.cvut.cz/publicDatasets/IoT-23-Dataset/IndividualScenarios/CTU-IoT-Malware-Capture-49-1/2019-02-28-20-50-15-192.168.1.193.pcap"
+      ],
+      "max_bytes": 300000000
+    }
+  },
+  "rationale_sealed2": "Chosen by rule before the fix was written: consecutive files from the middle of each event, untouched by either EBR version.",
+  "rationale_sealed3": "Chosen by fixed rule before any capture was opened: IoT-23 scanning-family captures from 50 MB up, first 300 MB where larger, and WRCCDC files at set positions in each year's list. A blind header screen then decides which count as scan-heavy."
+}

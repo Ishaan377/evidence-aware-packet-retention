@@ -1,0 +1,172 @@
+% ---------------------------------------------------------------------------
+\bookpart{II}{Attacks and investigators}{What attackers actually do on a network, how detection software spots them, and how investigators use recordings afterwards.}{corange}{The stages of an attack \textperiodcentered\ Intrusion detection \textperiodcentered\ Suricata and rules \textperiodcentered\ Network forensics}
+
+\chapter{What attackers do}
+\chapintro{An attack is usually a chain of steps, not one event. Each step leaves different traces in the traffic, and this is why a recording needs to keep many kinds of evidence.}
+
+\section{The chain of an attack}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=3mm and 4mm]
+  \tikzset{st/.style={solid box=#1,text width=23mm,minimum height=15mm,font=\footnotesize}}
+  \node[st=cblue] (a) {\textbf{1. Scanning}\\look for targets};
+  \node[st=cviolet,right=of a] (b) {\textbf{2. Break in}\\guess a password or use a flaw};
+  \node[st=corange,right=of b] (c) {\textbf{3. Take control}\\call home to the attacker};
+  \node[st=caqua,right=of c] (d) {\textbf{4. Move sideways}\\spread inside the network};
+  \node[st=cgreen,right=of d] (e) {\textbf{5. Act}\\steal, disrupt or flood};
+  \foreach \p/\q in {a/b,b/c,c/d,d/e} \draw[flow] (\p) -- (\q);
+  \node[note,below=2mm of a,text width=25mm] {millions of tiny failed connections};
+  \node[note,below=2mm of b,text width=25mm] {thousands of near-identical logins};
+  \node[note,below=2mm of c,text width=25mm] {few, small, regular flows};
+  \node[note,below=2mm of d,text width=25mm] {internal file-sharing traffic};
+  \node[note,below=2mm of e,text width=25mm] {large transfers or floods};
+\end{tikzpicture}
+\caption{A typical attack, with the kind of traffic each step produces.}
+\end{figure}
+
+\section{The attacks you will meet in this book}
+\subsection{Port scanning}
+A \textbf{port scan} tries many ports or addresses to see what answers. It is like walking down a street trying every door handle. Each try is tiny, often a single SYN packet, but there can be millions.
+
+\subsection{Brute force and login sprays}
+A \textbf{brute force} attack guesses passwords over and over. A \textbf{login spray} tries a short list of common passwords against many devices. To a recording, these attempts look almost identical. They have the same size and the same pattern, and the only difference is a few letters in the password. Remember this. It becomes the most important weakness of EBR in Chapter~\ref{ch:third}.
+
+\subsection{Exploits and web attacks}
+An \textbf{exploit} takes advantage of a bug. A classic example is \textbf{SQL injection}, where text typed into a website is treated as a database command:
+\begin{lstlisting}
+normal request:   /page?id=7
+attack request:   /page?id=1' OR 1=1--
+\end{lstlisting}
+\textbf{Cross-site scripting (XSS)} is a related trick that plants code in a page for other visitors to run.
+
+\subsection{Botnets and command and control}
+A \textbf{botnet} is a group of infected computers controlled by an attacker. Each infected machine, or \emph{bot}, checks in with a \textbf{command-and-control (C2)} server for orders. C2 traffic can be very small and very regular, which makes it easy to miss.
+
+Two botnet families appear in our tests. \textbf{Mirai} spread through internet-connected devices by trying factory passwords, famously including over Telnet~\cite{mirai}. \textbf{Hide and Seek} is a later botnet of the same broad kind.
+
+\subsection{Denial of service}
+A \textbf{denial-of-service (DoS)} attack overwhelms a service so real users cannot reach it. When many machines do this together it is a \textbf{distributed} attack (DDoS). Some floods are huge. Others, such as Slowloris, hold connections open very slowly.
+
+\subsection{Lateral movement}
+After getting in, a human attacker moves from computer to computer inside the network, often using SMB. This is called \textbf{lateral movement}. It is a sign that a real person is at work, and an investigator wants to see it above almost anything else.
+
+\section{Red teams}
+A \textbf{red team} is a group of skilled people who attack a network on purpose, to practise. The WRCCDC, a US student cyber-defence competition, publishes recordings of such contests. They are valuable test data because the attackers are real humans who improvise, unlike the scripted attacks of a lab dataset.
+
+\begin{recap}
+Attacks come in stages, and each stage looks different in the traffic: floods of tiny failures, repetitive logins, small regular check-ins, internal file sharing. A method that keeps only one kind of traffic will miss the others.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Intrusion detection: the guard at the door}
+\label{ch:ids}
+\chapintro{An intrusion detection system watches traffic and raises an alert when something looks like an attack. In this project it plays the role of the independent judge.}
+
+\section{What an IDS does}
+An \textbf{intrusion detection system (IDS)} reads packets and compares them with a large list of descriptions of bad behaviour. There are two broad kinds.
+
+\begin{gtable}{Two ways to detect attacks.}
+\begin{tabularx}{\linewidth}{l L L L}
+\toprule
+\hd{Kind} & \hd{How it works} & \hd{Strength} & \hd{Weakness}\\
+\midrule
+Signature & Looks for patterns known to be bad & Precise, and it explains what it found & Blind to anything with no rule yet\\
+Anomaly & Looks for what is unusual & Can notice new things & Many false alarms~\cite{outside}\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{Suricata and its rules}
+\textbf{Suricata} is a free, widely used signature-based IDS. A \textbf{rule} describes what to look for. Here is a simplified rule, written for this book:
+\begin{lstlisting}
+alert tcp any any -> any 23 (msg:"Example: Telnet login with a default password";
+      content:"admin"; sid:1000001; rev:1;)
+\end{lstlisting}
+It says: raise an alert for TCP traffic going to port 23 that contains the text \texttt{admin}. The \texttt{sid} is the rule's ID number.
+
+The tests in this project use \textbf{Emerging Threats Open (ET Open)}, a free public rule set. Our copy holds \textbf{52,778 rules}. When a rule matches, Suricata writes an \textbf{alert} with the rule's name, a category such as ``Network Trojan'', and the addresses involved.
+
+\begin{newword}
+\textbf{Rule (or signature):} a description of bad traffic. \textbf{Alert:} what the IDS produces when a rule matches. \textbf{False positive:} an alert on harmless traffic. \textbf{Attack signature (in this book):} a distinct rule from an attack category that fired on a capture.
+\end{newword}
+
+\section{Rate-based rules}
+Some rules count events. For example, ``alert if one address tries 30 ports within 60 seconds''. Such a \textbf{rate-based rule} needs many flows close together in time. If a reduced capture keeps just a few, spread out, the rule will not fire. This detail shapes two parts of EBR, the exemplar burst in Chapter~\ref{ch:diminishing} and the repair neighbours in Chapter~\ref{ch:verify}.
+
+\section{Rules arrive late}
+\begin{bigidea}
+Rules are written after someone discovers an attack. A recording made today might contain an attack for which no rule exists until next month. Anything that keeps only what today's rules recognise can never help with that later rule.
+\end{bigidea}
+
+This is the main reason EBR refuses to use rules when making its first selection. We tested this idea directly using a ``time-travel'' measure: alerts from rules published \emph{after} a capture was recorded.
+
+\begin{recap}
+An IDS compares traffic with thousands of rules. Suricata with ET Open is our judge. It is strong but limited: it only sees what a rule describes, and rules arrive after the attack.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Network forensics: the investigation}
+\chapintro{An IDS raises an alarm in the moment. Forensics is the work that comes afterwards, when someone has to work out what really happened.}
+
+\section{What investigators want to know}
+\textbf{Digital forensics} means collecting and examining data in a careful way so that its findings can be trusted~\cite{nist86}. In network forensics, the data is traffic. A typical investigation starts with a hint, such as a strange alert or a stolen file, and then works backwards through questions like these:
+\begin{itemize}
+\item \textbf{Who?} Which addresses were involved?
+\item \textbf{When?} When did it start, and how long did it last?
+\item \textbf{How?} How did the attacker get in? Which password or flaw did they use?
+\item \textbf{What next?} Which other machines did they touch after that?
+\item \textbf{How much?} What was taken, and how many attempts were made?
+\end{itemize}
+
+\begin{analogy}
+A packet recording is like CCTV. Most of the time, the footage shows nothing. After a burglary, it is priceless, and only then do you find out which hour you needed. A security office that overwrites its tapes every night will always be short of the footage it wants.
+\end{analogy}
+
+\section{Pivoting}
+Investigators do not look at traffic evenly. If one host looks bad, they look at everything it touched. This move is called a \textbf{pivot}. EBR copies this habit, as Chapter~\ref{ch:auto} explains.
+
+\section{Three kinds of evidence}
+Network evidence comes in three levels of detail, and each costs a different amount to store.
+
+\begin{gtable}{Levels of network evidence.}
+\begin{tabularx}{\linewidth}{l L L l}
+\toprule
+\hd{Level} & \hd{What it holds} & \hd{What it can answer} & \hd{Storage}\\
+\midrule
+Flow records & Who, when, how much & Who talked to whom, and how many times & Tiny\\
+Packet heads & The first bytes of each conversation & What was asked for, and which software asked & Small\\
+Full packets & Everything & Exactly what was said, in full & Huge\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+EBR uses all three levels at once. It keeps a compact record of every flow, the heads of most conversations, and full content where that is worth the bytes.
+
+\section{Hashes: digital fingerprints}
+\label{sec:hash}
+A \textbf{hash function} turns any file into a short fixed-length string. SHA-256 is the one used here. Change a single bit of the file and the hash changes completely, and nobody can practically find a different file with the same hash.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=4mm and 11mm]
+  \node[box=cblue,text width=38mm] (a) {\texttt{ebr\_config.json}\\original file};
+  \node[box=cviolet,right=of a,minimum width=22mm] (h) {SHA-256};
+  \node[box=caqua,right=of h,text width=42mm,font=\footnotesize\ttfamily] (o) {c667606c\dots ced44f4d};
+  \node[box=corange,text width=38mm,below=of a] (b) {The same file with one digit changed};
+  \node[box=cviolet,right=of b,minimum width=22mm] (h2) {SHA-256};
+  \node[box=corange,right=of h2,text width=42mm,font=\footnotesize\ttfamily] (o2) {a completely different string};
+  \draw[flow] (a) -- (h); \draw[flow] (h) -- (o);
+  \draw[flow] (b) -- (h2); \draw[flow] (h2) -- (o2);
+\end{tikzpicture}
+\caption{A hash is a fingerprint. The top line shows the real hash of our settings file, shortened.}
+\end{figure}
+
+Forensic examiners use hashes to show a file has not changed. We use them for something similar. Before each sealed test we recorded the hashes of the code and settings. Anyone can recompute them to check that nothing was altered afterwards.
+
+\begin{careful}
+A hash proves a file is unchanged. It does not prove the file is true, and it does not by itself make evidence acceptable in court. That needs a documented \textbf{chain of custody}, a record of who handled the evidence and when.
+\end{careful}
+
+\begin{recap}
+Forensics answers who, when, how and what next. Full recordings answer all of these, but storing them is expensive. Flow records are cheap, and packet heads sit in between. Hashes prove that files have not changed.
+\end{recap}

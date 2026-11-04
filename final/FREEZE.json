@@ -1,0 +1,22 @@
+{
+ "frozen_at": "2026-10-30T17:00:51",
+ "rules_sha256": "87db9268528953f871e3734498ff5597de20be1fe97edfdabaea1ac4468f6109",
+ "note": "Written before any test capture was opened.",
+ "files": {
+  "ebr/__init__.py": "400bdc47a3cc68f2cb2491f5e74eb500a84643b8216b58ce49866e9c326d0b08",
+  "ebr/pcapstream.py": "651705601704efd5d29def100b2684f093a5eb1a2adfc5991014241f3ba12672",
+  "ebr/profile.py": "fb1000dd5fef1bf9c371a4e5bc231f2fef2c4688838d86fb2c1edf6935997212",
+  "ebr/value.py": "af88778af8c4948e59c8be441d3eff6a8a98c2921593afa7d667f6e56931ea25",
+  "ebr/allocate.py": "03e2fb50ff3d8d5e686f2f49614f0bdd6b5a0cdd961b12d401eb0372aed3ae21",
+  "ebr/retain.py": "a474e57876fa1a86d1cc85f18993e0af29f21402195cdcd0babb481228339f0f",
+  "ebr/baselines.py": "e96746915b22fd918d1c268c161f92977a87156a7b825b110a56257e315fb6e2",
+  "ebr/forensic.py": "abc05d310803664606869c43468a6004eda12a6d997e7df4a8273d2b09bd79e8",
+  "ebr_config.json": "c4f1eb6251ec57c713ea378eec5b15e213e56b23565c568fd5b04719608f3e17",
+  "forensic_test.py": "042a88e580fba12c74dc6b3cd58634ff6239249be2fbd04a51b3a1b7fb98eaf0",
+  "forensic_cases.json": "b3ae9757d6556dc61ac06fe976aa6806f88f5c28b48ec3812b674993ca5d5331",
+  "forensic_truth.json": "4474ac16b2bc8811cc83b7b27a3d2eff9f9848b2494c20658d8fc8fb4fccd72e",
+  "lab/scan_batch.sh": "3a2a26d51607db31a554ebee51476e9eed4fb3ed4235468c36fac3f74c008298",
+  "lab/summarize_eve.py": "35e4022389a5107cb3f46f881a31929353e6bff50e643990a1d162a81e0e696e",
+  "lab/setup_lab.sh": "6d1da98572ee4e29fc9f43df7c058c8ff3c7a34b5e9ad7420034fb3f9fc88c2d"
+ }
+}

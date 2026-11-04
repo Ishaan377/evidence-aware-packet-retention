@@ -1,0 +1,102 @@
+% Cover
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[navy] (current page.south west) rectangle (current page.north east);
+  % A stream of packets narrowing into a small kept set
+  \begin{scope}[shift={([xshift=25mm,yshift=-118mm]current page.north west)}]
+    \pgfmathsetseed{42}
+    \foreach \row in {0,...,8} {
+      \foreach \col in {0,...,15} {
+        \pgfmathsetmacro{\shade}{22+40*rnd}
+        \fill[white!\shade!navy,rounded corners=.6pt] (\col*4.2mm,\row*4.2mm) rectangle ++(3.4mm,3.4mm);
+      }
+    }
+    \foreach \x/\y/\c in {1/7/corange,4/2/cyellow,6/5/caqua,9/1/cblue,11/7/corange,13/3/caqua,14/6/cyellow,3/4/cblue,8/8/caqua,12/0/corange} {
+      \fill[\c,rounded corners=.6pt] (\x*4.2mm,\y*4.2mm) rectangle ++(3.4mm,3.4mm);
+    }
+    \draw[white!60!navy,line width=.8pt] (72mm,-1mm) -- (92mm,12mm) -- (92mm,26mm) -- (72mm,39mm);
+    \draw[-{Latex[length=3mm,width=2.4mm]},white!70!navy,line width=1.1pt] (75mm,19mm) -- (97mm,19mm);
+    \foreach \x/\y/\c in {0/2/corange,1/1/cyellow,2/2/caqua,0/1/cblue,1/2/corange,2/1/caqua,0/0/cyellow,1/0/cblue,2/0/caqua} {
+      \fill[\c,rounded corners=.6pt] (101mm+\x*4.2mm,12.5mm+\y*4.2mm) rectangle ++(3.4mm,3.4mm);
+    }
+    \node[anchor=north west,text=white!75!navy,font=\footnotesize] at (101mm,10mm) {5\% of the size};
+    \node[anchor=north west,text=white!75!navy,font=\footnotesize] at (101mm,6mm) {99.6\% of attack signatures};
+  \end{scope}
+  \node[anchor=south west,text=cblue!60!white,font=\headfont\fontsize{13}{16}\selectfont] at ([xshift=25mm,yshift=-58mm]current page.north west) {THE COMPLETE GUIDE};
+  \node[anchor=north west,text width=165mm,text=white,align=left,font=\headfont\fontsize{38}{45}\selectfont] at ([xshift=25mm,yshift=-60mm]current page.north west) {Evidence-Based Retention};
+  \node[anchor=north west,text width=150mm,text=white!85!navy,align=left,font=\fontsize{15}{22}\selectfont] at ([xshift=25mm,yshift=-140mm]current page.north west) {How to shrink huge recordings of network traffic without losing the evidence, explained from the very first idea to the final result.};
+  \node[anchor=north west,text width=150mm,text=white!75!navy,align=left,font=\normalsize] at ([xshift=25mm,yshift=-186mm]current page.north west) {Written for complete beginners. No background in networking or security is needed.};
+  \node[anchor=south west,text width=160mm,text=white!85!navy,align=left,font=\normalsize] at ([xshift=25mm,yshift=26mm]current page.south west) {%
+    \textbf{Ishaan Suresh Mullya \ \textperiodcentered\ \ Shriya P Reddy \ \textperiodcentered\ \ Om KB}\\[3pt]
+    Information Security Lab (ICT3141), B.Tech. CCE, 5th Semester\\
+    Faculty guide: Dr. Adesh ND \ \textperiodcentered\ \ Academic Year 2026--2027};
+\end{tikzpicture}
+\null\clearpage
+
+\pagenumbering{roman}
+\chapter*{How to read this book}
+\addcontentsline{toc}{chapter}{How to read this book}
+\markright{How to read this book}
+\chapintro{This book assumes you know nothing about networks or security. Every new word is explained the first time it appears, and every word is collected in the glossary at the back.}
+
+The project in this book answers one practical question: \textbf{if a company cannot afford to keep every recording of its network traffic, which parts should it keep so that it can still investigate an attack later?}
+
+To follow the answer you need a few building blocks, so the book starts from those. Here is the route.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=3mm and 4.2mm]
+  \tikzset{route/.style={draw=#1,fill=#1!9,rounded corners=3pt,text width=19.6mm,minimum height=23mm,align=center,inner sep=2pt,font=\footnotesize,line width=.7pt}}
+  \node[route=cblue] (a) {\textbf{Part I}\\Networks from zero};
+  \node[route=corange,right=of a] (b) {\textbf{Part II}\\Attacks and investigators};
+  \node[route=cviolet,right=of b] (c) {\textbf{Part III}\\The storage problem};
+  \node[route=caqua,right=of c] (d) {\textbf{Part IV}\\How EBR works};
+  \node[route=cyellow,right=of d] (e) {\textbf{Part V}\\The tests};
+  \node[route=cgreen,right=of e] (f) {\textbf{Part VI}\\What it means, how to use it};
+  \foreach \p/\q in {a/b,b/c,c/d,d/e,e/f} \draw[flow] (\p) -- (\q);
+\end{tikzpicture}
+\caption{The route through this book. If you already know networking, start at Part III.}
+\end{figure}
+
+\section*{The coloured boxes}
+Five kinds of box appear throughout. You can skim them or read them closely.
+
+\begin{bigidea}
+The main point of a section, in a sentence or two.
+\end{bigidea}
+\begin{analogy}
+A comparison with something from ordinary life. These explain the idea, and they are not exact.
+\end{analogy}
+\begin{newword}
+Technical terms, defined in plain language.
+\end{newword}
+\begin{example}
+A small calculation you can follow with a pen. The numbers in these boxes were produced by running the project's real code.
+\end{example}
+\begin{honest}
+A place where a result was weaker than hoped, an idea failed, or a claim should not be pushed too far.
+\end{honest}
+
+\section*{A promise about the numbers}
+Every result in this book comes from the project's saved results. Where a test went badly, the book says so. Good research reports its failures, and this project had several. Chapter~\ref{ch:wrong} lists them in one place.
+
+\section*{If you are short of time}
+\begin{gtable}{Where to start, depending on what you need.}
+\begin{tabularx}{\linewidth}{l L}
+\toprule
+\hd{You have} & \hd{Read}\\
+\midrule
+Ten minutes & Chapter~1, which tells the whole story in two pages\\
+An hour & Chapters 1, 10, 11 and 13, then the headline results in Chapter~\ref{ch:third}\\
+A viva tomorrow & Chapters \ref{ch:bits}--\ref{ch:knapsack}, \ref{ch:verify}, \ref{ch:third}, \ref{ch:novel} and the viva questions in Chapter~33\\
+A demonstration to give & Chapter~\ref{ch:run}, including its warning about what the demonstration shows\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\clearpage
+\renewcommand{\contentsname}{Contents}
+{\setlength{\parskip}{0pt}\tableofcontents}
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{guide}

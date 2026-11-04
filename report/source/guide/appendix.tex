@@ -1,0 +1,209 @@
+% ---------------------------------------------------------------------------
+\colorlet{accent}{cviolet}
+\appendix
+\chapter{Glossary}
+\chapintro{Every technical term in the book, in plain words.}
+
+{\footnotesize
+\begin{longtable}{>{\raggedright\arraybackslash}p{37mm} >{\raggedright\arraybackslash}p{116mm}}
+\toprule
+\hd{Term} & \hd{Meaning}\\
+\midrule
+\endhead
+ACK & A TCP flag meaning ``I received that''.\\
+Ablation & Removing one part of a system to see what that part was contributing.\\
+Alert & What an IDS produces when a rule matches.\\
+Alert instance & In this project, one distinct combination of rule and pair of hosts.\\
+Attack signature & In this project, one distinct rule from an attack category that fired.\\
+Automation (score) & EBR's measure of how machine-made a group of flows looks.\\
+Baseline & What is normal for this capture. Also used for a simple method you compare against.\\
+Bit & The smallest unit of data. In information theory, the information in one fair coin flip.\\
+Bit-reversed order & A visiting order that keeps any prefix of a list spread evenly across it.\\
+Bootstrap & Estimating uncertainty by resampling your own data many times.\\
+Botnet & A group of infected computers controlled by one attacker.\\
+Brute force & Guessing passwords over and over.\\
+Budget, cap & The maximum size a reduced capture may have, such as 5\% of the original.\\
+Bulk & Everything in a flow past its head, deep head and turn heads.\\
+C2 & Command and control: how an attacker gives orders to infected machines.\\
+Chain of custody & A documented record of who handled evidence and when.\\
+Client & The computer that asks.\\
+Client fingerprint & A summary of the software a client seems to be using.\\
+Comparator & A method tested against yours.\\
+Compression & Shrinking a file. Lossless compression can rebuild the original exactly.\\
+Content skeleton & A flow's request with words removed and punctuation kept.\\
+Cross-site scripting & An attack that plants code in a page for other visitors to run.\\
+DDoS & A denial-of-service attack from many machines at once.\\
+Deep head & The first 16 KB of each direction of a flow (Tier 2).\\
+Development data & Data used to tune a method. Never used for final results.\\
+Diminishing returns & The idea that each extra copy of something adds less value.\\
+DNS & The internet's phone book. It turns names into IP addresses.\\
+DoS & Denial of service: overwhelming a service so real users cannot reach it.\\
+EBR & Evidence-Based Retention, the algorithm in this project.\\
+Elephant flow & A flow holding a huge number of bytes.\\
+Encryption & Scrambling data so only the intended reader can understand it.\\
+Ephemeral port & The temporary high-numbered port a client uses.\\
+ET Open & Emerging Threats Open, a free public set of detection rules.\\
+Exemplar & One of the first flows of a behaviour, kept at full value.\\
+Exploit & An attack that takes advantage of a software bug.\\
+False positive & An alert on harmless traffic.\\
+Fidelity tier & A level of detail at which part of a flow can be kept.\\
+Five-tuple & The five values that identify a flow: two addresses, two ports, one protocol.\\
+FIN & A TCP flag meaning ``I am finished''.\\
+Flow & All the packets of one conversation.\\
+Flow cutoff & A method that keeps only the first part of each flow.\\
+Flow ledger & EBR's small compressed table recording every flow.\\
+Forensics & Careful examination of data to work out what happened.\\
+Freeze & Recording the hashes of files so that any later change can be detected.\\
+Good--Turing & A way of estimating how likely rare or unseen things are.\\
+Gzip & A common lossless compression tool.\\
+Hash & A short fingerprint of a file.\\
+Head & The first 1 KB of each direction of a flow (Tier 1).\\
+Header & Control information at the front of a packet.\\
+HTTP, HTTPS & The protocol of the web. HTTPS is the encrypted version.\\
+Hull (upper concave) & The levels of a flow left after removing poor-value ones.\\
+Hypothesis & A precise prediction that a test can pass or fail.\\
+IDS & Intrusion detection system: software that raises alerts on suspicious traffic.\\
+IDS-triggered capture & Keeping only traffic that raised an alert.\\
+IP address & The number that identifies a device on a network.\\
+Knapsack problem & Choosing items of various values and sizes to fit a limit.\\
+Lateral movement & An attacker moving between computers inside a network.\\
+Ledger & See flow ledger.\\
+Login spray & Trying common passwords against many devices or accounts.\\
+Lossy reduction & Shrinking data by deliberately dropping some of it.\\
+Metadata & Data about data, such as who talked to whom and when.\\
+Mouse flow & A very small flow.\\
+Novelty (here) & The share of values in a capture that were seen exactly once.\\
+Packet & A small piece of data sent across a network.\\
+Payload & The content carried by a packet.\\
+PCAP & The standard file format for recorded packets.\\
+Pivot & Moving from one suspicious item to everything connected with it.\\
+Port & A number that picks out one program on a computer.\\
+Port scan & Trying many ports or addresses to see what answers.\\
+Pre-registration & Writing down predictions and pass rules before seeing the data.\\
+Protocol & An agreed set of rules for communicating.\\
+Rate-based rule & An IDS rule that counts events over time.\\
+Recall & The share of something that survived.\\
+Red team & People who attack a network on purpose, to practise or test defences.\\
+Repair & Restoring the flows behind lost detections, inside the same budget.\\
+Router & A device that passes messages towards their destination.\\
+Rule & A description of bad traffic used by an IDS.\\
+Sealed test & A test whose code and settings were locked before its data was opened.\\
+Sequence number & TCP's numbering of bytes, used to reorder them and detect gaps.\\
+Server & The computer that answers.\\
+SHA-256 & The hash function used in this project.\\
+Skeleton & Control packets that prove a connection happened (Tier 0).\\
+SMB & Windows file-sharing protocol.\\
+SQL injection & An attack that gets text treated as a database command.\\
+SSH & Encrypted remote control of a computer.\\
+Streaming & Processing data as it is read, without holding it all in memory.\\
+Surprisal & The information in an event, $-\log_2 P$, measured in bits.\\
+Suricata & The open-source IDS used as the judge in this project.\\
+SYN & A TCP flag meaning ``can we talk?''.\\
+TCP & The reliable transport protocol, which uses a handshake.\\
+Telnet & Old, unencrypted remote control of a device.\\
+Time travel (here) & Testing old captures with rules published later.\\
+TLS & The encryption protocol behind HTTPS.\\
+Turn & One side's stretch of talking in a conversation.\\
+Turn heads & The first 1 KB of each later turn in a flow (Tier 3).\\
+UDP & A simple transport protocol with no handshake or resending.\\
+Verify before delete & Checking and repairing a reduction before deleting the original.\\
+Wireshark & A free program for looking inside PCAP files.\\
+\bottomrule
+\end{longtable}}
+
+% ---------------------------------------------------------------------------
+\chapter{Formula sheet}
+\chapintro{Every formula in EBR on one page.}
+
+\begin{gtable}{The formulas.}
+\renewcommand{\arraystretch}{1.7}
+\begin{tabularx}{\linewidth}{l L}
+\toprule
+\hd{Name} & \hd{Formula}\\
+\midrule
+Budget & $B = \lfloor \text{cap} \times \text{original bytes} \rfloor$\\
+Probability & $P(x) = \max\bigl(n_x/N,\ \text{novelty}/n_x\bigr)$, where novelty is the share of values seen once\\
+Surprisal & $s(x) = \min\bigl(16,\ -\log_2 P(x)\bigr)$\\
+Excess & $e_t = \max\bigl(0,\ s_t - \text{median}(s_t)\bigr)$ for each trait $t$\\
+Rarity & $R = e_{(1)} + 0.25 \sum_{i>1} e_{(i)}$, where $e_{(1)}$ is the largest excess\\
+Automation & $A = \log_2(n) \times \max(1-\text{spread},\ \text{regularity},\ \text{failure share})$ for groups of $n \ge 8$ flows\\
+Host mass & $m_h = \sum 2^{\min(b-6,\ 12)}$ over flows $h$ started with $b = \max(R,A) \ge 6$ bits\\
+Host suspicion & $H_h = \max\bigl(0,\ \log_2(1+m_h) - \text{median host score}\bigr)$\\
+Pivot & $U = 0.5 \times \max(H_{\text{client}},\ H_{\text{server}})$. For a victim's next rare peers within 30 minutes, at least $0.25 \times H_{\text{attacker}}$\\
+Discount & $r^{-p}$, with $r = 1$ for the first 16 flows and then $r = \text{rank} - 15$\\
+Powers & $p = 0.5$ for repeats and silent flows, $p = 0.25$ for variations\\
+Multiplier & $M = M_{\text{repeat}} \times \min(M_{\text{client}},\ M_{\text{server}},\ M_{\text{silent}})$\\
+Flow value & $V = \bigl(1 + \max(R, A) + U\bigr) \times M$\\
+Level value & Value of a level $= V \times$ sum of the weights of occupied tiers up to that level\\
+Order of selection & Hull segments are sorted by value per byte, highest first\\
+Repair boost & A flow behind a lost alert gets $V = 1000 \times \max(V)$\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+% ---------------------------------------------------------------------------
+\chapter{Settings}
+\chapintro{The values in \texttt{final/ebr\_config.json}, which are sealed by \texttt{FREEZE\_v3.json}.}
+
+\begin{gtable}{EBR settings.}
+\begin{tabularx}{\linewidth}{l l L}
+\toprule
+\hd{Setting} & \hd{Value} & \hd{Meaning}\\
+\midrule
+\texttt{tcp\_idle\_seconds} & 300 & Quiet time that ends a TCP flow\\
+\texttt{udp\_idle\_seconds} & 60 & Quiet time that ends a UDP flow\\
+\texttt{head\_bytes} & 1,024 & Size of the head, each way\\
+\texttt{deep\_head\_bytes} & 16,384 & Size of the deep head, each way\\
+\texttt{turn\_head\_bytes} & 1,024 & Bytes kept from each later turn\\
+\texttt{udp\_tier\_packets} & 8, 64 & UDP head and deep head, in packets\\
+\texttt{tier\_weights} & 0.2, 0.5, 0.15, 0.1, 0.05 & Share of value for each tier\\
+\texttt{opaque\_bulk\_factor} & 0.1 & Multiplier past the head for unreadable flows\\
+\texttt{readable\_apps} & smb & Unencrypted protocols treated as readable\\
+\texttt{silent\_budget\_share} & 0.3 & First-pass limit for payload-free flows\\
+\texttt{rarity\_cap\_bits} & 16 & Most surprise one trait can give\\
+\texttt{rarity\_tail\_weight} & 0.25 & Weight of the less surprising traits\\
+\texttt{automation\_min\_flows} & 8 & Smallest group that can count as automated\\
+\texttt{pivot\_seed\_bits} & 6 & Flows at or above this feed host suspicion\\
+\texttt{pivot\_weight} & 0.5 & Lift from a suspicious host\\
+\texttt{pivot\_victim\_weight} & 0.25 & Lift for a victim's next moves\\
+\texttt{pivot\_window\_seconds} & 1,800 & How long the victim lift lasts\\
+\texttt{pivot\_rare\_peer\_flows} & 4 & A peer seen this often or less is rare\\
+\texttt{exemplar\_burst} & 16 & Flows of a behaviour that keep full value\\
+\texttt{repeat\_power} & 0.5 & Steep discount\\
+\texttt{spread\_power} & 0.25 & Gentle discount\\
+\texttt{base\_value\_bits} & 1.0 & Starting value of every flow\\
+\texttt{ledger\_max\_share} & 0.1 & Largest share of the budget for the ledger\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+The repair loop's settings are a boost of 1,000, up to 64 neighbouring flows, and two repair rounds.
+
+% ---------------------------------------------------------------------------
+\clearpage
+\renewcommand{\bibname}{References}
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{References}
+\markright{References}
+\footnotesize
+\setlength{\itemsep}{1.5pt}
+\bibitem{shannon} C. E. Shannon, ``A mathematical theory of communication,'' \emph{Bell Syst. Tech. J.}, vol. 27, no. 3, pp. 379--423, 1948.
+\bibitem{good} I. J. Good, ``The population frequencies of species and the estimation of population parameters,'' \emph{Biometrika}, vol. 40, nos. 3--4, pp. 237--264, 1953.
+\bibitem{mckp} P. Sinha and A. A. Zoltners, ``The multiple-choice knapsack problem,'' \emph{Oper. Res.}, vol. 27, no. 3, pp. 503--515, 1979.
+\bibitem{bootstrap} B. Efron and R. J. Tibshirani, \emph{An Introduction to the Bootstrap}. New York, NY, USA: Chapman \& Hall, 1993.
+\bibitem{timemachine} S. Kornexl, V. Paxson, H. Dreger, A. Feldmann, and R. Sommer, ``Building a time machine for efficient recording and retrieval of high-volume network traffic,'' in \emph{Proc. ACM SIGCOMM Internet Meas. Conf.}, 2005, pp. 267--272.
+\bibitem{timetravel} G. Maier, R. Sommer, H. Dreger, A. Feldmann, V. Paxson, and F. Schneider, ``Enriching network security analysis with time travel,'' in \emph{Proc. ACM SIGCOMM}, 2008, pp. 183--194.
+\bibitem{xnet} T. Papastergiou \emph{et al.}, ``XNET: Intelligent dynamic sampling for high-speed network security monitoring,'' arXiv:2608.18349, Aug. 2026.
+\bibitem{sanspcap} Z. Gaster, ``Rethinking full packet capture: Evaluating IDS-triggered PCAP,'' SANS Institute, Sep. 2026.
+\bibitem{trimpcap} E. Hjelmvik, ``Don't delete PCAP files -- trim them!'' Netresec, Dec. 2017.
+\bibitem{capping} V. Uceda, M. Rodr\'iguez, J. Ramos, J. L. Garc\'ia-Dorado, and J. Aracil, ``Selective capping of packet payloads for network analysis and management,'' in \emph{Proc. Traffic Monit. Anal. (TMA)}, LNCS 9053, 2015.
+\bibitem{suricata} Open Information Security Foundation, ``Suricata user guide.'' [Online]. Available: https://docs.suricata.io
+\bibitem{outside} R. Sommer and V. Paxson, ``Outside the closed world: On using machine learning for network intrusion detection,'' in \emph{Proc. IEEE Symp. Secur. Privacy}, 2010, pp. 305--316.
+\bibitem{mirai} M. Antonakakis \emph{et al.}, ``Understanding the Mirai botnet,'' in \emph{Proc. 26th USENIX Secur. Symp.}, 2017, pp. 1093--1110.
+\bibitem{nist86} K. Kent, S. Chevalier, T. Grance, and H. Dang, ``Guide to integrating forensic techniques into incident response,'' NIST, Gaithersburg, MD, USA, SP 800-86, Aug. 2006.
+\bibitem{prereg} B. A. Nosek, C. R. Ebersole, A. C. DeHaven, and D. T. Mellor, ``The preregistration revolution,'' \emph{Proc. Nat. Acad. Sci. USA}, vol. 115, no. 11, pp. 2600--2606, 2018.
+\bibitem{cic} I. Sharafaldin, A. H. Lashkari, and A. A. Ghorbani, ``Toward generating a new intrusion detection dataset and intrusion traffic characterization,'' in \emph{Proc. 4th Int. Conf. Inf. Syst. Secur. Privacy}, 2018, pp. 108--116.
+\bibitem{troubleshooting} G. Engelen, V. Rimmer, and W. Joosen, ``Troubleshooting an intrusion detection dataset: The CICIDS2017 case study,'' in \emph{Proc. IEEE Secur. Privacy Workshops}, 2021, pp. 7--12.
+\bibitem{ctu} S. Garc\'ia, M. Grill, J. Stiborek, and A. Zunino, ``An empirical comparison of botnet detection methods,'' \emph{Comput. Secur.}, vol. 45, pp. 100--123, 2014.
+\bibitem{iot23} S. Garcia, A. Parmisano, and M. J. Erquiaga, ``IoT-23: A labeled dataset with malicious and benign IoT network traffic,'' Zenodo, 2020. [Online]. Available: https://zenodo.org/record/4743745
+\end{thebibliography}

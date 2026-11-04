@@ -1,0 +1,171 @@
+% ---------------------------------------------------------------------------
+\bookpart{III}{The storage problem}{Why a complete recording cannot be kept, what people do about it today, and how this project got to its final idea.}{cviolet}{Why compression is not enough \textperiodcentered\ Existing methods \textperiodcentered\ The story of the project}
+
+\chapter{Why recordings cannot simply be kept}
+\chapintro{The arithmetic is short, and it explains the whole field.}
+
+\section{How much data is that?}
+\begin{example}[One day of a 1 gigabit link]
+A link running flat out at 1 gigabit per second carries:
+\begin{itemize}
+\item 1,000,000,000 bits per second $\div$ 8 = 125,000,000 bytes per second, or 125 MB/s
+\item 125 MB/s $\times$ 86,400 seconds in a day = 10,800,000 MB, or \textbf{10.8 TB per day}
+\item 10.8 TB $\times$ 30 days = \textbf{324 TB per month}
+\end{itemize}
+This is a worst case for a link that is always full, and many organisations run several links that are faster than this.
+\end{example}
+
+An attack is often noticed long after it starts. If the recording is overwritten every few days, the evidence is already gone by the time anyone looks for it. The storage budget therefore directly limits how far back an investigation can go.
+
+\section{Why not just compress it?}
+\textbf{Lossless compression}, such as gzip, shrinks a file by removing repetition, and the original can be rebuilt exactly. It helps, but not nearly enough. Here is what gzip achieved on our own test data.
+
+\begin{gtable}{What lossless gzip achieved on the three sealed test sets.}
+\begin{tabularx}{\linewidth}{l r r L}
+\toprule
+\hd{Test set} & \hd{Size} & \hd{After gzip} & \hd{Range across captures}\\
+\midrule
+First & 11.28 GB & 51.3\% & 25.6\% to 88.4\%\\
+Second & 7.03 GB & 56.5\% & 29.1\% to 95.6\%\\
+Third & 6.15 GB & 39.9\% & 14.4\% to 73.5\%\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+Encrypted traffic looks random, and random data cannot be compressed. As more traffic becomes encrypted, gzip helps less. One capture barely shrank at all.
+
+\begin{bigidea}
+To reach 1\% to 10\% of the original size, you have to throw information away on purpose. That is called \textbf{lossy reduction}. The whole question becomes: \emph{what can you lose and still investigate?}
+\end{bigidea}
+
+\section{The storage cap}
+Throughout this project, a method is given a \textbf{cap} (or budget): a fixed fraction of the original size. We test four caps: 1\%, 2\%, 5\% and 10\%. At a 5\% cap, a 1 GB capture must end up at 50 MB or less.
+
+Every byte counts against the cap, including file headers and any summary a method writes. This keeps the comparison fair.
+
+\begin{recap}
+A busy link produces terabytes a day. Compression alone leaves around 40--55\% of the original, far too much. So some data must be deliberately dropped, and the skill lies in choosing which.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{What people do today}
+\label{ch:existing}
+\chapintro{EBR was compared with the strongest simple methods we could build fairly. Each one is shown below as a small picture. Understanding what each loses tells you what EBR has to do better.}
+
+\newcommand{\minirow}[3]{% y, label, list of kept x positions
+  \node[anchor=east,font=\footnotesize] at (-1.5mm,#1+1.4mm) {#2};
+  \foreach \i in {0,...,23} \fill[paleline,rounded corners=.5pt] (\i*3.4mm,#1) rectangle ++(2.8mm,2.8mm);
+  \foreach \i in {#3} \fill[accent,rounded corners=.5pt] (\i*3.4mm,#1) rectangle ++(2.8mm,2.8mm);
+}
+
+\section{Random packets}
+Keep each packet with some fixed probability. It is simple and it is hopeless for forensics, because a conversation is left full of holes. Almost nothing can be reassembled. Across our third test it kept only 20.8\% of attack signatures at a 5\% cap.
+
+\section{Random flows}
+Pick whole conversations at random until the budget runs out. What is kept is complete and readable, but the choice is blind. Big flows use up the budget and most small attack flows are lost.
+
+\section{Flow cutoff (Time Machine)}
+The \textbf{Time Machine} system~\cite{timemachine,timetravel} keeps only the first part of every connection, up to a set number of bytes. This was a major insight: the start of a conversation holds most of its value, and it cuts the elephants down.
+
+We made this comparator stronger than the original by fitting the cutoff exactly to each budget. It still treats every connection the same, and a scan storm can eat the budget. It also loses anything that happens late in a long session.
+
+\section{Rare destinations (inspired by XNET)}
+\textbf{XNET}~\cite{xnet} is a recent system that monitors at very high speed. It prioritises rarely contacted destinations and DNS. Our comparator is \emph{inspired by} this idea and is not a copy, since it runs offline and uses no outside popularity lists. It does well when attackers call out to unusual places, and badly when the attack happens inside the network.
+
+\section{IDS-triggered capture}
+Here, the IDS decides. Only flows that raised an alert are kept~\cite{sanspcap}. Commercial and open-source tools offer this, including Suricata's conditional logging. It is very precise, and it is the strongest existing method in this study. We tested a stronger version, \textbf{IDS-triggered + fill}, which spends any leftover budget on a flow cutoff.
+
+We also gave it a real advantage: it gets real Suricata alerts from rules published before each capture. EBR gets no rules at all.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \colorlet{accent}{cviolet}
+  \minirow{24mm}{Original capture}{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23}
+  \minirow{19mm}{Random packets}{2,7,11,16,21}
+  \minirow{14mm}{Random flows}{4,5,6,7,8}
+  \minirow{9mm}{Flow cutoff}{0,3,6,9,12,15,18,21}
+  \minirow{4mm}{Rare destinations}{1,2,3,14,19}
+  \minirow{-1mm}{IDS-triggered}{8,9,10,17,18}
+\end{tikzpicture}
+\caption{Each row is the same capture, and a filled square is a kept packet. These are sketches, not data. Each method spends a similar budget in a very different way.}
+\end{figure}
+
+\begin{gtable}{The comparators at a glance.}
+\begin{tabularx}{\linewidth}{l l L L}
+\toprule
+\hd{Method} & \hd{Uses rules?} & \hd{Strength} & \hd{Main weakness}\\
+\midrule
+Random packets & No & Trivial to run & Destroys conversations\\
+Random flows & No & Kept flows stay whole & Blind choice\\
+Flow cutoff & No & Protects openings of every flow & Treats everything alike\\
+Rare destinations & No & Finds unusual outside contacts & Misses attacks inside the network\\
+IDS-triggered + fill & Yes & Very precise for known threats & Cannot help with rules that do not exist yet\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{honest}
+Other work is close to ours, including TrimPCAP~\cite{trimpcap}, which trims the tail of each session, and selective capping~\cite{capping}, which keeps full packets for known protocols and cuts the rest. Keeping data by its value is an old idea too. Chapter~\ref{ch:novel} sets out carefully what is and is not new here.
+\end{honest}
+
+\begin{recap}
+Five comparators cover the main ideas in the field. The strongest is IDS-triggered capture, which uses real rules. Beating it without using rules is hard, and that is the bar we set.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{The story of this project}
+\chapintro{The project changed a lot on its way to EBR. Each stage failed in a way that taught something, so it is worth seeing how we got here.}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[yscale=.9]
+  \draw[line width=1.6pt,color=paleline] (0,0) -- (0,-11.8);
+  \foreach \py/\pc/\pt/\pd in {
+    {0/cblue/Synopsis/Pyshark, SQLite and simple detection rules},
+    {-1.7/cviolet/Synthetic demo/Eight investigation questions on generated traffic. Shown to the professor},
+    {-3.4/corange/October version/Real captures and a stronger audit. A simple rival won on several captures},
+    {-5.1/caqua/EBR redesign/Streaming, bits of surprise, fidelity tiers and a knapsack},
+    {-6.8/cgreen/First sealed test/11.3 GB. Beat the signature-free methods. Weak on a human red team},
+    {-8.5/cyellow/Second sealed test/7.0 GB. A scan cap was added, but these captures never used it},
+    {-10.2/cmagenta/Verify before delete/A new loop that repairs losses before deletion. Unsealed prototype},
+    {-11.8/cblue/Third sealed test/6.1 GB. Pre-registered. Repair won at 5\%. Only one of five predictions passed in full}} {
+    \fill[\pc] (0,\py) circle (1.6mm);
+    \node[anchor=west,text width=138mm,align=left,font=\small] at (4mm,\py) {\textbf{\pt}\\[-1pt]{\footnotesize\color{muted}\pd}};
+  }
+\end{tikzpicture}
+\caption{How the project developed.}
+\end{figure}
+
+\section{Stage 1: the synopsis}
+The project began as a lab mini-project: read PCAP files with a Python library called Pyshark, store the features in a SQLite database, and apply simple rules to spot suspicious behaviour. It worked offline and was meant to teach the basics. The team's first question soon became more interesting than the tool itself: packet files are huge, so which packets matter?
+
+\section{Stage 2: the synthetic demo}
+For the progress check we built a demonstration on generated traffic. We wrote eight concrete investigation questions, such as ``does the kept capture still show this DNS lookup and its answer?'', and scored each method by how many it could still answer. At a 5\% cap, the evidence-based method answered 7 of 8, against 4 for a simple alert policy and 0.2 on average for random selection.
+
+\begin{honest}
+That demo proved the mechanism worked and little else. We had designed the questions and the scoring features together, on traffic we generated ourselves, so a good score was close to guaranteed.
+\end{honest}
+
+\section{Stage 3: the October version on real traffic}
+Next came a much larger version using five real public captures, 1,295 trials and an independent audit. The audit added a strong, simple comparator that used no weights at all. The result was uncomfortable:
+
+\begin{itemize}
+\item \textbf{A simple method beat the weighted one on several captures.} On the DonBot capture it scored 60.20\% against 38.68\%. The scoring was not earning its complexity.
+\item \textbf{Scan traffic used up the budget}, because all sessions were treated as equally important.
+\item \textbf{It could not scale.} Every packet was held in Python memory. At a 50\% budget, a 58 MB capture took 230 seconds, so a multi-gigabyte run was out of reach.
+\end{itemize}
+
+\begin{bigidea}
+This was the turning point. The October version was honest work, and its own audit showed it had to be replaced. EBR is a redesign, not a patch.
+\end{bigidea}
+
+\section{Stage 4: EBR}
+EBR kept the main lesson of the earlier work, that the unit of evidence is a conversation, and changed nearly everything else: streaming so it can handle gigabytes, value measured in bits, partial keeping of flows, a real optimisation, and a real IDS as judge. The evaluation also changed, from questions we wrote ourselves to detections by software we did not write.
+
+\section{Stages 5 to 8: three sealed tests}
+Part V tells this story in detail. In short, each test found something the previous one had missed, and the design changed to respond. That is how the work is supposed to go.
+
+\begin{recap}
+The project moved from a teaching tool, to a synthetic demo, to a real-data audit that exposed its own flaws, to EBR. Each failure pointed to the next design.
+\end{recap}

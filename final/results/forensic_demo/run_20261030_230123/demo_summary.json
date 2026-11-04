@@ -1,0 +1,519 @@
+{
+ "generated": "2026-10-30T23:03:35",
+ "cap": 0.05,
+ "reference_run": "sealed2",
+ "config_sha256": "c667606cb6371008ea983a13b62b32071b11cfa9f7aff2e6b0046d5cced44f4d",
+ "input_bytes": 7028901576,
+ "output_bytes": 296016601,
+ "cases": [
+  {
+   "case": "sealed2_wrccdc2019",
+   "input_bytes": 600031591,
+   "output_bytes": 30001119,
+   "ledger_bytes": 123748,
+   "packets": 485327,
+   "packets_kept": 146378,
+   "flows": 8399,
+   "flows_with_packets": 8319,
+   "seconds": 2.2,
+   "budget": 30001579,
+   "suspects": [
+    {
+     "address": "10.59.104.66",
+     "bits": 7.9
+    },
+    {
+     "address": "10.59.106.66",
+     "bits": 6.4
+    },
+    {
+     "address": "10.59.102.66",
+     "bits": 6.0
+    },
+    {
+     "address": "10.58.102.233",
+     "bits": 5.3
+    },
+    {
+     "address": "10.128.0.91",
+     "bits": 5.1
+    },
+    {
+     "address": "10.59.103.108",
+     "bits": 4.6
+    },
+    {
+     "address": "10.59.107.105",
+     "bits": 4.5
+    },
+    {
+     "address": "10.155.249.34",
+     "bits": 4.3
+    },
+    {
+     "address": "10.128.0.124",
+     "bits": 4.0
+    },
+    {
+     "address": "10.58.102.234",
+     "bits": 4.0
+    }
+   ],
+   "outputs": [
+    {
+     "file": "continuous.pcap",
+     "bytes": 29877371,
+     "sha256": "60195724ea1f909d56935a863a09d016e98ba360b8b34c6f525f50a0c0e92ef5"
+    }
+   ],
+   "files": [
+    "continuous.pcap"
+   ]
+  },
+  {
+   "case": "sealed2_wrccdc2024",
+   "input_bytes": 1000070860,
+   "output_bytes": 27985577,
+   "ledger_bytes": 44882,
+   "packets": 568683,
+   "packets_kept": 70138,
+   "flows": 2946,
+   "flows_with_packets": 2946,
+   "seconds": 2.3,
+   "budget": 50003543,
+   "suspects": [
+    {
+     "address": "192.168.220.66",
+     "bits": 7.8
+    },
+    {
+     "address": "192.168.220.132",
+     "bits": 5.1
+    },
+    {
+     "address": "192.168.220.53",
+     "bits": 3.5
+    },
+    {
+     "address": "192.168.220.111",
+     "bits": 3.4
+    },
+    {
+     "address": "192.168.220.73",
+     "bits": 3.1
+    },
+    {
+     "address": "10.0.0.50",
+     "bits": 3.1
+    },
+    {
+     "address": "192.168.220.30",
+     "bits": 3.1
+    },
+    {
+     "address": "192.168.220.241",
+     "bits": 2.8
+    },
+    {
+     "address": "10.100.116.2",
+     "bits": 2.8
+    },
+    {
+     "address": "192.168.220.43",
+     "bits": 2.6
+    }
+   ],
+   "outputs": [
+    {
+     "file": "continuous.pcap",
+     "bytes": 27940695,
+     "sha256": "743ef17cd5a7161b35542bb3a3f1ab59f99683141785eb59d8cdf1adbffcc508"
+    }
+   ],
+   "files": [
+    "continuous.pcap"
+   ]
+  },
+  {
+   "case": "sealed2_wrccdc2026",
+   "input_bytes": 1276464497,
+   "output_bytes": 30413475,
+   "ledger_bytes": 10698,
+   "packets": 477045,
+   "packets_kept": 81280,
+   "flows": 618,
+   "flows_with_packets": 618,
+   "seconds": 2.1,
+   "budget": 63823224,
+   "suspects": [
+    {
+     "address": "10.100.118.10",
+     "bits": 5.3
+    },
+    {
+     "address": "10.100.108.14",
+     "bits": 1.3
+    },
+    {
+     "address": "10.100.118.50",
+     "bits": 0.3
+    },
+    {
+     "address": "10.100.102.14",
+     "bits": 0.3
+    },
+    {
+     "address": "10.100.106.240",
+     "bits": 0.2
+    },
+    {
+     "address": "10.100.116.20",
+     "bits": 0.0
+    },
+    {
+     "address": "10.100.119.14",
+     "bits": 0.0
+    },
+    {
+     "address": "10.100.119.50",
+     "bits": 0.0
+    },
+    {
+     "address": "10.100.121.240",
+     "bits": 0.0
+    },
+    {
+     "address": "10.100.101.22",
+     "bits": 0.0
+    }
+   ],
+   "outputs": [
+    {
+     "file": "continuous.pcap",
+     "bytes": 30402777,
+     "sha256": "5ca8e502efe87f35d76a545cf18751c5b3945637b0a00517c4c6b2a8a32c5bfe"
+    }
+   ],
+   "files": [
+    "continuous.pcap"
+   ]
+  },
+  {
+   "case": "sealed2_ctu_mixed1",
+   "input_bytes": 893718425,
+   "output_bytes": 44685762,
+   "ledger_bytes": 875329,
+   "packets": 1437980,
+   "packets_kept": 227748,
+   "flows": 53929,
+   "flows_with_packets": 33660,
+   "seconds": 6.3,
+   "budget": 44685921,
+   "suspects": [
+    {
+     "address": "10.0.0.45",
+     "bits": 16.3
+    },
+    {
+     "address": "0800273b87ab",
+     "bits": 9.0
+    },
+    {
+     "address": "78e4006c39cd",
+     "bits": 9.0
+    },
+    {
+     "address": "79.157.33.11",
+     "bits": 8.0
+    },
+    {
+     "address": "37.146.232.152",
+     "bits": 4.8
+    },
+    {
+     "address": "213.139.53.202",
+     "bits": 1.8
+    },
+    {
+     "address": "62.143.233.84",
+     "bits": 1.8
+    },
+    {
+     "address": "72.28.145.95",
+     "bits": 1.8
+    },
+    {
+     "address": "222.128.199.6",
+     "bits": 0.9
+    },
+    {
+     "address": "2.4.6.172",
+     "bits": 0.3
+    }
+   ],
+   "outputs": [
+    {
+     "file": "2015-07-28_mixed.pcap",
+     "bytes": 43810433,
+     "sha256": "5d0ef49f5f01983d3594ea32d2b10bf185d7119cb3a8b9048ad0e127b28f612b"
+    }
+   ],
+   "files": [
+    "2015-07-28_mixed.pcap"
+   ]
+  },
+  {
+   "case": "sealed2_ctu_mixed2",
+   "input_bytes": 526117370,
+   "output_bytes": 26305838,
+   "ledger_bytes": 258623,
+   "packets": 692898,
+   "packets_kept": 113686,
+   "flows": 16387,
+   "flows_with_packets": 13900,
+   "seconds": 2.8,
+   "budget": 26305868,
+   "suspects": [
+    {
+     "address": "10.0.2.15",
+     "bits": 10.9
+    },
+    {
+     "address": "525400123502",
+     "bits": 9.2
+    },
+    {
+     "address": "080027c78d41",
+     "bits": 9.1
+    },
+    {
+     "address": "10.0.2.2",
+     "bits": 5.4
+    },
+    {
+     "address": "8.8.8.8",
+     "bits": 2.9
+    },
+    {
+     "address": "8.8.4.4",
+     "bits": 1.6
+    },
+    {
+     "address": "0.0.0.0",
+     "bits": 0.4
+    },
+    {
+     "address": "37.146.100.128",
+     "bits": 0.0
+    },
+    {
+     "address": "91.104.78.241",
+     "bits": 0.0
+    },
+    {
+     "address": "173.194.116.240",
+     "bits": 0.0
+    }
+   ],
+   "outputs": [
+    {
+     "file": "2015-09-08_mixed.pcap",
+     "bytes": 26047215,
+     "sha256": "29fc7380dd36e151178104a0d269973d0ddf8197e82a89e107506ac5cefd0258"
+    }
+   ],
+   "files": [
+    "2015-09-08_mixed.pcap"
+   ]
+  },
+  {
+   "case": "sealed2_ddos_feb21",
+   "input_bytes": 2732498776,
+   "output_bytes": 136624830,
+   "ledger_bytes": 11972917,
+   "packets": 11430853,
+   "packets_kept": 675761,
+   "flows": 1098039,
+   "flows_with_packets": 77031,
+   "seconds": 91.2,
+   "budget": 136624938,
+   "suspects": [
+    {
+     "address": "18.216.200.189",
+     "bits": 15.1
+    },
+    {
+     "address": "18.218.229.235",
+     "bits": 15.1
+    },
+    {
+     "address": "18.218.115.60",
+     "bits": 15.1
+    },
+    {
+     "address": "18.219.9.1",
+     "bits": 15.1
+    },
+    {
+     "address": "18.218.11.51",
+     "bits": 15.1
+    },
+    {
+     "address": "18.218.55.126",
+     "bits": 15.0
+    },
+    {
+     "address": "18.219.32.43",
+     "bits": 15.0
+    },
+    {
+     "address": "18.216.24.42",
+     "bits": 15.0
+    },
+    {
+     "address": "52.14.136.135",
+     "bits": 15.0
+    },
+    {
+     "address": "18.219.5.43",
+     "bits": 15.0
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capPC1-172.31.67.35.pcap",
+     "bytes": 43760054,
+     "sha256": "681572b297f0a6401b39e5cb852ee04cb8e5820db7ef0e60c72363929b0885e1"
+    },
+    {
+     "file": "UCAP172.31.69.28_part_2.pcap",
+     "bytes": 80891859,
+     "sha256": "9c87343a1066f4830624889c736882d3b4a726f99ec3e7bac6e1f6748401eeb3"
+    }
+   ],
+   "files": [
+    "capPC1-172.31.67.35.pcap",
+    "UCAP172.31.69.28_part_2.pcap"
+   ]
+  }
+ ],
+ "findings": {
+  "sealed2_wrccdc2019": {
+   "attack_alerts_full": 45,
+   "attack_alerts_kept": 45,
+   "attack_signatures_full": 16,
+   "attack_signatures_kept": 16,
+   "invented_attack_alerts": 0,
+   "findings": []
+  },
+  "sealed2_wrccdc2024": {
+   "attack_alerts_full": 61,
+   "attack_alerts_kept": 58,
+   "attack_signatures_full": 15,
+   "attack_signatures_kept": 15,
+   "invented_attack_alerts": 2,
+   "findings": []
+  },
+  "sealed2_wrccdc2026": {
+   "attack_alerts_full": 0,
+   "attack_alerts_kept": 0,
+   "attack_signatures_full": 0,
+   "attack_signatures_kept": 0,
+   "invented_attack_alerts": 0,
+   "findings": []
+  },
+  "sealed2_ctu_mixed1": {
+   "attack_alerts_full": 88,
+   "attack_alerts_kept": 56,
+   "attack_signatures_full": 18,
+   "attack_signatures_kept": 15,
+   "invented_attack_alerts": 17,
+   "findings": []
+  },
+  "sealed2_ctu_mixed2": {
+   "attack_alerts_full": 43,
+   "attack_alerts_kept": 22,
+   "attack_signatures_full": 14,
+   "attack_signatures_kept": 13,
+   "invented_attack_alerts": 3,
+   "findings": []
+  },
+  "sealed2_ddos_feb21": {
+   "attack_alerts_full": 362,
+   "attack_alerts_kept": 352,
+   "attack_signatures_full": 24,
+   "attack_signatures_kept": 23,
+   "invented_attack_alerts": 0,
+   "findings": [
+    {
+     "id": "ddos_loic_udp",
+     "name": "DDoS LOIC-UDP",
+     "attackers": [
+      "18.218.115.60",
+      "18.219.9.1",
+      "18.219.32.43",
+      "18.218.55.126",
+      "52.14.136.135",
+      "18.219.5.43",
+      "18.216.200.189",
+      "18.218.229.235",
+      "18.218.11.51",
+      "18.216.24.42"
+     ],
+     "window": [
+      "2018-02-21T14:09",
+      "2018-02-21T14:43"
+     ],
+     "detectable": false,
+     "caught": false,
+     "signatures_full": 0,
+     "signatures_kept": 0,
+     "examples": [],
+     "suspect_rank": 1,
+     "ledger": {
+      "flows": 0,
+      "first_ns": null,
+      "last_ns": null,
+      "payload_bytes": 0
+     }
+    },
+    {
+     "id": "ddos_hoic",
+     "name": "DDoS HOIC",
+     "attackers": [
+      "18.218.115.60",
+      "18.219.9.1",
+      "18.219.32.43",
+      "18.218.55.126",
+      "52.14.136.135",
+      "18.219.5.43",
+      "18.216.200.189",
+      "18.218.229.235",
+      "18.218.11.51",
+      "18.216.24.42"
+     ],
+     "window": [
+      "2018-02-21T18:05",
+      "2018-02-21T19:05"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 4,
+     "signatures_kept": 3,
+     "examples": [
+      "ET POLICY Unsupported/Fake Internet Explorer Version MSIE 5.",
+      "ET POLICY Unsupported/Fake FireFox Version 2.",
+      "ET HUNTING Googlebot User-Agent Observed in Outbound HTTP Request"
+     ],
+     "suspect_rank": 1,
+     "ledger": {
+      "flows": 1082293,
+      "first_ns": 1519236668829466000,
+      "last_ns": 1519239954057773000,
+      "payload_bytes": 1336104088
+     }
+    }
+   ]
+  }
+ }
+}

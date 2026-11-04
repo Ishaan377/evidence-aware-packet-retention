@@ -1,0 +1,821 @@
+{
+ "generated": "2026-10-30T23:01:13",
+ "cap": 0.05,
+ "reference_run": "test",
+ "config_sha256": "c667606cb6371008ea983a13b62b32071b11cfa9f7aff2e6b0046d5cced44f4d",
+ "input_bytes": 11284659848,
+ "output_bytes": 564232587,
+ "cases": [
+  {
+   "case": "test_dos_feb15",
+   "input_bytes": 932011627,
+   "output_bytes": 46600577,
+   "ledger_bytes": 687540,
+   "packets": 1143271,
+   "packets_kept": 254567,
+   "flows": 51122,
+   "flows_with_packets": 36791,
+   "seconds": 5.6,
+   "budget": 46600581,
+   "suspects": [
+    {
+     "address": "18.219.211.138",
+     "bits": 14.8
+    },
+    {
+     "address": "172.31.66.111",
+     "bits": 12.8
+    },
+    {
+     "address": "212.47.252.61",
+     "bits": 11.0
+    },
+    {
+     "address": "172.31.69.25",
+     "bits": 10.8
+    },
+    {
+     "address": "fe80::6c39:aee1:40ab:6ad3",
+     "bits": 10.1
+    },
+    {
+     "address": "151.106.17.146",
+     "bits": 9.5
+    },
+    {
+     "address": "131.202.242.193",
+     "bits": 8.6
+    },
+    {
+     "address": "77.72.82.72",
+     "bits": 8.5
+    },
+    {
+     "address": "116.237.221.152",
+     "bits": 8.3
+    },
+    {
+     "address": "02ca69c46d06",
+     "bits": 8.2
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capPC1-172.31.66.111.pcap",
+     "bytes": 19222108,
+     "sha256": "7a8e0f738a687a7ad471b0a48dfd97bc0c35db9d36e1812b2cfd3bdc25b1905b"
+    },
+    {
+     "file": "UCAP172.31.69.25.pcap",
+     "bytes": 26690929,
+     "sha256": "f26fa2bb4e7f831e3ae817ee8a7584dadf7e9f6e3e91ef38124f8bda8ff24605"
+    }
+   ],
+   "files": [
+    "capPC1-172.31.66.111.pcap",
+    "UCAP172.31.69.25.pcap"
+   ]
+  },
+  {
+   "case": "test_dos_feb16",
+   "input_bytes": 4588987813,
+   "output_bytes": 229449352,
+   "ledger_bytes": 21774908,
+   "packets": 19578106,
+   "packets_kept": 1056748,
+   "flows": 1925265,
+   "flows_with_packets": 120729,
+   "seconds": 162.2,
+   "budget": 229449390,
+   "suspects": [
+    {
+     "address": "18.219.193.20",
+     "bits": 20.8
+    },
+    {
+     "address": "13.59.126.31",
+     "bits": 15.4
+    },
+    {
+     "address": "172.31.64.31",
+     "bits": 12.5
+    },
+    {
+     "address": "02a36a4e8158",
+     "bits": 8.0
+    },
+    {
+     "address": "5.101.40.43",
+     "bits": 7.5
+    },
+    {
+     "address": "175.195.219.31",
+     "bits": 7.5
+    },
+    {
+     "address": "5.101.40.105",
+     "bits": 7.5
+    },
+    {
+     "address": "212.92.116.6",
+     "bits": 7.0
+    },
+    {
+     "address": "185.222.56.82",
+     "bits": 6.9
+    },
+    {
+     "address": "212.92.114.68",
+     "bits": 6.9
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capPC1-172.31.64.31.pcap",
+     "bytes": 46847401,
+     "sha256": "6748d505475ae2024624e29518a15245575a6c76771e17adb80f419924424688"
+    },
+    {
+     "file": "UCAP172.31.69.25-part1.pcap",
+     "bytes": 160827043,
+     "sha256": "467818b13a18e1ff449990e8b76cdb6bd352da3c810411b73459537c0d391ad4"
+    }
+   ],
+   "files": [
+    "capPC1-172.31.64.31.pcap",
+    "UCAP172.31.69.25-part1.pcap"
+   ]
+  },
+  {
+   "case": "test_web_feb23",
+   "input_bytes": 747430813,
+   "output_bytes": 37371351,
+   "ledger_bytes": 393301,
+   "packets": 877813,
+   "packets_kept": 166583,
+   "flows": 23771,
+   "flows_with_packets": 23771,
+   "seconds": 3.7,
+   "budget": 37371540,
+   "suspects": [
+    {
+     "address": "193.111.198.63",
+     "bits": 12.9
+    },
+    {
+     "address": "213.202.230.223",
+     "bits": 12.9
+    },
+    {
+     "address": "172.31.64.52",
+     "bits": 12.3
+    },
+    {
+     "address": "172.31.69.28",
+     "bits": 9.6
+    },
+    {
+     "address": "212.111.40.72",
+     "bits": 9.3
+    },
+    {
+     "address": "fe80::2d09:555b:1d6e:a050",
+     "bits": 8.7
+    },
+    {
+     "address": "18.218.115.60",
+     "bits": 7.2
+    },
+    {
+     "address": "02a36a4e8158",
+     "bits": 7.1
+    },
+    {
+     "address": "131.202.242.193",
+     "bits": 6.4
+    },
+    {
+     "address": "13.58.42.57",
+     "bits": 6.3
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capPC1-172.31.64.52.pcap",
+     "bytes": 29570211,
+     "sha256": "9583c413e4435f329d47e4a71e9d5723df6f364e5b71a7c749993fce5d96578d"
+    },
+    {
+     "file": "UCAP172.31.69.28.pcap",
+     "bytes": 7407839,
+     "sha256": "32614045720327d9dc3473c9bedd144d2ea3021b71551154d4860a7275c36d20"
+    }
+   ],
+   "files": [
+    "capPC1-172.31.64.52.pcap",
+    "UCAP172.31.69.28.pcap"
+   ]
+  },
+  {
+   "case": "test_infiltration_mar01",
+   "input_bytes": 947780274,
+   "output_bytes": 47388955,
+   "ledger_bytes": 1936509,
+   "packets": 1619240,
+   "packets_kept": 306744,
+   "flows": 191813,
+   "flows_with_packets": 112078,
+   "seconds": 9.8,
+   "budget": 47389013,
+   "suspects": [
+    {
+     "address": "172.31.69.13",
+     "bits": 20.6
+    },
+    {
+     "address": "172.31.64.40",
+     "bits": 14.9
+    },
+    {
+     "address": "213.202.230.232",
+     "bits": 10.9
+    },
+    {
+     "address": "213.202.230.143",
+     "bits": 10.7
+    },
+    {
+     "address": "fe80::957a:c1e4:ddd4:ff18",
+     "bits": 10.1
+    },
+    {
+     "address": "fe80::b53e:29f5:db13:4421",
+     "bits": 9.6
+    },
+    {
+     "address": "02a36a4e8158",
+     "bits": 9.5
+    },
+    {
+     "address": "02ca69c46d06",
+     "bits": 9.5
+    },
+    {
+     "address": "208.36.133.196",
+     "bits": 9.3
+    },
+    {
+     "address": "37.46.246.28",
+     "bits": 9.0
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.13_part1.pcap",
+     "bytes": 4204254,
+     "sha256": "43168b044243e1247b1b107bee3b12316637c78d1aa018261133c7002a97f5ee"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.13_part2.pcap",
+     "bytes": 4103990,
+     "sha256": "3d510862660a4e63fe27fcb27e6fb4dcf18012a753422753e675f56aa33978f0"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.13_part3.pcap",
+     "bytes": 21448954,
+     "sha256": "12ecf2b015baff3f9e887349278c623f85de7f0bcd2f01034c0e177eeaaef825"
+    },
+    {
+     "file": "capPC1-172.31.64.40.pcap",
+     "bytes": 15695248,
+     "sha256": "2837c84dc0d71791e8c9311c3d781602096e9d99685059fb6c6182cd01d497e4"
+    }
+   ],
+   "files": [
+    "capEC2AMAZ-O4EL3NG-172.31.69.13_part1.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.13_part2.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.13_part3.pcap",
+    "capPC1-172.31.64.40.pcap"
+   ]
+  },
+  {
+   "case": "test_bot_mar02",
+   "input_bytes": 1568446559,
+   "output_bytes": 78422287,
+   "ledger_bytes": 2865591,
+   "packets": 3788529,
+   "packets_kept": 397290,
+   "flows": 222357,
+   "flows_with_packets": 64906,
+   "seconds": 21.0,
+   "budget": 78422327,
+   "suspects": [
+    {
+     "address": "172.31.64.116",
+     "bits": 17.8
+    },
+    {
+     "address": "172.31.69.29",
+     "bits": 16.2
+    },
+    {
+     "address": "172.31.69.6",
+     "bits": 15.4
+    },
+    {
+     "address": "172.31.69.8",
+     "bits": 15.4
+    },
+    {
+     "address": "172.31.69.23",
+     "bits": 15.4
+    },
+    {
+     "address": "172.31.69.10",
+     "bits": 15.1
+    },
+    {
+     "address": "172.31.69.14",
+     "bits": 15.1
+    },
+    {
+     "address": "172.31.69.17",
+     "bits": 14.7
+    },
+    {
+     "address": "172.31.69.30",
+     "bits": 14.6
+    },
+    {
+     "address": "172.31.69.12",
+     "bits": 14.5
+    }
+   ],
+   "outputs": [
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.10.pcap",
+     "bytes": 7672196,
+     "sha256": "2862021a83bc0b1e44a81507bd3311625956f8e691ba5a32cefeb928152b4637"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.12.pcap",
+     "bytes": 3733082,
+     "sha256": "2c503bc48c2e754cdff8ae8d37e93e4518cef1c50df52ab27b694b3e093f3629"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.14.pcap",
+     "bytes": 4758379,
+     "sha256": "ddf616fbc6e10cb637bfa34794c0e8c03ce6621c50a36faaff65a254951542ce"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.17.pcap",
+     "bytes": 4278929,
+     "sha256": "b0bebe156d4ce1d9208f788466836daf536174a637cbe34cdbb4e00f201a6b14"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.23.pcap",
+     "bytes": 5437784,
+     "sha256": "b13dcfb71bf6932e2d0136e137575d21996aae7260145f921bcb333a8e48584d"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.26.pcap",
+     "bytes": 2985521,
+     "sha256": "fa218e0ad75fab5ff33dc8dd89a11ce6636a98129c64f2a4d60b80b94adc2765"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.29.pcap",
+     "bytes": 9273420,
+     "sha256": "27a4c9a43d6fc1e2b48a67400a3e328d2edf96a8f58af0fc69f9d8c9ab90f614"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.30.pcap",
+     "bytes": 5363565,
+     "sha256": "314ab3f0dc13663256b5d663bd6c392b9742fa0369d8a246095d4b2ea830074d"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.6.pcap",
+     "bytes": 5284636,
+     "sha256": "09c0347e993eb322ab7c715a50cdee438832a580f21d02a4fe74f4b97bba2851"
+    },
+    {
+     "file": "capEC2AMAZ-O4EL3NG-172.31.69.8.pcap",
+     "bytes": 6364517,
+     "sha256": "e59c1cc4a99ae18f798e684b6dc4e048210ff2be7316c938d4586653dc57ed90"
+    },
+    {
+     "file": "capPC1-172.31.64.116.pcap",
+     "bytes": 20404667,
+     "sha256": "94178fb87a177171c1eef1198745f0159688b5d85647ef7191276c80b78b3f71"
+    }
+   ],
+   "files": [
+    "capEC2AMAZ-O4EL3NG-172.31.69.10.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.12.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.14.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.17.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.23.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.26.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.29.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.30.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.6.pcap",
+    "capEC2AMAZ-O4EL3NG-172.31.69.8.pcap",
+    "capPC1-172.31.64.116.pcap"
+   ]
+  },
+  {
+   "case": "test_wrccdc2018",
+   "input_bytes": 2500002287,
+   "output_bytes": 125000065,
+   "ledger_bytes": 10239466,
+   "packets": 7973233,
+   "packets_kept": 731312,
+   "flows": 1683187,
+   "flows_with_packets": 188470,
+   "seconds": 93.2,
+   "budget": 125000114,
+   "suspects": [
+    {
+     "address": "10.129.50.185",
+     "bits": 19.0
+    },
+    {
+     "address": "10.217.203.219",
+     "bits": 18.3
+    },
+    {
+     "address": "10.206.39.83",
+     "bits": 7.0
+    },
+    {
+     "address": "10.0.0.251",
+     "bits": 6.2
+    },
+    {
+     "address": "10.201.215.52",
+     "bits": 6.1
+    },
+    {
+     "address": "10.128.0.247",
+     "bits": 6.0
+    },
+    {
+     "address": "10.0.0.111",
+     "bits": 6.0
+    },
+    {
+     "address": "10.47.2.152",
+     "bits": 5.9
+    },
+    {
+     "address": "10.47.26.82",
+     "bits": 5.8
+    },
+    {
+     "address": "10.0.0.227",
+     "bits": 5.4
+    }
+   ],
+   "outputs": [
+    {
+     "file": "continuous.pcap",
+     "bytes": 114760599,
+     "sha256": "2aff77cc81cacc4b8261c23ae77e14396147f97cefb089269b7598a4e6607c99"
+    }
+   ],
+   "files": [
+    "continuous.pcap"
+   ]
+  }
+ ],
+ "findings": {
+  "test_dos_feb15": {
+   "attack_alerts_full": 1131,
+   "attack_alerts_kept": 1131,
+   "attack_signatures_full": 17,
+   "attack_signatures_kept": 17,
+   "invented_attack_alerts": 0,
+   "findings": [
+    {
+     "id": "goldeneye",
+     "name": "DoS GoldenEye",
+     "attackers": [
+      "172.31.70.46",
+      "18.219.211.138"
+     ],
+     "window": [
+      "2018-02-15T13:26",
+      "2018-02-15T14:09"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 2,
+     "signatures_kept": 2,
+     "examples": [
+      "ET HUNTING Invalid User-Agent - MSIE 9 on Windows NT 5",
+      "ET HUNTING Suspicious MSIE 10 on Windows NT 5"
+     ],
+     "suspect_rank": 1,
+     "ledger": {
+      "flows": 28437,
+      "first_ns": 1518701262466479000,
+      "last_ns": 1518703379332681000,
+      "payload_bytes": 35204354
+     }
+    },
+    {
+     "id": "slowloris",
+     "name": "DoS Slowloris",
+     "attackers": [
+      "172.31.70.8",
+      "18.217.165.70"
+     ],
+     "window": [
+      "2018-02-15T14:59",
+      "2018-02-15T15:40"
+     ],
+     "detectable": false,
+     "caught": false,
+     "signatures_full": 0,
+     "signatures_kept": 0,
+     "examples": [],
+     "suspect_rank": null,
+     "ledger": {
+      "flows": 7162,
+      "first_ns": 1518706812551313000,
+      "last_ns": 1518709312861289000,
+      "payload_bytes": 1355600
+     }
+    }
+   ]
+  },
+  "test_dos_feb16": {
+   "attack_alerts_full": 353,
+   "attack_alerts_kept": 353,
+   "attack_signatures_full": 20,
+   "attack_signatures_kept": 20,
+   "invented_attack_alerts": 0,
+   "findings": [
+    {
+     "id": "slowhttptest",
+     "name": "DoS SlowHTTPTest",
+     "attackers": [
+      "172.31.70.23",
+      "13.59.126.31"
+     ],
+     "window": [
+      "2018-02-16T14:12",
+      "2018-02-16T15:08"
+     ],
+     "detectable": false,
+     "caught": false,
+     "signatures_full": 0,
+     "signatures_kept": 0,
+     "examples": [],
+     "suspect_rank": 2,
+     "ledger": {
+      "flows": 105550,
+      "first_ns": 1518790334134225000,
+      "last_ns": 1518793513888211000,
+      "payload_bytes": 0
+     }
+    },
+    {
+     "id": "hulk",
+     "name": "DoS Hulk",
+     "attackers": [
+      "172.31.70.16",
+      "18.219.193.20"
+     ],
+     "window": [
+      "2018-02-16T17:45",
+      "2018-02-16T18:19"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 1,
+     "signatures_kept": 1,
+     "examples": [
+      "ET MALWARE Spoofed MSIE 7 User-Agent Likely Ponmocup"
+     ],
+     "suspect_rank": 1,
+     "ledger": {
+      "flows": 1803379,
+      "first_ns": 1518803127826666000,
+      "last_ns": 1518803902128187000,
+      "payload_bytes": 2309221582
+     }
+    }
+   ]
+  },
+  "test_web_feb23": {
+   "attack_alerts_full": 394,
+   "attack_alerts_kept": 393,
+   "attack_signatures_full": 26,
+   "attack_signatures_kept": 25,
+   "invented_attack_alerts": 0,
+   "findings": [
+    {
+     "id": "web_bruteforce_d2",
+     "name": "Web login brute force",
+     "attackers": [
+      "18.218.115.60"
+     ],
+     "window": [
+      "2018-02-23T14:03",
+      "2018-02-23T15:03"
+     ],
+     "detectable": false,
+     "caught": false,
+     "signatures_full": 0,
+     "signatures_kept": 0,
+     "examples": [],
+     "suspect_rank": 7,
+     "ledger": {
+      "flows": 123,
+      "first_ns": 1519394670193975000,
+      "last_ns": 1519398186406311000,
+      "payload_bytes": 7873962
+     }
+    },
+    {
+     "id": "web_xss_d2",
+     "name": "Cross-site scripting",
+     "attackers": [
+      "18.218.115.60"
+     ],
+     "window": [
+      "2018-02-23T17:00",
+      "2018-02-23T18:10"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 1,
+     "signatures_kept": 1,
+     "examples": [
+      "ET WEB_SERVER Script tag in URI Possible Cross Site Scripting Attempt"
+     ],
+     "suspect_rank": 7,
+     "ledger": {
+      "flows": 74,
+      "first_ns": 1519405264559707000,
+      "last_ns": 1519409428237421000,
+      "payload_bytes": 17825942
+     }
+    },
+    {
+     "id": "web_sqli_d2",
+     "name": "SQL injection",
+     "attackers": [
+      "18.218.115.60"
+     ],
+     "window": [
+      "2018-02-23T19:05",
+      "2018-02-23T19:18"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 4,
+     "signatures_kept": 4,
+     "examples": [
+      "ET WEB_SERVER Possible Attempt to Get SQL Server Version in URI using SELECT VERSION",
+      "ET WEB_SERVER SQL Errors in HTTP 200 Response (error in your SQL syntax)",
+      "ET WEB_SERVER ATTACKER SQLi - SELECT and Schema Columns M1"
+     ],
+     "suspect_rank": 7,
+     "ledger": {
+      "flows": 33,
+      "first_ns": 1519412722675686000,
+      "last_ns": 1519413444949719000,
+      "payload_bytes": 76833
+     }
+    }
+   ]
+  },
+  "test_infiltration_mar01": {
+   "attack_alerts_full": 798,
+   "attack_alerts_kept": 780,
+   "attack_signatures_full": 29,
+   "attack_signatures_kept": 27,
+   "invented_attack_alerts": 2,
+   "findings": [
+    {
+     "id": "infil_b1",
+     "name": "Infiltration, first wave",
+     "attackers": [
+      "13.58.225.34"
+     ],
+     "window": [
+      "2018-03-01T13:57",
+      "2018-03-01T14:55"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 2,
+     "signatures_kept": 1,
+     "examples": [
+      "ET HUNTING PE EXE Download over raw TCP"
+     ],
+     "suspect_rank": null,
+     "ledger": {
+      "flows": 2,
+      "first_ns": 1519912674262686000,
+      "last_ns": 1519928245705978000,
+      "payload_bytes": 1265570
+     }
+    },
+    {
+     "id": "infil_b2",
+     "name": "Infiltration, second wave",
+     "attackers": [
+      "13.58.225.34"
+     ],
+     "window": [
+      "2018-03-01T18:00",
+      "2018-03-01T19:37"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 2,
+     "signatures_kept": 1,
+     "examples": [
+      "ET HUNTING PE EXE Download over raw TCP"
+     ],
+     "suspect_rank": null,
+     "ledger": {
+      "flows": 2,
+      "first_ns": 1519913075178978000,
+      "last_ns": 1519933041871938000,
+      "payload_bytes": 1517250
+     }
+    }
+   ]
+  },
+  "test_bot_mar02": {
+   "attack_alerts_full": 1088,
+   "attack_alerts_kept": 1083,
+   "attack_signatures_full": 27,
+   "attack_signatures_kept": 27,
+   "invented_attack_alerts": 0,
+   "findings": [
+    {
+     "id": "bot_a1",
+     "name": "Bot C2 (Ares/Zeus), first window",
+     "attackers": [
+      "18.219.211.138"
+     ],
+     "window": [
+      "2018-03-02T14:11",
+      "2018-03-02T15:34"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 1,
+     "signatures_kept": 1,
+     "examples": [
+      "ET INFO User-Agent (python-requests) Inbound to Webserver"
+     ],
+     "suspect_rank": null,
+     "ledger": {
+      "flows": 49239,
+      "first_ns": 1520000008376104000,
+      "last_ns": 1520004899948744000,
+      "payload_bytes": 178381610
+     }
+    },
+    {
+     "id": "bot_a2",
+     "name": "Bot C2 (Ares/Zeus), second window",
+     "attackers": [
+      "18.219.211.138"
+     ],
+     "window": [
+      "2018-03-02T18:24",
+      "2018-03-02T19:55"
+     ],
+     "detectable": true,
+     "caught": true,
+     "signatures_full": 1,
+     "signatures_kept": 1,
+     "examples": [
+      "ET INFO User-Agent (python-requests) Inbound to Webserver"
+     ],
+     "suspect_rank": null,
+     "ledger": {
+      "flows": 47976,
+      "first_ns": 1520015039996314000,
+      "last_ns": 1520020491339399999,
+      "payload_bytes": 153202283
+     }
+    }
+   ]
+  },
+  "test_wrccdc2018": {
+   "attack_alerts_full": 121,
+   "attack_alerts_kept": 112,
+   "attack_signatures_full": 28,
+   "attack_signatures_kept": 27,
+   "invented_attack_alerts": 19,
+   "findings": []
+  }
+ }
+}

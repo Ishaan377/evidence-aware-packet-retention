@@ -1,0 +1,468 @@
+% ---------------------------------------------------------------------------
+\bookpart{V}{The tests}{How the experiments were built so that a good score would mean something, and what each one found, including what went wrong.}{cyellow}{Fair testing \textperiodcentered\ The lab and the data \textperiodcentered\ Three sealed tests \textperiodcentered\ Which parts matter \textperiodcentered\ Every mistake we made}
+
+\chapter{How to test fairly}
+\label{ch:fair}
+\chapintro{It is easy to fool yourself in this kind of work. You can tune an algorithm until it fits your test data and call that a discovery. Each rule below blocks one way of fooling yourself.}
+
+\section{The basic experiment}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=5mm and 9mm]
+  \node[box=cblue,text width=25mm,minimum height=13mm] (a) {\textbf{Full capture}};
+  \node[box=caqua,text width=34mm,minimum height=9mm,right=12mm of a,yshift=9mm] (b) {Method reduces it\\to the cap};
+  \node[box=corange,text width=34mm,minimum height=9mm,right=of b] (c) {Suricata scans\\the reduced copy};
+  \node[box=corange,text width=34mm,minimum height=9mm,below=8mm of c] (d) {Suricata scans\\the full capture};
+  \node[solid box=navy,text width=25mm,minimum height=13mm,right=9mm of $(c)!.5!(d)$] (e) {\textbf{Compare} the two sets of alerts};
+  \draw[flow] (a) |- (b); \draw[flow] (b) -- (c); \draw[flow] (a) |- (d); \draw[flow] (c) -| (e); \draw[flow] (d) -| (e);
+\end{tikzpicture}
+\caption{Each method is scored by how many of the full capture's detections survive in its reduced copy.}
+\end{figure}
+
+\section{What we measure}
+\begin{newword}
+\textbf{Recall} is the share of something that survived. If the full capture raises 30 attack signatures and the reduced copy still raises 27 of them, recall is $27 \div 30 = 90\%$.
+\end{newword}
+
+\begin{gtable}{The measures used in this project.}
+\begin{tabularx}{\linewidth}{l L L}
+\toprule
+\hd{Measure} & \hd{What it counts} & \hd{Why it is useful}\\
+\midrule
+Attack signature recall & Distinct attack-category rules that still fire & Primary measure. Did each \emph{kind} of attack stay visible?\\
+Alert instance recall & Distinct combinations of rule and host pair that still fire & Finer detail. Did it survive on each pair of hosts?\\
+Later-rule recall & Alert instances from rules published on or after the capture date & The time-travel measure. Nothing could have used these rules at capture time\\
+Labelled attacks caught & Attacks named by the dataset publisher that still link attacker to victim & Ground truth from a third party\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+We report signature recall first because it is the steadier measure, for a reason Chapter~\ref{ch:third} explains: scanning the same file twice does not always give the same instance count.
+
+A case only counts if the full capture raises at least one attack alert. If nothing fires on the complete recording, there is nothing to preserve, and the case is \textbf{not scored}.
+
+\section{Rule 1: an independent judge}
+The judge is Suricata with 52,778 public rules. We did not write it and EBR never sees those rules. Scoring EBR by what it was built to keep would be meaningless.
+
+\section{Rule 2: independent ground truth}
+Attack times and addresses come from the dataset publishers, not from us.
+
+\section{Rule 3: strong, fair comparators}
+\begin{itemize}
+\item The flow cutoff is fitted to every budget, which makes it stronger than a fixed setting.
+\item The IDS-triggered method receives real alerts from rules older than the capture. EBR gets no rules at all.
+\item The cap counts every serialised byte, and EBR's ledger comes out of its own allowance.
+\end{itemize}
+
+\section{Rule 4: separate development and test data}
+Tuning happens on \textbf{development cases}. Final results come from \textbf{test cases} that were never opened during tuning. Using test data for tuning is like seeing the exam paper before the exam.
+
+\section{Rule 5: seal it}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=3mm and 4mm]
+  \tikzset{st/.style={box=#1,text width=24mm,minimum height=16mm,font=\footnotesize}}
+  \node[st=cblue] (a) {\textbf{1. Write}\\code, settings and scoring};
+  \node[st=cviolet,right=of a] (b) {\textbf{2. Seal}\\hash every file into a freeze record};
+  \node[st=caqua,right=of b] (c) {\textbf{3. Open}\\fetch and read the test data};
+  \node[st=cyellow,right=of c] (d) {\textbf{4. Run}\\no changes are allowed};
+  \node[st=cgreen,right=of d] (e) {\textbf{5. Report}\\everything, as it came out};
+  \foreach \p/\q in {a/b,b/c,c/d,d/e} \draw[flow] (\p) -- (\q);
+\end{tikzpicture}
+\caption{A sealed test. Anyone can recompute the hashes to confirm nothing changed after step 2.}
+\end{figure}
+
+The freeze record for the third test covers 22 files, including the plan itself. Running \texttt{python -B final/freeze.py check v3} recomputes every hash.
+
+\section{Rule 6: pre-register}
+Sealing stops you changing the method. \textbf{Pre-registration} stops you changing the question~\cite{prereg}. Before opening the third test's data, we wrote down five hypotheses, the primary measure, and the exact rule for calling each one supported. Without this, it is tempting to look at the results and decide afterwards what you were really testing.
+
+\section{Rule 7: use honest statistics}
+With only a few cases, one lucky case can swing an average. The \textbf{bootstrap}~\cite{bootstrap} shows how much the average could plausibly vary.
+
+\begin{example}[The bootstrap, step by step]
+Say a method beat another by these points on 8 cases.
+\begin{enumerate}
+\item Draw 8 cases at random from that list, allowing the same case to be picked twice.
+\item Compute the mean difference for that draw.
+\item Repeat 10,000 times.
+\item Sort the 10,000 means. The middle 95\% of them is the \textbf{95\% interval}.
+\end{enumerate}
+If that interval does not include zero, the difference is unlikely to be a fluke of which cases we happened to have. That was the pass rule for every hypothesis.
+\end{example}
+
+\begin{recap}
+A fair test uses an outside judge, outside ground truth, strong comparators, separate tuning data, sealed code, predictions written in advance, and intervals that respect how few cases there are.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{The lab and the data}
+\chapintro{Where the tests ran, and what they ran on.}
+
+\section{The laboratory}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=5mm and 12mm]
+  \node[box=cblue,text width=46mm,minimum height=26mm,align=left] (w) {\textbf{Windows PC}\\[2pt]\footnotesize Python code in \texttt{final/}\\EBR and comparators\\Captures on disk};
+  \node[box=corange,text width=52mm,minimum height=26mm,align=left,right=22mm of w] (l) {\textbf{Isolated Linux lab (\texttt{ebr-lab})}\\[2pt]\footnotesize Suricata 7.0.3\\52,778 ET Open rules\\One daemon, so rules load once};
+  \draw[flowc=cblue] ([yshift=4mm]w.east) -- node[above,note] {captures} ([yshift=4mm]l.west);
+  \draw[flowc=corange] ([yshift=-4mm]l.west) -- node[below,note] {alert summaries} ([yshift=-4mm]w.east);
+\end{tikzpicture}
+\caption{The lab. Captures are only read from files. Nothing is ever replayed onto a real network.}
+\end{figure}
+
+Suricata runs in a dedicated Linux environment under WSL 2 on the Windows machine. Each run produces a compact summary of its alerts. Thousands of scans were needed, so one background daemon keeps the rules loaded, which saves a long start-up for each file.
+
+\section{The datasets}
+\begin{gtable}{The data sources.}
+\begin{tabularx}{\linewidth}{l L L}
+\toprule
+\hd{Dataset} & \hd{What it is} & \hd{Strength and weakness}\\
+\midrule
+CSE-CIC-IDS2018~\cite{cic} & A large simulated company under scripted attacks, by day & Labelled attackers and times. Attackers are easy to separate, and such lab datasets have known flaws~\cite{troubleshooting}\\
+WRCCDC & Recordings from a student cyber-defence competition with a live red team & Real humans improvising. No exact labels\\
+CTU-Mixed~\cite{ctu} & Real captures with live malware infections & Real malware traffic\\
+IoT-23~\cite{iot23} & Recordings of infected internet-connected devices & Enormous scan volumes. Dominated by one infected host\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{The three test sets}
+\begin{gtable}{What each sealed test contained.}
+\begin{tabularx}{\linewidth}{l r r r L}
+\toprule
+\hd{Test} & \hd{Size} & \hd{Packets} & \hd{Scored} & \hd{Contents}\\
+\midrule
+First & 11.28 GB & 35.0 M & 6 of 6 & Five days of CIC-IDS2018, one WRCCDC 2018 red-team slice\\
+Second & 7.03 GB & 15.1 M & 5 of 6 & WRCCDC 2019, 2024 and 2026, two CTU networks, one CIC DDoS day\\
+Third & 6.15 GB & 34.0 M & 8 of 9 & Six IoT-23 captures, three WRCCDC slices from 2017 and 2018\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+Each test used captures that had not been seen before. One disclosure: the WRCCDC 2018 slices in the third test come from the same event as a capture used in development, at different hours. They are unseen data, not a new network.
+
+\section{How the runs were kept honest}
+\begin{itemize}
+\item \textbf{One crash, disclosed.} The first frozen run stopped before anything was scored, because one 4.3 GB capture was PCAPNG. It was converted to classic PCAP, the independent tool Scapy confirmed all 18,890,171 packets matched with zero mismatches, and no frozen file changed.
+\item \textbf{Replay checks.} The first test can be rerun from its frozen settings to confirm that the selections match.
+\item \textbf{Scan noise is measured.} See Chapter~\ref{ch:third}.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\chapter{The first sealed test}
+\label{ch:first}
+\chapintro{11.3 GB, 35.0 million packets, six cases. This tested the first version of EBR against everything else, with no rules and no second chances.}
+
+\section{Results}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[capaxis]
+\addplot[ebralone] coordinates {(1\%,87.7)(2\%,90.5)(5\%,91.7)(10\%,91.1)};
+\addplot[idsfill] coordinates {(1\%,83.9)(2\%,83.9)(5\%,86.5)(10\%,91.9)};
+\addplot[raredest] coordinates {(1\%,57.9)(2\%,62.8)(5\%,69.2)(10\%,74.8)};
+\addplot[cutoff] coordinates {(1\%,30.3)(2\%,54.0)(5\%,62.8)(10\%,74.7)};
+\legend{EBR,IDS-triggered + fill,Rare destinations,Tuned flow cutoff}
+\end{axis}
+\end{tikzpicture}
+\caption{First sealed test: attack signatures preserved, mean across cases.}
+\end{figure}
+
+\begin{gtable}{Labelled attacks still caught, out of the 8 that Suricata detects on the full capture.}
+\begin{tabularx}{.78\linewidth}{L c c c c}
+\toprule
+\hd{Method} & \hd{1\%} & \hd{2\%} & \hd{5\%} & \hd{10\%}\\
+\midrule
+\textbf{EBR} & 5 & 7 & \textbf{8} & \textbf{8}\\
+IDS-triggered + fill & 7 & 7 & 7 & 8\\
+Tuned flow cutoff & 0 & 2 & 5 & 7\\
+Rare destinations & 3 & 3 & 3 & 4\\
+Random flows (mean of 3 seeds) & 5.7 & 6.3 & 6.3 & 6.3\\
+Random packets (mean of 3 seeds) & 0 & 0.7 & 1.7 & 3\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{What it showed}
+\begin{itemize}
+\item \textbf{EBR beat the methods that use no rules.} Against the tuned cutoff and rare destinations, the 95\% interval on its advantage excluded zero at every cap.
+\item \textbf{It was level with an IDS given real rules.} EBR was ahead at 1--5\% and behind at 10\%, but every interval included zero, so this test cannot separate them. That is still a strong result for a method that used no rules.
+\item \textbf{The ledger was accurate.} It gave the attacker's exact flow count in all five labelled cases at a 5\% cap.
+\end{itemize}
+
+\section{What did not go EBR's way}
+\begin{itemize}
+\item \textbf{Tight caps favour an IDS on alert instances.} At 1\%, IDS-triggered capture kept 91.7\% of alert instances against EBR's 49.2\%.
+\item \textbf{The time-travel prediction failed.} We expected later-published rules to favour EBR. IDS-triggered capture still kept 92.9\% of those alerts against 85.0\% at 5\%, because new rules mostly fire on flows that old rules had already flagged.
+\item \textbf{Human red-team traffic was the weak spot.} On WRCCDC, EBR kept 60.7\% of attack signatures at 5\%, against 78.6\% for IDS-triggered capture. Of the 11 signatures it never recovered, 10 were SMB lateral movement or SMB exploits.
+\item \textbf{More budget sometimes lost detections.} Three WRCCDC signatures present at a lower cap were gone at 10\%.
+\item \textbf{The suspect list was uneven.} The attacker ranked \#1, \#1 and \#7 in three labelled cases, and did not appear at all for the bot and infiltration cases.
+\end{itemize}
+
+\begin{bigidea}
+A single good number hides a lot. Overall the mean looked strong, but one case exposed a real flaw. Looking case by case is what led to the next version.
+\end{bigidea}
+
+% ---------------------------------------------------------------------------
+\chapter{The second sealed test}
+\label{ch:second}
+\chapintro{7.0 GB of fresh captures, testing a fixed version. It went well, but it had an unexpected catch.}
+
+\section{The diagnosis and the fix}
+Why was EBR weak on the red-team capture? The first explanation was gaps inside flows. An experiment disproved that: the affected login flows alert at every fidelity level when scanned alone. Checking where the bytes went gave the real answer: \textbf{scan flows took 82\% of the budget}.
+
+A steeper discount looked like the fix until it was tried on all 13 earlier cases, where it damaged others. The final changes were the 30\% scan cap (Section~\ref{sec:scancap}) and treating SMB as readable.
+
+\section{Results}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[capaxis]
+\addplot[ebralone] coordinates {(1\%,89.6)(2\%,91.9)(5\%,94.4)(10\%,97.8)};
+\addplot[idsfill] coordinates {(1\%,85.9)(2\%,89.6)(5\%,85.9)(10\%,91.2)};
+\addplot[raredest] coordinates {(1\%,63.7)(2\%,72.6)(5\%,79.9)(10\%,85.8)};
+\addplot[cutoff] coordinates {(1\%,38.0)(2\%,61.0)(5\%,77.5)(10\%,82.8)};
+\legend{EBR,IDS-triggered + fill,Rare destinations,Tuned flow cutoff}
+\end{axis}
+\end{tikzpicture}
+\caption{Second sealed test: attack signatures preserved, mean across five scored cases.}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{EBR led every method on signature recall at every cap.}
+\item Its lead over rare destinations cleared the 95\% interval at every cap.
+\item Its lead over IDS-triggered capture cleared the interval at 5\% and 10\% (+8.5 and +6.5 points), but not at 1\% and 2\%.
+\item On alert instances the two were closer. IDS-triggered capture kept more at 1\% and 2\%, and EBR kept more at 5\% and 10\%. None of those differences cleared the interval.
+\end{itemize}
+
+\section{The catch}
+\begin{honest}
+\textbf{This test did not exercise the fix at all.} Payload-free flows would have taken at most 3.4\% of the budget on these captures, against 82\% on the capture that exposed the flaw. The scan cap never engaged, and the old and new versions tied on signature recall in every case. The evidence for the cap at this point was therefore not sealed. That is why a third test was needed, chosen specifically to be scan-heavy.
+\end{honest}
+
+% ---------------------------------------------------------------------------
+\chapter{The verify-before-delete prototype}
+\label{ch:proto}
+\chapintro{The first trial of the repair loop, run on captures whose results we already knew. Keep that in mind: this is a promising prototype, not a sealed result.}
+
+\begin{careful}
+Nothing in this chapter is sealed. The loop's settings were fixed before the run and not tuned afterwards, but the outcomes of these captures were already known.
+\end{careful}
+
+\begin{gtable}{First results of the repair loop, across 11 cases, using only rules older than each capture.}
+\begin{tabularx}{.92\linewidth}{l L c c c c}
+\toprule
+\hd{Measure} & \hd{Method} & \hd{1\%} & \hd{2\%} & \hd{5\%} & \hd{10\%}\\
+\midrule
+Attack signatures & EBR with repair & \textbf{95.7} & \textbf{98.7} & \textbf{99.6} & \textbf{100}\\
+ & EBR alone & 88.6 & 91.8 & 96.2 & 98.7\\
+ & IDS-triggered + fill & 84.8 & 86.5 & 86.2 & 91.6\\
+\midrule
+Alert instances & EBR with repair & 68.7 & 84.6 & \textbf{97.2} & \textbf{97.1}\\
+ & EBR alone & 59.8 & 76.8 & 90.2 & 92.9\\
+ & IDS-triggered + fill & \textbf{85.1} & \textbf{87.7} & 85.1 & 89.3\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+With repair, EBR beat IDS-triggered capture on signature recall at every cap, by 8 to 13 points, and every 95\% interval stayed above zero. Six of 88 case comparisons got worse, by up to 15 points at a 1\% cap.
+
+\section{The blind-spot estimate}
+This prototype also tried an inventive idea. Hide half of the rule families from the repair step, and see how many hidden alerts EBR kept. That estimates how well EBR handles threats with no rule, and it could be computed daily. On this unsealed data it looked promising, with an average error of 9.1 points against 26.8 for guessing. It later failed, as the next chapter shows.
+
+% ---------------------------------------------------------------------------
+\chapter{The third sealed test}
+\label{ch:third}
+\chapintro{The most important experiment in the project: 6.1 GB of captures chosen to be scan-heavy, with five written predictions, opened only after the plan was hashed.}
+
+\section{The plan}
+Version 3 was frozen on 31 October 2026 at 00:54:12, with hashes of 22 files. A blind screen then read packet headers only, with no detection, to find which captures had scan storms. It found 7 of 9 scan-heavy, so unlike the second test, this one really exercised the scan cap.
+
+Three versions were compared: EBR, the first version of EBR (with no scan cap), and EBR with repair.
+
+\section{Results}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[capaxis]
+\addplot[repair] coordinates {(1\%,87.1)(2\%,95.1)(5\%,99.6)(10\%,98.4)};
+\addplot[idsfill] coordinates {(1\%,82.2)(2\%,82.2)(5\%,84.9)(10\%,85.7)};
+\addplot[ebralone] coordinates {(1\%,55.0)(2\%,72.7)(5\%,84.7)(10\%,92.4)};
+\addplot[firstver] coordinates {(1\%,50.8)(2\%,68.1)(5\%,82.6)(10\%,92.4)};
+\addplot[cutoff] coordinates {(1\%,22.6)(2\%,26.9)(5\%,34.4)(10\%,38.0)};
+\addplot[raredest] coordinates {(1\%,12.9)(2\%,13.3)(5\%,14.1)(10\%,14.4)};
+\legend{EBR with repair,IDS-triggered + fill,EBR alone,EBR first version,Tuned flow cutoff,Rare destinations}
+\end{axis}
+\end{tikzpicture}
+\caption{Third sealed test: attack signatures preserved, mean across 8 scored cases.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[capaxis]
+\addplot[repair] coordinates {(1\%,79.3)(2\%,85.3)(5\%,92.2)(10\%,94.2)};
+\addplot[idsfill] coordinates {(1\%,73.1)(2\%,73.3)(5\%,82.0)(10\%,82.2)};
+\addplot[ebralone] coordinates {(1\%,40.3)(2\%,49.7)(5\%,74.2)(10\%,85.3)};
+\addplot[cutoff] coordinates {(1\%,18.8)(2\%,24.2)(5\%,33.1)(10\%,36.2)};
+\addplot[raredest] coordinates {(1\%,12.1)(2\%,12.2)(5\%,12.2)(10\%,12.2)};
+\legend{EBR with repair,IDS-triggered + fill,EBR alone,Tuned flow cutoff,Rare destinations}
+\end{axis}
+\end{tikzpicture}
+\caption{Third sealed test: attack alert instances preserved, a finer and noisier measure.}
+\end{figure}
+
+\begin{gtable}{Attack signatures kept at a 5\% cap, case by case.}
+\begin{tabularx}{.9\linewidth}{L c c c c}
+\toprule
+\hd{Case} & \hd{EBR} & \hd{First version} & \hd{IDS + fill} & \hd{EBR + repair}\\
+\midrule
+IoT-23 1-1 (Hide and Seek) & 52\% & 52\% & 100\% & \textbf{100\%}\\
+IoT-23 7-1 & 57\% & 57\% & 100\% & \textbf{100\%}\\
+IoT-23 9-1 & 100\% & 100\% & 100\% & \textbf{100\%}\\
+IoT-23 48-1 & 100\% & 100\% & 83\% & \textbf{100\%}\\
+IoT-23 49-1 & 100\% & 100\% & 67\% & \textbf{100\%}\\
+WRCCDC 2017 at 75\% & 88\% & 88\% & 100\% & \textbf{100\%}\\
+WRCCDC 2018 at 25\% & 93\% & 77\% & 67\% & \textbf{97\%}\\
+WRCCDC 2018 at 75\% & 88\% & 88\% & 62\% & \textbf{100\%}\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\section{The verdicts}
+\begin{gtable}{The five pre-registered hypotheses.}
+\begin{tabularx}{\linewidth}{l L l L}
+\toprule
+\hd{} & \hd{Prediction} & \hd{Verdict} & \hd{Evidence (points)}\\
+\midrule
+H1 & On scan-heavy cases, the scan cap beats the first version at 5\% and 10\% & \textbf{Failed} & +2.8 at 5\%, and the interval reaches zero. 0.0 at 10\%\\
+H2 & Repair beats EBR alone at every cap & \textbf{Passed} & +32.1, +22.4, +14.9, +7.6\\
+H3 & Repair beats IDS-triggered + fill at every cap & \textbf{Failed} & Clear at 2\%, 5\%, 10\%. Inconclusive at 1\%\\
+H4 & Repair costs later-rule recall no more than 5 points at any cap & \textbf{Failed} & $-$7.5 at 2\%, from just four cases\\
+H5 & The blind-spot estimate beats guessing & \textbf{Unscoreable} & 8 usable pairs of the 10 required. On those, 24.5 error against 14.6\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+The intervals tell the story better than the averages. In the charts below, a dot is the average gain and the bar is the 95\% interval. A bar that crosses the zero line does not pass.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=9mm},guideaxis,width=78mm,height=44mm,
+  ytick={1,2,3,4},yticklabels={10\%,5\%,2\%,1\%},ymin=.5,ymax=4.5,xmin=-20,xmax=60,ymajorgrids=false,xmajorgrids,xlabel={Points gained}]
+\nextgroupplot[title={\footnotesize\textbf{H2:} repair vs EBR alone (passed)}]
+\addplot[only marks,mark=*,color=cblue,mark size=2pt,error bars/.cd,x dir=both,x explicit,error bar style={line width=1.2pt,color=cblue}] coordinates {
+ (32.1,4) += (22.4,0) -= (21.5,0)
+ (22.4,3) += (20.9,0) -= (19.0,0)
+ (14.9,2) += (13.9,0) -= (11.5,0)
+ (7.6,1) += (12.1,0) -= (7.2,0)};
+\draw[corange,line width=.8pt,dashed] (axis cs:0,.5) -- (axis cs:0,4.5);
+\nextgroupplot[title={\footnotesize\textbf{H3:} repair vs IDS + fill (failed at 1\%)},yticklabels={}]
+\addplot[only marks,mark=*,color=cblue,mark size=2pt,error bars/.cd,x dir=both,x explicit,error bar style={line width=1.2pt,color=cblue}] coordinates {
+ (4.8,4) += (16.6,0) -= (19.2,0)
+ (12.9,3) += (10.5,0) -= (9.3,0)
+ (14.7,2) += (11.0,0) -= (10.5,0)
+ (12.7,1) += (9.4,0) -= (9.4,0)};
+\draw[corange,line width=.8pt,dashed] (axis cs:0,.5) -- (axis cs:0,4.5);
+\end{groupplot}
+\end{tikzpicture}
+\caption{Paired differences by cap, with 95\% intervals from resampling cases. The dashed line is zero.}
+\end{figure}
+
+\section{Why it came out this way}
+\subsection{The scan cap had little to protect}
+A botnet host makes millions of scan flows, but few flows have any content, and that content usually fits anyway. The cap helped in 3 of 8 cases and did not lower signature recall in any. It is a safeguard against a rare failure, not a general improvement.
+
+\subsection{Login sprays look like repeats}
+On the Hide and Seek capture, EBR alone lost 110 of 158 attack alert instances at a 10\% cap, mostly Telnet logins with known default passwords. Each attempt has the same size and shape, and the difference lies in the password. Diminishing returns sees repetition and throws them away.
+
+\begin{bigidea}[A real blind spot]
+This is a weakness in the very idea that does most of EBR's work. It explains why EBR alone did poorly at low caps here. The repair loop fixes it when a rule exists. Without a rule, EBR alone remains exposed.
+\end{bigidea}
+
+\subsection{Rate-based rules are hard to repair}
+At 5\%, 249 of 2,041 usable alerts stayed lost, mostly scan rules that need many flows close together. Restoring those can cost more budget than exists.
+
+\section{Scan noise}
+The same selection, scanned twice by Suricata, does not always give the same answer. Across 32 comparisons, 12 differed, by 0.4 points of instance recall on average and up to 6.1 on one case. Signature recall moved by 0.4 points on average, and by 12.5 on one case with only 8 signatures. Running Suricata in single-threaded mode did not remove this, so differences of a point or two should be ignored.
+
+\section{What it costs}
+Repaired flows used 15.6\%, 13.1\%, 5.0\% and 1.4\% of the budget at the four caps. Repair made 3 of 64 case comparisons worse. Lossless gzip reached only 39.9\% of the original size on these captures.
+
+\begin{recap}
+Repair is the clear winner, passing H2 at every cap and beating IDS-triggered capture at 2\%, 5\% and 10\%. The other predictions did not pass in full. The scan cap is a safeguard, and the blind-spot estimate is an open idea. EBR alone is not always ahead, because traffic type matters.
+\end{recap}
+
+% ---------------------------------------------------------------------------
+\chapter{Which parts of EBR matter?}
+\label{ch:parts}
+\chapintro{An algorithm with many parts raises a fair question: are all of them doing anything? We found out by removing them one at a time. This is called an ablation study.}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[guideaxis,xbar,bar width=4mm,width=118mm,height=74mm,axis lines=left,y dir=reverse,
+  symbolic y coords={Full EBR,No turn heads,No pivoting,No ledger,No automation score,No rarity score,No diminishing returns,Tiers and knapsack only},
+  ytick=data,xmin=0,xmax=104,xtick={0,25,50,75,100},xticklabel={\pgfmathprintnumber{\tick}\%},ymajorgrids=false,xmajorgrids,
+  enlarge y limits=.08,xlabel={Attack signatures kept at a 1\% cap},
+  nodes near coords,nodes near coords style={font=\footnotesize,color=ink,/pgf/number format/.cd,fixed,fixed zerofill,precision=1},
+  every axis y label/.style={},tick label style={font=\footnotesize,color=ink}]
+\addplot[fill=caqua,draw=caqua] coordinates {(87.7,Full EBR)(87.7,No turn heads)(87.7,No pivoting)(87.7,No ledger)(87.1,No automation score)(83.8,No rarity score)(51.5,No diminishing returns)(51.1,Tiers and knapsack only)};
+\end{axis}
+\end{tikzpicture}
+\caption{Removing each part in turn, first sealed test data, 1\% cap. Only diminishing returns makes a large difference on its own.}
+\end{figure}
+
+\begin{gtable}{Full ablation results, attack signature recall, first test data.}
+\begin{tabularx}{.92\linewidth}{L c c c c c}
+\toprule
+\hd{Variant} & \hd{1\%} & \hd{2\%} & \hd{5\%} & \hd{10\%} & \hd{Attacks caught}\\
+\midrule
+Full EBR & 87.7 & 90.5 & 91.7 & 91.1 & 5 / 7 / 8 / 8\\
+No diminishing returns & 51.5 & 67.3 & 77.8 & 77.8 & 2 / 5 / 6 / 8\\
+Tiers and knapsack only & 51.1 & 63.4 & 75.5 & 76.5 & 1 / 4 / 6 / 8\\
+No rarity score & 83.8 & 88.6 & 91.1 & 92.3 & 5 / 7 / 8 / 8\\
+No automation score & 87.1 & 89.9 & 90.5 & 91.7 & 5 / 7 / 8 / 8\\
+No pivoting & 87.7 & 90.5 & 91.7 & 91.1 & 5 / 7 / 8 / 8\\
+No turn heads & 87.7 & 90.5 & 91.7 & 91.1 & 5 / 7 / 8 / 8\\
+No ledger & 87.7 & 90.5 & 91.7 & 92.3 & 7 / 7 / 8 / 8\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{honest}
+\textbf{Diminishing returns carries most of the benefit.} Pivoting and turn heads made no measurable difference to signature recall on these captures, and rarity and automation each changed it only slightly when removed alone. They may overlap, so that when one is removed another covers for it. This study does not show that those parts are needed, and a simpler EBR might do just as well. The ledger costs detection at 1\%, which is the price of exact flow counts.
+\end{honest}
+
+% ---------------------------------------------------------------------------
+\chapter{Everything we got wrong}
+\label{ch:wrong}
+\chapintro{This chapter is here on purpose. A result is only believable if its failures are visible.}
+
+\begin{gtable}{The mistakes, and what corrected them.}
+\begin{tabularx}{\linewidth}{L L}
+\toprule
+\hd{What we thought} & \hd{What turned out to be true}\\
+\midrule
+A weighted evidence score must beat a simple method & An unweighted comparator beat it on several captures, which led to the EBR redesign\\
+Later-published rules would favour EBR & They did not. New rules mostly fire on flows old rules had already flagged\\
+SMB was the main cause of the red-team failure & Scan flows taking 82\% of the budget were the main cause. SMB was a smaller second cause\\
+Gaps inside flows caused lost detections & Disproved by an isolation experiment. The login flows alert at every level when scanned alone\\
+A steeper repetition discount was the fix & It damaged other captures when tested on all 13 earlier cases\\
+The scan cap would help on scan-heavy data & It failed its pre-registered test. It works as a safeguard\\
+The SMB change had a small cost & That difference was within scan noise, so the claim was withdrawn\\
+Signature recall never changes between scans & It moved by 0.4 points on average, and 12.5 on a small case\\
+The blind-spot estimate was the project's most novel finding & It did worse than guessing on the sealed data. It remains an open idea\\
+EBR alone always leads an IDS & It led in two tests and fell behind at 1\% and 2\% on scan-heavy traffic\\
+\bottomrule
+\end{tabularx}
+\end{gtable}
+
+\begin{bigidea}
+Most of these were found by testing an explanation instead of trusting it. The most useful habit in the whole project was asking ``how would I know if this were wrong?''
+\end{bigidea}
+
+\section{A favourite surprise}
+The ``FTP brute force'' attack in the CIC dataset turned out to be 192,300 refused connections, because the server was not listening. Keeping a small set of exemplars and an exact count was the right forensic answer, and the case exposed a flaw in our first evaluation metric.

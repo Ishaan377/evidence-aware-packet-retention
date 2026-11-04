@@ -1,0 +1,28 @@
+{
+  "title": "Third sealed test: pre-registered plan",
+  "written": "Before any third-test capture was opened. Hashed in FREEZE_v3.json.",
+  "versions": {
+    "ebr": "Current settings in ebr_config.json: scan cap and readable SMB.",
+    "ebr_frozen": "First sealed version, from ebr_config_frozen.json.",
+    "repair": "Current EBR plus the verify-before-delete loop, repairing only with rules published before each capture."
+  },
+  "cases": "IoT-23 scanning-family captures from 50 MB upward, first 300 MB where larger, plus WRCCDC files at fixed positions in the 2017 and 2018 file lists.",
+  "screen": {
+    "rule": "A case is scan-heavy if payload-free flows would take at least 30 percent of the packet budget at a 5 percent cap with the scan cap removed.",
+    "when": "After the freeze and before any Suricata scan of these captures. It reads packet headers and first bytes only, and prints flow counts and shares.",
+    "use": "Only H1 is restricted to scan-heavy cases. All other hypotheses use every scored case."
+  },
+  "primary_measure": "Attack signature recall, because repeated scans have not changed it. Alert instance recall is secondary and reported with a measured noise band.",
+  "noise": "The forensic_test run and the first round of the repair run scan identical EBR selections, so their gap measures scan noise.",
+  "analysis": "Means across scored cases. Paired differences by case, with 95 percent bootstrap intervals from resampling cases, 10000 replicates, as in earlier reports.",
+  "decision_rule": "A hypothesis is supported at a cap only if the mean difference favours it and the 95 percent interval excludes zero. A case with no attack alerts on the complete capture is not scored.",
+  "hypotheses": {
+    "H1": "On scan-heavy cases, EBR with the scan cap keeps more attack signatures than the first version at the 5 and 10 percent caps.",
+    "H2": "Repair keeps more attack signatures than EBR alone at every cap.",
+    "H3": "Repair keeps more attack signatures than IDS-triggered capture with fill at every cap.",
+    "H4": "Repair does not lower recall of later-published rules by more than 5 points on average at any cap.",
+    "H5": "The hidden-family estimate predicts later-rule recall with a lower mean absolute error than always guessing the mean. Needs at least 10 usable case and cap pairs."
+  },
+  "not_tuned": "Repair settings stay as in the prototype: boost 1000, 64 neighbours, two repair rounds. No setting changes after this plan is hashed.",
+  "disclosures": "The WRCCDC 2018 slices are from the same event as a capture used in development, at different hours. They are unseen data, not a new network."
+}
